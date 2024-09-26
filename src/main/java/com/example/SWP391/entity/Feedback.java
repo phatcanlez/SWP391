@@ -21,13 +21,13 @@ import java.util.Date;
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String feedbackId;
+    int feedbackId;
 
     Date feedbackDate;
 
     @NotBlank(message = "Star rating is required")
     int rating;
 
-    @Size(min = 0, max = 300, message = "Feedback must be between 0 and 300 characters")
+    @Size(min = 0, max = 200, message = "Feedback must be between 0 and 200 characters")
     String content;
 }
