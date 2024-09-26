@@ -16,8 +16,8 @@ import java.util.Date;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String paymentId;
+    int paymentId;
     Date paymentDate;
     String status;
-    Order order;
+//    Order order;
 }

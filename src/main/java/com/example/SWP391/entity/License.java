@@ -22,7 +22,7 @@ public class License {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String licenseId;
+    int licenseId;
 
     Date issueDate;
 
@@ -32,8 +32,8 @@ public class License {
     @NotBlank(message = "License type is required")
     String licenseType;
 
-    @Size(min = 0, max = 300, message = "Description must be between 0 and 300 characters")
+    @Size(min = 0, max = 200, message = "Description must be between 0 and 200 characters")
     String description;
 
-    Order order;
+//    Order order;
 }
