@@ -7,31 +7,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/license")
+
 @RestController
+@CrossOrigin("*")
 public class LicenseAPI {
 
         @Autowired
         private LicenseService licenseService;
 
-        @PostMapping("/create")
+        @PostMapping("/api/licence-create")
         public ResponseEntity createLicense(@Valid @RequestBody License license) {
             License newLicense = licenseService.createLicense(license);
             return ResponseEntity.ok(newLicense);
         }
 
-        @GetMapping("/get")
+        @GetMapping("/api/licence-get")
         public void getAllLicense() {
             // Some code here
         }
 
-        @GetMapping("/get/{id}")
+        @GetMapping("/api/licence-get/{id}")
         public void getLicenseById() {
             // Some code here
         }
 
 
-        @PutMapping("/update")
+        @PutMapping("/api/licence-update")
         public void updateLicense() {
             // Some code here
         }

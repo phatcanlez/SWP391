@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class CustomerAccResponse {
+public class RegisterRequest {
     @NotBlank(message = "Name is required")
     String name;
 
@@ -25,7 +25,8 @@ public class CustomerAccResponse {
     @NotBlank(message = "Password is required")
     String password;
 
-    String status;
+    @NotBlank(message = "Confirm password is required")
+    String confirmPassword;
 
     @Email(message = "Email not valid")
     @NotBlank(message = "Email is required")

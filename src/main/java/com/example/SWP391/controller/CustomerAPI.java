@@ -1,10 +1,7 @@
 package com.example.SWP391.controller;
 
-import com.example.SWP391.entity.License;
 import com.example.SWP391.service.CustomerService;
 import com.example.SWP391.entity.Customer;
-import com.example.SWP391.model.DTO.CustomerAccResponse;
-import com.example.SWP391.service.LicenseService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
