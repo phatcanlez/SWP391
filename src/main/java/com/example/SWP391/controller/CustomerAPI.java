@@ -1,13 +1,14 @@
 package com.example.SWP391.controller;
 
-import com.example.SWP391.Service.CustomerService;
+import com.example.SWP391.service.CustomerService;
 import com.example.SWP391.entity.Customer;
-import com.example.SWP391.model.DTO.CustomerAccResponse;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin("*")
@@ -21,20 +22,31 @@ public class CustomerAPI {
 
     @PostMapping("api/customer")
     public ResponseEntity createCustomer(@Valid @RequestBody Customer customer) {
-        CustomerAccResponse cus = customerService.createCustomer(customer);
-        return ResponseEntity.ok(cus);
+        try {
+            Customer cus = customerService.createCustomer(customer);
+            return ResponseEntity.ok(cus);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Duplicated info");
+        }
     }
 
     @GetMapping("api/customer/{id}")
-    public ResponseEntity viewAccount(@PathVariable String id) {
-        Customer customer = customerService.viewAccount(id);
+    public ResponseEntity viewCustomerById(@PathVariable String id) {
+        Customer customer = customerService.viewAccountById(id);
         return ResponseEntity.ok(customer);
     }
 
-//    @PutMapping("api/customer/{id}")
-//    public ResponseEntity update(@Valid @RequestBody Customer cus, @PathVariable String id) {
-//        Customer a = customerService.updateAccount(cus,id);
-//
-//        return ResponseEntity.ok(a);
-//    }
+    @GetMapping("api/customer")
+    public ResponseEntity viewAllCustomer() {
+        List<Customer> customer = customerService.viewAccount();
+        return ResponseEntity.ok(customer);
+    }
+
+    @PutMapping("api/customer/{id}")
+    public ResponseEntity updateCustomer(@Valid @RequestBody Customer cus, @PathVariable String id) {
+        Customer a = customerService.updateAccount(cus,id);
+
+        return ResponseEntity.ok(a);
+    }
+
 }
