@@ -1,9 +1,7 @@
 package com.example.SWP391.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.SWP391.model.Enum.StatusInfo;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,12 +18,14 @@ import java.util.Date;
 public class Status {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String id;
+    int id;
 
     @NotBlank(message = "Status name is required")
-    String description;
+    StatusInfo description;
 
     Date date;
     Employee employee;
 
+    @Enumerated(EnumType.STRING)
+    StatusInfo statusInfo;
 }

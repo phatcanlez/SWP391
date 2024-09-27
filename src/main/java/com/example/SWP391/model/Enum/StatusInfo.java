@@ -1,4 +1,4 @@
-package com.example.SWP391.entity;
+package com.example.SWP391.model.Enum;
 
 public enum StatusInfo {
     SUCCESS,
