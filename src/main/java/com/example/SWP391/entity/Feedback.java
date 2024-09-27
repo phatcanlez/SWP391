@@ -30,4 +30,6 @@ public class Feedback {
 
     @Size(min = 0, max = 200, message = "Feedback must be between 0 and 200 characters")
     String content;
+
+    Orders order;
 }
