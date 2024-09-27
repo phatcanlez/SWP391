@@ -1,11 +1,15 @@
 package com.example.SWP391.service;
 
 import com.example.SWP391.entity.License;
+import com.example.SWP391.exception.DuplicateException;
+import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.repository.LicenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class LicenseService {
     @Autowired
     private LicenseRepository licenseRepository;
@@ -20,7 +24,7 @@ public class LicenseService {
             License newLicense = licenseRepository.save(license);
             return newLicense;
         }catch (Exception e){
-            throw new DuplicateEntity("This license is existed!!");
+            throw new DuplicateException("This license is existed!!");
         }
     }
 
@@ -30,12 +34,11 @@ public class LicenseService {
             throw new NotFoundException("Not found!");
         }
         try{
-            oldLicense.setLicenseId(license.getLicenseId());
-            oldLicense.setLicenseName(license.getLicenseName());
-            oldLicense.setLicenseType(license.getLicenseType());
+            oldLicense.setName(license.getName());
+            oldLicense.setType(license.getType());
             return licenseRepository.save(oldLicense);
         }catch (Exception e){
-            throw new DuplicateEntity("This license ID already existed!! Try another one");
+            throw new DuplicateException("This license ID already existed!! Try another one");
         }
     }
 
