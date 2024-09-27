@@ -1,5 +1,6 @@
 package com.example.SWP391.entity;
 
+import com.example.SWP391.model.Enum.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Customer {
+public class Customer implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
@@ -42,7 +43,7 @@ public class Customer {
     @NotBlank(message = "Password is required")
     String password;
 
-    String status;
+    Boolean status;
 
     @Email(message = "Email not valid")
     @NotBlank(message = "Email is required")
@@ -52,5 +53,35 @@ public class Customer {
     Date birthday;
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(Role.CUSTOMER.toString()));
+        return authorities;
+    }
 
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
