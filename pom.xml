@@ -12,7 +12,7 @@
 	<artifactId>SWP391</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SWP391</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Koikichi</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -67,7 +67,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.1</version>
+		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>

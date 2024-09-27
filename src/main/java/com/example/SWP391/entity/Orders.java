@@ -1,12 +1,12 @@
 package com.example.SWP391.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.Date;
 
 @AllArgsConstructor
@@ -14,25 +14,21 @@ import java.util.Date;
 @Setter
 @Getter
 @Entity
-public class Orders {
-
+public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String orderID;
 
-    @Temporal(TemporalType.DATE)
     Date orderDate;
 
     @NotBlank(message = "Address is required")
     String reciverAdress;
 
-    @Temporal(TemporalType.DATE)
     Date expDeliveryDate;
 
-    @Temporal(TemporalType.DATE)
     Date actDeliveryDate;
 
-    @Size(min = 0, message = "Price of your Koi is required")
+    @NotBlank(message = "Price of your Koi is required")
     double orderPrice;
 
     String note;
@@ -44,7 +40,9 @@ public class Orders {
     @NotBlank(message = "Name of receiver is required")
     String reciverName;
 
-    @NotNull(message = "Total price is required")
+    @NotBlank(message = "Total price is required")
     double totalPrice;
 
+    @Enumerated(EnumType.STRING)
+    StatusInfo statusInfo;
 }
