@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @CrossOrigin("*")
@@ -22,8 +24,9 @@ public class LicenseAPI {
         }
 
         @GetMapping("/api/licence-get")
-        public void getAllLicense() {
-            // Some code here
+        public ResponseEntity getAllLicense() {
+                List<License> list = licenseService.getAllLicense();
+                return ResponseEntity.ok(list);
         }
 
         @GetMapping("/api/licence-get/{id}")
