@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CustomerService {
     @Autowired
@@ -20,19 +22,12 @@ public class CustomerService {
     @Autowired
     ModelMapper modelMapper;
 
-    public CustomerAccResponse createCustomer(Customer customer) {
-        try {
-            customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-            Customer cus = customerRepository.save(customer);
-            CustomerAccResponse cusAcc = modelMapper.map(cus, CustomerAccResponse.class);
-            return cusAcc;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+    public Customer createCustomer(Customer customer) {
+        Customer newStudent = customerRepository.save(customer);
+        return newStudent;
     }
 
-    public Customer viewAccount(String id){
+    public Customer viewAccountById(String id){
         Customer customer = customerRepository.findCustomerById(id);
         if(customer == null){
             throw new DuplicateException("Not found");
@@ -40,6 +35,14 @@ public class CustomerService {
         else{
             return customer;
         }
+    }
+
+    public List<Customer> viewAccount(){
+        List<Customer> list = customerRepository.findAll();
+        if(list == null){
+            throw new DuplicateException("Not found");
+        }
+        return list;
     }
 
     public Customer updateAccount(Customer cus, String id) {

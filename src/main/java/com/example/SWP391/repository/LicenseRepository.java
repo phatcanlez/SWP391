@@ -4,5 +4,5 @@ import com.example.SWP391.entity.License;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LicenseRepository extends JpaRepository<License, Integer> {
-    License findLicenseById(int Id);
+    License findLicenseById(long Id);
 }
