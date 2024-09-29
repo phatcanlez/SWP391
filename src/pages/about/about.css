@@ -1,0 +1,95 @@
+.about-us {
+
+    h4 {
+        font-size: 50px;
+        font-weight: 700;
+    }
+
+    .about-banner {
+        padding-top: 80px;
+        padding-bottom: 40px;
+
+        h1,
+        h6 {
+            text-shadow: 8px 4px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        .about-banner__item {
+            background-color: rgba(29, 27, 32, 1);
+            border-radius: 5px;
+            padding: 40px;
+            margin: 60px;
+
+            h5 {
+                text-align: center;
+                color: rgba(245, 245, 245, 1);
+            }
+        }
+    }
+
+    .story-section {
+        display: flex;
+        align-items: center;
+        padding-bottom: 80px;
+
+
+
+        h5 {
+            color: rgba(44, 44, 44, 1);
+        }
+
+        .cnt {
+            align-items: flex-start;
+            gap: 50px;
+        }
+    }
+
+    .vision-section {
+        background-color: rgba(29, 27, 32, 1);
+
+        h4,
+        h5 {
+            color: rgba(245, 245, 245, 1);
+        }
+
+        .item {
+            display: flex;
+            gap: 34rem;
+            padding: 70px 100px;
+        }
+    }
+}
+
+.carousel {
+    width: 100%;
+    height: 600px;
+
+    h5 {
+        color: rgba(0, 0, 0, 1);
+        font-weight: 500;
+    }
+
+    p {
+        font-size: 20px;
+        font-weight: 300;
+    }
+
+    .swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 351px;
+        height: 421px;
+    }
+
+    .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
