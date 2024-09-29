@@ -7,9 +7,9 @@ import { useEffect, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons';
 import { toast } from 'react-toastify';
 import uploadFile from './util/file';
+import api from './config/axios';
 
 function OrderManagement() {
-  const api = "https://66e151fdc831c8811b5480e5.mockapi.io/Orders";
 
   const [order, setOrder] = useState([]);
 
@@ -115,7 +115,7 @@ function OrderManagement() {
     }
     try {
       setSubmit(true)
-      const response = axios.post(api, order)
+      const response = axios.post("category", order)
       toast.success('Successful')
       setIsModalOpen(false)
       formVariable.resetFields();
@@ -143,6 +143,7 @@ function OrderManagement() {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
+
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
   const uploadButton = (
     <button
@@ -169,6 +170,7 @@ function OrderManagement() {
       <Button type="primary" onClick={showModal}>Add order</Button>
       <Table dataSource={order} columns={columns} />;
       <Modal confirmLoading={submit} title="Add order form" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        
         <Form onFinish={handleSubmit} form={formVariable}>
           <Form.Item name={"id"} label={"ID: "} rules={[{
             required: true,
