@@ -3,6 +3,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.Account;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
 import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
 import com.example.SWP391.model.DTO.authenticatonDTO.RegisterRequest;
@@ -40,6 +41,9 @@ public class AuthenticationService implements UserDetailsService {
     @Autowired
     TokenService tokenService;
 
+    @Autowired
+    EmailService emailService;
+
     public AccountResponse register(RegisterRequest registerRequest) {
         Account account = modelMapper.map(registerRequest, Account.class);
         try {
@@ -48,6 +52,12 @@ public class AuthenticationService implements UserDetailsService {
             account.setRole(Role.CUSTOMER);
             account.setStatus(true);
             Account newAccount = accountRepository.save(account);
+            //đăng ký thành công, gửi mail cho người dùng
+            EmailDetail emailDetail = new EmailDetail();
+            emailDetail.setReceiver(newAccount);
+            emailDetail.setSubject("Welcome to KOIKICHI");
+            emailDetail.setLink("https://www.google.com.vn/");
+            emailService.sendEmail(emailDetail);
             return modelMapper.map(newAccount, AccountResponse.class);
         } catch (Exception e) {
 
