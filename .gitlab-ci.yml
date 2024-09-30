@@ -1,36 +1,42 @@
+image: docker:latest
 
-image: gitlab/dind # sử dụng môi trường gitlab
 services:
-  - docker:dind # sử dụng docker để run các thành phần bên dưới
+  - docker:dind
 
 variables:
-  IMAGE_NAME: canlez1705/phatcanlez # iamge mà các bạn vừa tạo, nhớ thay tên username và tên image bạn vừa tạo ở trên
+  DOCKER_TLS_CERTDIR: "/certs"
+  IMAGE_NAME: canlez1705/phatcanlez
 
-stages: # định nghĩa các bước, ở đây minhd có 3 bước tương ứng như bên dưới
+stages:
   - build
   - test
   - docker
 
-maven-build: # đây chính là bước build file .jar mà mình đã đề cập ở bên trên
+maven-build:
   image: maven:3.8.1-openjdk-17-slim
   stage: build
-  script: "./mvn clean package"
+  script:
+    - chmod +x ./mvnw
+    - ./mvnw clean package -DskipTests
   artifacts:
     paths:
       - target/*.jar
 
-maven-test: # run unit test của project
+maven-test:
   image: maven:3.8.1-openjdk-17-slim
   stage: test
-  script: "mvn test"
+  script:
+    - chmod +x ./mvnw
+    - ./mvnw test
   artifacts:
     paths:
-      - target/*.jar
+      - target/surefire-reports/
 
-docker-build: # bước này sẽ build iamge từ Dockerfile và push lên docker hub
+docker-build:
   stage: docker
   script:
-    - docker login -u $USERNAME_DOCKER -p $PASSWORD_DOCKER # nhập tên username và password docker hub của các bạn ở đây để có quyền push
-    - docker build -t $IMAGE_NAME:1.0 . # build image, 1.0 là tag coi nó như version
-    - docker push $IMAGE_NAME:1.0 # push image docker hub sau khi build thành công
-
+    - docker login -u $USERNAME_DOCKER -p $PASSWORD_DOCKER
+    - docker build -t $IMAGE_NAME:$CI_COMMIT_SHORT_SHA .
+    - docker push $IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+    - docker tag $IMAGE_NAME:$CI_COMMIT_SHORT_SHA $IMAGE_NAME:latest
+    - docker push $IMAGE_NAME:latest
