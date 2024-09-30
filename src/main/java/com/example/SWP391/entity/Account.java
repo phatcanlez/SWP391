@@ -1,10 +1,9 @@
 package com.example.SWP391.entity;
 
 import com.example.SWP391.model.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,41 +17,48 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Getter
 @Setter
-public class Employee implements UserDetails {
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+//implement UserDetails để Spring security hiểu mốt để dùng phân quyền
+public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @NotBlank(message = "Name is required")
+    @Enumerated(EnumType.STRING)
+    Role role;
+
+    @NotBlank(message = "Name can not be blank")
+    @Size(min = 1, max = 30, message = "Name must less than 30 letter")
     String name;
 
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
-    String phoneNumber;
-
-    String avatar;
-
-    @NotBlank(message = "Password is required")
-    String password;
-
-    String status;
+    @NotBlank(message = "not blank")
+    @Column(unique = true)
+    String username;
 
     @Email(message = "Email not valid")
-    @NotBlank(message = "Email is required")
     @Column(unique = true)
     String email;
 
-    @Enumerated(EnumType.STRING)
-    Role role;
+    String avatar;
+
+    Boolean status;
+
+    @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
+    String phoneNumber;
+
+    @NotBlank(message = "Password can not be blank")
+    @Size(min = 6, message = "Password must more than 6 letter")
+    String password;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // định nghĩa những quyền hạn mà account có thể làm được
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         if(this.role!=null)
             authorities.add(new SimpleGrantedAuthority(this.role.toString()));
@@ -60,13 +66,8 @@ public class Employee implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
     public String getUsername() {
-        return this.email;
+        return this.username;  //dang nhap bang email, this.phone -> dang nhap bang phone
     }
 
     @Override
