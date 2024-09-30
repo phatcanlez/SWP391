@@ -44,5 +44,6 @@ public class Orders {
 
     @OneToOne
     @JoinColumn(name = "status_id")
+
     Status statusInfo;
 }
