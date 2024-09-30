@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import "./index.css";
 import { Button } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
+import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Space } from 'antd';
 
 // Import ảnh logo
@@ -11,12 +11,19 @@ import logo from '../../img/logo.png';
 function Header() {
   const items = [
     {
-      label: <a href="https://www.antgroup.com">Vietnamese</a>,
+      label: <a href="https://www.antgroup.com">1st menu item</a>,
       key: '0',
     },
     {
-      label: <a href="https://www.aliyun.com">Japanese</a>,
+      label: <a href="https://www.aliyun.com">2nd menu item</a>,
       key: '1',
+    },
+    {
+      type: 'divider',
+    },
+    {
+      label: '3rd menu item',
+      key: '3',
     },
   ];
 
@@ -24,28 +31,28 @@ function Header() {
   return (
     <header className='header'>
       <div className='header__logo'>
-        <img src={logo} alt="Logo" width={80} />
+        <img src={logo} alt="Logo" width={50} />
       </div>
       <nav className='header__nav'>
 
         <ul>
-          <li className='nav__btn'>
-            <Link to="/">HOME</Link>
+          <li>
+            <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/about">ABOUT</Link>
+            <Link to="/">About</Link>
           </li>
           <li>
-            <Link to="/">SERVICE</Link>
+            <Link to="/">Service</Link>
           </li>
           <li>
-            <Link to="/">TRACKING</Link>
+            <Link to="/">Tracking</Link>
           </li>
           <li>
             <Link to="/">FAQ</Link>
           </li>
           <li>
-            <Link to="/">SUPPORT</Link>
+            <Link to="/">Support</Link>
           </li>
           <Dropdown
             menu={{
@@ -55,14 +62,14 @@ function Header() {
           >
             <a onClick={(e) => e.preventDefault()}>
               <Space>
-                LANGUAGE
-                <CaretDownOutlined />
+                Language
+                <DownOutlined />
               </Space>
             </a>
           </Dropdown>
         </ul>
       </nav>
-      <Link to={"/login"}><Button className='header__btn'  >LOGIN</Button></Link>
+      <Button className='header__btn' type="primary">Register</Button>
     </header>
   )
 }
