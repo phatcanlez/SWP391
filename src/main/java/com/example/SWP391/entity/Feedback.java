@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class Feedback {
 
     Date feedbackDate;
 
-    @NotBlank(message = "Star rating is required")
+    @NotNull(message = "Star rating is required")
     int rating;
 
     @Size(min = 0, max = 200, message = "Feedback must be between 0 and 200 characters")

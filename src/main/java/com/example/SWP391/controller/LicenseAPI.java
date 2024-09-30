@@ -30,14 +30,15 @@ public class LicenseAPI {
         }
 
         @GetMapping("/api/licence-get/{id}")
-        public void getLicenseById() {
-            // Some code here
+        public ResponseEntity getLicenseById(@PathVariable long id) {
+            License license = licenseService.viewEmployeeById(id);
+            return ResponseEntity.ok(license);
         }
 
 
         @PutMapping("/api/licence-update")
-        public void updateLicense() {
-            // Some code here
+        public ResponseEntity updateLicense(@RequestBody @Valid License license, long id) {
+            return ResponseEntity.ok(licenseService.updateLicense(license, id));
         }
 
 }

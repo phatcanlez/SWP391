@@ -2,6 +2,7 @@ package com.example.SWP391.service;
 
 import com.example.SWP391.entity.Customer;
 import com.example.SWP391.exception.DuplicateException;
+import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.repository.CustomerRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class CustomerService {
     public Customer viewAccountById(String id){
         Customer customer = customerRepository.findCustomerById(id);
         if(customer == null){
-            throw new DuplicateException("Not found");
+            throw new NotFoundException("Not found");
         }
         else{
             return customer;
@@ -39,7 +40,7 @@ public class CustomerService {
     public List<Customer> viewAccount(){
         List<Customer> list = customerRepository.findAll();
         if(list == null){
-            throw new DuplicateException("Not found");
+            throw new NotFoundException("Not found");
         }
         return list;
     }
