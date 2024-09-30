@@ -1,7 +1,8 @@
-package com.example.SWP391.service;
 
-import com.example.SWP391.entity.Customer;
-import com.example.SWP391.repository.CustomerRepository;
+package com.example.SWP391.model.DTO.authenticatonDTO;
+
+import com.example.SWP391.entity.Account;
+import com.example.SWP391.repository.AccountRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -19,16 +20,16 @@ public class TokenService<T> {
     public final String SECRET_KEY = "4bb6d1dfbafb64a681139d1586b6f1160d18159afd57c8c79136d7490630407c";
 
     @Autowired
-    CustomerRepository customerRepository;
+    AccountRepository accountRepository;
 
     private SecretKey getSigninKey(){
-       byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY); //Decoders.BASE64.decode(SECRET_KEY): giải mã chuỗi thành mảng byte
-       return Keys.hmacShaKeyFor(keyBytes); //Tạo một SecretKey cho HMAC-SHA từ mảng byte
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY); //Decoders.BASE64.decode(SECRET_KEY): giải mã chuỗi thành mảng byte
+        return Keys.hmacShaKeyFor(keyBytes); //Tạo một SecretKey cho HMAC-SHA từ mảng byte
     }
 
     // mỗi account từ FE gửi xuống BE sẽ nhận được 1 token riêng (mã định danh)
-    public String generateToken(Customer customer){
-        String token = Jwts.builder().subject(customer.getId() + "")
+    public String generateToken(Account account){
+        String token = Jwts.builder().subject(account.getId()+"")
                 .issuedAt(new Date(System.currentTimeMillis())) // thời gian khởi tạo, thời gian theo miligiay
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) //thời gian hết hạn
                 .signWith(getSigninKey())
@@ -36,7 +37,7 @@ public class TokenService<T> {
         return token;
     }
 
-    public Customer getAccountByToken(String token){
+    public Account getAccountByToken(String token){
         Claims claims = Jwts.parser()
                 .verifyWith(getSigninKey())
                 .build()
@@ -44,6 +45,6 @@ public class TokenService<T> {
                 .getPayload();    //lấy info từ token, jwt giải mã với signinKey, getPayload trả về Account thông tin và lưu trong claims
 
         String id = claims.getSubject();
-        return customerRepository.findCustomerById(id);
+        return accountRepository.findAccountById(id);
     }
 }

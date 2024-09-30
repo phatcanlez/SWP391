@@ -1,4 +1,4 @@
-package com.example.SWP391.model.DTO;
+package com.example.SWP391.model.DTO.authenticatonDTO;
 
 import lombok.*;
 
@@ -7,6 +7,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequest {
-    String email;
+    String username;
     String password;
 }
