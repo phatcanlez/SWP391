@@ -24,7 +24,7 @@ public class Status {
     String description;
 
     Date date;
-    Employee employee;
+
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
