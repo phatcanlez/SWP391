@@ -2,8 +2,9 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import Dosmetic from "./dosmetic";
 import International from "./international";
-import "./index.scss";
+//import "./index.scss";
 import { useState } from "react";
+import '../service/index.scss';
 
 function Service() {
   const [service, setService] = useState(1);
