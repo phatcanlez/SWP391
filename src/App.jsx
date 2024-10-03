@@ -1,12 +1,10 @@
-import React from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import LoginPage from './pages/login';
-import RegisterPage from './pages/register';
-import HomePage from './pages/home';
-import AboutUs from './pages/about';
-import ManageOrder from './pages/admin/manage-order';
-import Dashboard from './components/dashboard';
-import OrderManagement from './OrderManagement';
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LoginPage from "./pages/login";
+import RegisterPage from "./pages/register";
+import HomePage from "./pages/home";
+import Service from "./pages/service";
+import Tracking from "./pages/tracking";
 
 function App() {
   const router = createBrowserRouter([
@@ -24,7 +22,15 @@ function App() {
     },
     {
       path: "about",
-      element: <AboutUs />,
+      element: <AboutUs  />,
+    },
+    {
+      path: "service",
+      element: <Service />,
+    },
+    {
+      path: "/tracking",
+      element: <Tracking />,
     },
     {
       path: "dashboard",
@@ -43,4 +49,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
