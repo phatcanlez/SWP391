@@ -2,42 +2,44 @@ import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
-import HomePage from './pages/home';            
+import HomePage from './pages/home';
 import AboutUs from './pages/about';
 import ManageOrder from './pages/admin/manage-order';
 import Dashboard from './components/dashboard';
+import OrderManagement from './OrderManagement';
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <HomePage/>,
+      element: <HomePage />,
     },
     {
       path: "login",
-      element: <LoginPage/>,
+      element: <LoginPage />,
     },
     {
       path: "register",
-      element: <RegisterPage/>,
+      element: <RegisterPage />,
     },
     {
       path: "about",
-      element: <AboutUs/>,
+      element: <AboutUs />,
     },
     {
       path: "dashboard",
-      element: <Dashboard/>,
+      element: <Dashboard />,
       children: [
         {
           path: "customer",
-          element: <ManageOrder/>
+          element: <ManageOrder />
         }
       ]
     },
+
   ]);
   return (
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   )
 }
 
