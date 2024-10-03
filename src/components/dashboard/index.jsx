@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { PieChartOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, children) {
     return {
         key,
         icon,
         children,
-        label,
+        label: <Link to={`/dashboard/${key}`}>{label}</Link>
     };
 }
 const items = [getItem("Manage Order", "order", <PieChartOutlined />),
