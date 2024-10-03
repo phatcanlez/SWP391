@@ -1,10 +1,7 @@
 package com.example.SWP391.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -22,7 +19,7 @@ import java.util.Date;
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int feedbackId;
+    long feedbackId;
 
     Date feedbackDate;
 
@@ -32,5 +29,8 @@ public class Feedback {
     @Size(min = 0, max = 200, message = "Feedback must be between 0 and 200 characters")
     String description;
 
-//    Orders order;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    @JsonIgnore
+    Orders orders;
 }

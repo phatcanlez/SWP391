@@ -1,11 +1,9 @@
 package com.example.SWP391.service;
 
 import com.example.SWP391.entity.Feedback;
-import com.example.SWP391.entity.License;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.repository.FeedbackRepository;
-import com.example.SWP391.repository.LicenseRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

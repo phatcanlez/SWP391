@@ -55,6 +55,9 @@ public class Account implements UserDetails {
     @Size(min = 6, message = "Password must more than 6 letter")
     String password;
 
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    List<Orders> orders = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
