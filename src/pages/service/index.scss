@@ -15,7 +15,7 @@
         transform: translate(-50%, -50%);
         color: #fff;
         font-size: 128px;
-        box-shadow: var(--sds-size-depth-200) var(--sds-size-depth-100) 4px 0px rgba(0, 0, 0, 0.25);
+        box-shadow: var(--sds-size-depth-200) var(--sds-size-depth-100) 4px 0px #2c2c2c;
     }
     &__text2 {
         position: absolute;
@@ -32,12 +32,12 @@
         justify-content: center;
         button {
             font-size: 30px;
-            border: 1px solid rgba(0, 0, 0, 1);
+            border: 1px solid #2c2c2c;
             border-radius: 5px;
             cursor: pointer;
             padding: 7px 12px;
             background-color: #fff;
-            color: #111;
+            color: #2c2c2c;
         }
         &__1{
             margin-right: 15px;
