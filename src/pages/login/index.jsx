@@ -12,6 +12,8 @@ import fb from '../../img/fb.png';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../config/axios';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/features/userSlice';
 
 function LoginPage() {
 
@@ -41,17 +43,21 @@ function LoginPage() {
 
     }
     const navigate = useNavigate();
+
+    const dispatch = useDispatch();
+
     const handleLogin = async (values) => {
         try {
             const response = await api.post("login", values);
+            toast.success("Successful")
             console.log(response)
+            dispatch(login(response.data));
             const { role, token } = response.data;
             localStorage.setItem("token", token);
 
+            if (role === "ADMIN")
+                navigate("/dashboard")
 
-            navigate("/dashboard")
-
-            toast.success("Successful")
         } catch (err) {
             toast.error(err.response.data)
         }

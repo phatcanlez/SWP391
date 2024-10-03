@@ -20,8 +20,6 @@ import logo12 from '../../img/logo12.png';
 import logo13 from '../../img/logo13.png';
 function HomePage() {
 
-
-
   return (
     <div>
       <Header />
