@@ -1,4 +1,4 @@
-import "./index.scss";
+import "./index.css";
 
 function International() {
   const container1P1 = { fontSize: 45, fontWeight: 700 };

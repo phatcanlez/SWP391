@@ -5,6 +5,9 @@ import RegisterPage from "./pages/register";
 import HomePage from "./pages/home";
 import Service from "./pages/service";
 import Tracking from "./pages/tracking";
+import AboutUs from "./pages/about";
+import Dashboard from "./components/dashboard";
+import ManageOrder from "./pages/admin/manage-order";
 
 function App() {
   const router = createBrowserRouter([
