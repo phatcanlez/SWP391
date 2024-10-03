@@ -7,8 +7,8 @@ import { useState } from "react";
 
 function Service() {
   const [service, setService] = useState(1);
-  const [highlight1, isHighlighted1] = useState(false);
-  const [highlight2, isHighlighted2] = useState(true);
+  const [highlight1, isHighlighted1] = useState(true);
+  const [highlight2, isHighlighted2] = useState(false);
   const buttonStyle1 = isHighlighted1
     ? { backgroundColor: "#111", color: "#fff" }
     : {};
