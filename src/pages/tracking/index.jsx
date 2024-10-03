@@ -5,6 +5,8 @@ import "../tracking/index.css";
 import { useState } from "react";
 import EstimatedShippingFee from "./estimatedShippingFee";
 import BillOfLading from "./billOfLading";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
 
 function Tracking() {
   const [tracking, setTracking] = useState(1);
