@@ -11,6 +11,12 @@ import { Pagination } from 'swiper/modules'
 import a1 from '../../img/a1.png'
 import a2 from '../../img/a2.png'
 import c1 from '../../img/c1.png'
+import c2 from '../../img/c2.png'
+import c3 from '../../img/c3.png'
+import c4 from '../../img/c4.png'
+import c5 from '../../img/c5.png'
+import c6 from '../../img/c6.png'
+import commit from '../../img/commit.png'
 
 function AboutUs() {
   return (
@@ -47,10 +53,11 @@ function AboutUs() {
         </div>
       </section>
 
-      <section >
+      <section className='carousel-section'>
+        <h4>CORE VALUES</h4>
         <Swiper
           slidesPerView={3}
-          spaceBetween={30}
+          spaceBetween={50}
           pagination={{
             clickable: true,
           }}
@@ -62,15 +69,55 @@ function AboutUs() {
             <p>Top priority for the health and safety of Koi fish.</p>
             <div><img src={c1} alt="" /></div>
           </SwiperSlide>
-          <SwiperSlide>Slide 2</SwiperSlide>
-          <SwiperSlide>Slide 3</SwiperSlide>
-          <SwiperSlide>Slide 4</SwiperSlide>
-          <SwiperSlide>Slide 5</SwiperSlide>
-          <SwiperSlide>Slide 6</SwiperSlide>
-          <SwiperSlide>Slide 7</SwiperSlide>
-          <SwiperSlide>Slide 8</SwiperSlide>
-          <SwiperSlide>Slide 9</SwiperSlide>
+
+          <SwiperSlide>
+            <h5>Innovation</h5>
+            <p>Continuously updating advanced transportation technologies and methods.</p>
+            <div><img src={c2} alt="" /></div>
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <h5>Professionalism</h5>
+            <p>A team of experienced and well-trained experts.</p>
+            <div><img src={c3} alt="" /></div>
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <h5>Transparency</h5>
+            <p>We believe in clear  communication at every step.</p>
+            <div><img src={c4} alt="" /></div>
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <h5>Sustainability</h5>
+            <p>We're committed to environmentally responsible practices.</p>
+            <div><img src={c5} alt="" /></div>
+          </SwiperSlide>
+
+          <SwiperSlide>
+            <h5>Community</h5>
+            <p>We foster connections among Koi enthusiasts worldwide.</p>
+            <div><img src={c6} alt="" /></div>
+          </SwiperSlide>
         </Swiper>
+      </section>
+
+      <section className='commit-section'>
+        <div className='commit-section__item'>
+          <h4>Our Commitment</h4>
+          <h5>Facilitate knowledge exchange among Koi enthusiasts<br />
+            Support conservation efforts for rare Koi varieties<br />
+            Promote ethical breeding and trading practices<br />
+            Organize virtual and physical Koi exhibitions and competitions</h5>
+        </div>
+      </section>
+
+      <section className='last-section'>
+        <div className='border'></div>
+        <div>
+          <h4>Future Directions</h4>
+          <h5>Expanding our network to reach more remote locations<br /> Developing specialized equipment for long-distance Koi transportation<br /> Collaborating with researchers to advance Koi health during transit<br /> Integrating virtual reality for immersive Koi selection experiences</h5>
+        </div>
       </section>
 
       <Footer />
