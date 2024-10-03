@@ -1,16 +1,16 @@
 .dosmetic {
-    &__title {
+    .dosmetic__title {
         text-align: center;
         align-content: center;
         height: 50vh;
-        &__1 {
+        .dosmetic__title__1 {
             padding-left: 48vh;
             padding-right: 48vh;
             font-size: 50px;
             font-weight: 700;
             line-height: 50px;
         }
-        &__2 {
+        .dosmetic__title__2 {
             padding-top: 5vh;
             padding-left: 5vh;
             padding-right: 5vh;
@@ -19,23 +19,23 @@
             line-height: 30px;
         }
     }
-    &__rectangle {
+    .dosmetic__rectangle {
         height: 90vh;
         background-color: rgba(255, 255, 255, 1);
         margin-bottom: 10vh;
 
         display: flex;
         align-items: center;
-        &__title {
+        .dosmetic__rectangle__title {
             width: 100%;
             text-align: center;
-            &__1{
+            .dosmetic__rectangle__title__1{
                 font-size: 35px;
                 font-weight: 500;
                 line-height: 35px;
                 padding-bottom: 10vh;
             }
-            &__2 {
+            .dosmetic__rectangle__title__2 {
                 padding-left: 10vh;
                 padding-right: 5vh;
                 font-size: 25px;
@@ -50,20 +50,20 @@
             height: 65vh;
             
         }
-        &__img1 {
+        .dosmetic__rectangle__img1 {
             padding-right: 4%;
         }
-        &__img2 {
+        .dosmetic__rectangle__img2 {
             padding-left: 8%;
         }
     }
-    &__container {
+    .dosmetic__container {
         height: 100dvh;
         background: #2c2c2c;
         display: flex;
         color: #fff;
         align-items: center;
-        &__left {
+        .dosmetic__container__left {
             width: 45%;
             align-items: center;
             margin-right: 10%;
@@ -73,16 +73,16 @@
                 text-align: center;
                 align-items: center;
             }
-            &__title {
+            .dosmetic__container__left__title {
                 font-size: 50px;
                 font-weight: 600;
             }
-            &__paragraph {
+            .dosmetic__container__left__paragraph {
                 font-size: 32px;
                 font-weight: 500;
             }
         }
-        &__right {
+        .dosmetic__container__right {
             color: rgba(226, 88, 34, 1);
             align-items: center;
             align-content: center;
@@ -107,11 +107,11 @@
             }
         }
     }
-    &__support {
+    .dosmetic__support {
         text-align: center;
         background-color: #fff;
 
-        &__title {
+        .dosmetic__support__title {
             height: 45vh;
             margin-left: 15vh;
             margin-right: 15vh;
@@ -119,7 +119,7 @@
             font-size: 45px;
             font-weight: 700;
         }
-        &__rectangle {
+        .dosmetic__support__rectangle {
             height: 70vh;
             justify-content: space-around;
             display: flex;
@@ -134,7 +134,7 @@
                 padding-right: 5vh;
                 padding-bottom: 5vh;
             }
-            &__title {
+            .dosmetic__support__rectangle__title {
                 font-size: 30px;
                 line-height: 30px;
                 font-weight: 500;
@@ -142,7 +142,7 @@
                 padding-top: 5vh;
                 padding-bottom: 5vh;
             }
-            &__paragraph {
+            .dosmetic__support__rectangle__paragraph {
                 padding-top: 5vh;
                 font-size: 15px;
                 line-height: 20px;

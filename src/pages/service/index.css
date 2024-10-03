@@ -1,5 +1,5 @@
 .service{
-    &__img{
+    .service__img{
         width: 100%;
     height: 461px;
     top: 87px;
@@ -8,24 +8,24 @@
     opacity: 0px;
     backdrop-filter: blur(4px)
     }
-    &__text1 {
+    .service__text1 {
         position: absolute;
-        top: 40%;
+        top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         color: #fff;
         font-size: 128px;
         box-shadow: var(--sds-size-depth-200) var(--sds-size-depth-100) 4px 0px #2c2c2c;
     }
-    &__text2 {
+    .service__text2 {
         position: absolute;
-        top: 55%;
+        top: 65%;
         left: 50%;
         transform: translate(-50%, -50%);
         color: #fff;
         font-size: 32px;
     }
-    &__button {
+    .service__button {
         height: 70px;
         display: flex;
         align-items: center;
@@ -39,7 +39,7 @@
             background-color: #fff;
             color: #2c2c2c;
         }
-        &__1{
+        .service__button__1{
             margin-right: 15px;
         }
     }

@@ -1,7 +1,7 @@
 .international{
-    &__container1{
+    .international__container1{
         height: 160vh;
-        &__title {
+        .international__container1__title {
             height: 35vh;
             text-align: center;
             p {
@@ -9,7 +9,7 @@
                 align-content: center;
             }
         }
-        &__diagram{ 
+        .international__container1__diagram{ 
             img {
                 height: 100vh;
                 width: 85%;
@@ -37,19 +37,19 @@
                 }
             }
         }
-        &__foot {
+        .international__container1__foot {
             text-align: center;
             align-items: center;
         }
     }
     
-    &__container2{
+    .international__container2{
         height: 100dvh;
         background: rgba(44, 44, 44, 1);
         display: flex;
         color: #fff;
         align-items: center;
-        &__left {
+        .international__container2__left {
             width: 45%;
             align-items: center;
             margin-right: 10%;
@@ -60,7 +60,7 @@
                 align-items: center;
             }
         }
-        &__right{
+        .international__container2__right{
             color: rgba(226, 88, 34, 1);
             align-items: center;
             align-content: center;
@@ -84,11 +84,11 @@
             }
         }
     }
-    &__container3 {
+    .international__container3 {
         text-align: center;
 
 
-        &__title {
+        .international__container3__title {
             height: 45vh;
             margin-left: 10vh;
             margin-right: 10vh;
@@ -96,7 +96,7 @@
             font-size: 50px;
             font-weight: 700;
         }
-        &__rectangle {
+        .international__container3__rectangle {
             height: 100vh;
             justify-content: space-around;
             display: flex;
@@ -111,20 +111,20 @@
                 padding-right: 5vh;
                 padding-bottom: 5vh;
             }
-            &__title {
+            .international__container3__rectangle__title {
                 font-size: 20px;
                 line-height: 30px;
                 font-weight: 500;
                 color: rgba(226, 88, 34, 1);
             }
-            &__paragraph {
+            .international__container3__rectangle__paragraph {
                 padding-top: 5vh;
                 font-size: 15px;
                 line-height: 30px;
                 font-weight: 300;               
                 color: rgba(0, 0, 0, 1);
             }
-            &__image {
+            .international__container3__rectangle__image {
                 position: absolute;
                 bottom: 8vh;
                 left: 21vh;
