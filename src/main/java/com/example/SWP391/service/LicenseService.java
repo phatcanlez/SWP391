@@ -55,7 +55,7 @@ public class LicenseService {
             oldLicense.setDescription(license.getDescription());
             return licenseRepository.save(oldLicense);
         }catch (Exception e){
-            throw new DuplicateException("Info is blank or Invalid description");
+            throw new DuplicateException("Update fail");
         }
     }
 

@@ -1,12 +1,15 @@
 package com.example.SWP391.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,8 +18,8 @@ import java.util.Date;
 @Entity
 public class Orders {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long orderID;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String orderID;
 
     Date orderDate;
 
@@ -42,8 +45,23 @@ public class Orders {
     @Min(value = 0, message = "Total price must be positive number")
     double totalPrice;
 
-    @OneToOne
-    @JoinColumn(name = "status_id")
+    @OneToMany(mappedBy = "orders",cascade = CascadeType.ALL)
+    List<Status> status = new ArrayList<>();
 
-    Status statusInfo;
+    @OneToMany(mappedBy = "orders",cascade = CascadeType.ALL)
+    List<License> licenses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "orders",cascade = CascadeType.ALL)
+    List<Report> reports = new ArrayList<>();
+
+    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
+    Payment payment;
+
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
+    List<Feedback> feedbacks = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    @JsonIgnore
+    Account account;
 }
