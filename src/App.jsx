@@ -21,6 +21,10 @@ function App() {
       element: <RegisterPage />,
     },
     {
+      path: "about",
+      element: <AboutUs  />,
+    },
+    {
       path: "service",
       element: <Service />,
     },
@@ -28,8 +32,21 @@ function App() {
       path: "/tracking",
       element: <Tracking />,
     },
+    {
+      path: "dashboard",
+      element: <Dashboard />,
+      children: [
+        {
+          path: "customer",
+          element: <ManageOrder />
+        }
+      ]
+    },
+
   ]);
-  return <RouterProvider router={router} />;
+  return (
+    <RouterProvider router={router} />
+  )
 }
 
 export default App;
