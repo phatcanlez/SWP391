@@ -25,14 +25,14 @@ function App() {
     },
     {
       path: "about",
-      element: <AboutUs  />,
+      element: <AboutUs />,
     },
     {
       path: "service",
       element: <Service />,
     },
     {
-      path: "/tracking",
+      path: "tracking",
       element: <Tracking />,
     },
     {
@@ -41,15 +41,12 @@ function App() {
       children: [
         {
           path: "customer",
-          element: <ManageOrder />
-        }
-      ]
+          element: <ManageOrder />,
+        },
+      ],
     },
-
   ]);
-  return (
-    <RouterProvider router={router} />
-  )
+  return <RouterProvider router={router} />;
 }
 
 export default App;
