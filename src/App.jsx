@@ -21,7 +21,7 @@ function App() {
       element: <RegisterPage />,
     },
     {
-      path: "/service",
+      path: "service",
       element: <Service />,
     },
     {
