@@ -5,6 +5,9 @@ import RegisterPage from "./pages/register";
 import HomePage from "./pages/home";
 import Service from "./pages/service";
 import Tracking from "./pages/tracking";
+import AboutUs from "./pages/about";
+import Dashboard from "./components/dashboard";
+import ManageOrder from "./pages/admin/manage-order";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,14 +25,14 @@ function App() {
     },
     {
       path: "about",
-      element: <AboutUs  />,
+      element: <AboutUs />,
     },
     {
       path: "service",
       element: <Service />,
     },
     {
-      path: "/tracking",
+      path: "tracking",
       element: <Tracking />,
     },
     {
@@ -38,15 +41,12 @@ function App() {
       children: [
         {
           path: "customer",
-          element: <ManageOrder />
-        }
-      ]
+          element: <ManageOrder />,
+        },
+      ],
     },
-
   ]);
-  return (
-    <RouterProvider router={router} />
-  )
+  return <RouterProvider router={router} />;
 }
 
 export default App;
