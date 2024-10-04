@@ -16,9 +16,6 @@ public class RegisterRequest {
     @Column(unique = true)
     String username;
 
-    @NotBlank(message = "Address is required")
-    String address;
-
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
     String phoneNumber;
@@ -36,5 +33,6 @@ public class RegisterRequest {
     @Column(unique = true)
     String email;
 
-
+    @Pattern(regexp = "STAFF|MANAGER|CUSTOMER", message = "Role must be STAFF, MANAGER, or CUSTOMER")
+    String role;
 }

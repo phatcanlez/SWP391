@@ -5,9 +5,7 @@ import com.example.SWP391.entity.Account;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
-import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
-import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
-import com.example.SWP391.model.DTO.authenticatonDTO.RegisterRequest;
+import com.example.SWP391.model.DTO.authenticatonDTO.*;
 import com.example.SWP391.model.DTO.authenticatonDTO.TokenService;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
@@ -53,7 +51,6 @@ public class AuthenticationService implements UserDetailsService {
         try {
             String originPass = account.getPassword();
             account.setPassword(passwordEncoder.encode(originPass));
-            account.setRole(Role.CUSTOMER);
             account.setStatus(true);
             Account newAccount = accountRepository.save(account);
             //đăng ký thành công, gửi mail cho người dùng
@@ -97,6 +94,32 @@ public class AuthenticationService implements UserDetailsService {
 
     }
 
+    public AccountResponse loginGoogle(OAuth oAuth) {
+        Account account = modelMapper.map(oAuth, Account.class);
+        try {
+            Account acc = accountRepository.findByUsername(oAuth.getUid());
+            if (acc == null) {
+                account.setPassword(oAuth.getUid());
+                String originPass = account.getPassword();
+                account.setPassword(passwordEncoder.encode(originPass));
+                account.setUsername(oAuth.getUid());
+                account.setRole(Role.CUSTOMER);
+                account.setStatus(true);
+                accountRepository.save(account);
+            }
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    oAuth.getUid(),
+                    oAuth.getUid())); //kh có thì catch exception
+            account = (Account) authentication.getPrincipal(); //lấy thông tin ng dùng và cast về account
+            AccountResponse accountResponse = modelMapper.map(account, AccountResponse.class);
+            accountResponse.setToken(tokenService.generateToken(account));
+            return accountResponse;
+
+        } catch (Exception e) {
+            //error => throw new exception
+            throw new NotFoundException("Email or Password is invalid!!");
+        }
+    }
 
     public List<Account> getAllAccounts() {
         List<Account> list = accountRepository.findAll(); // findAll() lấy tất cả account trong DB
