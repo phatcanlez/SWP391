@@ -61,7 +61,7 @@ public class Orders {
     List<Feedback> feedbacks = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @JsonIgnore
     Account account;
 }

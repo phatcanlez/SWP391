@@ -15,4 +15,5 @@ public class AccountResponse {
     String username;
     String phoneNumber;
     String token;
+    String role;
 }
