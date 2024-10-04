@@ -1,8 +1,10 @@
 package com.example.SWP391.controller;
 
-import com.example.SWP391.model.DTO.CustomerResponse;
-import com.example.SWP391.model.DTO.LoginRequest;
-import com.example.SWP391.model.DTO.RegisterRequest;
+import com.example.SWP391.entity.Account;
+import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
+import com.example.SWP391.model.DTO.authenticatonDTO.CustomerResponse;
+import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
+import com.example.SWP391.model.DTO.authenticatonDTO.RegisterRequest;
 import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -17,23 +19,29 @@ import java.util.List;
 @SecurityRequirement(name = "api") //bắt buộc có, nên nhớ
 public class AuthenticationAPI {
 
-    //DI: Dependency Injection
     @Autowired
     AuthenticationService authenticationService;   //tương tự new package: AuthenticationService a = new AuthenticationService();
     @PostMapping("/api/register")
     public ResponseEntity register(@RequestBody @Valid RegisterRequest registerRequest) {
         //api nhận request và object từ FE, sau đó nhờ service xử lý, thông qua lớp authenticationService
         //bản chất API là chỉ nhận request và response
-        CustomerResponse newCustomerResponse = authenticationService.register(registerRequest);
-        return ResponseEntity.ok(newCustomerResponse);
+        AccountResponse newAccount = authenticationService.register(registerRequest);
+        return ResponseEntity.ok(newAccount);
     }
 
-    LoginRequest loginRequest;
+
     @PostMapping("/api/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest)
     {
-        CustomerResponse a = authenticationService.login(loginRequest);
+        AccountResponse a = authenticationService.login(loginRequest);
         return ResponseEntity.ok(a);
+    }
+
+
+    @GetMapping("/api/account")
+    public ResponseEntity getAllAccounts() {
+        List<Account> list = authenticationService.getAllAccounts();
+        return ResponseEntity.ok(list);
     }
 
 }
