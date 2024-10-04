@@ -1,5 +1,6 @@
 package com.example.SWP391.service;
 
+
 import com.example.SWP391.entity.Account;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
@@ -25,9 +26,11 @@ import java.util.List;
 
 @Service
 public class AuthenticationService implements UserDetailsService {
+
     //xử lý logic, xử lý nghiệp vụ
     @Autowired
     AccountRepository accountRepository;
+
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -40,6 +43,7 @@ public class AuthenticationService implements UserDetailsService {
 
     @Autowired
     TokenService tokenService;
+
 
     @Autowired
     EmailService emailService;
@@ -86,11 +90,13 @@ public class AuthenticationService implements UserDetailsService {
             accountResponse.setToken(tokenService.generateToken(account));
             return accountResponse;
         } catch (Exception e) {
+
             //error => throw new exception
             throw new NotFoundException("Email or Password is invalid!!");
         }
 
     }
+
 
     public List<Account> getAllAccounts() {
         List<Account> list = accountRepository.findAll(); // findAll() lấy tất cả account trong DB
@@ -103,3 +109,4 @@ public class AuthenticationService implements UserDetailsService {
         return accountRepository.findByUsername(username);
     }
 }
+
