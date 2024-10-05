@@ -4,10 +4,13 @@ import com.example.SWP391.entity.License;
 import com.example.SWP391.entity.Status;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.repository.StatusRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,8 +18,13 @@ public class StatusService {
     @Autowired
     StatusRepository statusRepository;
 
-    public Status createStatus(Status status){
+    @Autowired
+    ModelMapper modelMapper;
+
+    public Status createStatus(StatusRequest statusRequest){
         try{
+            Status status = modelMapper.map(statusRequest, Status.class);
+            status.setDate(new Date(System.currentTimeMillis()));
             return statusRepository.save(status);
         }catch (Exception e){
             throw new DuplicateException("This status is existed!!");

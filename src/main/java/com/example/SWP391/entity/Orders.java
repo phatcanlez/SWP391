@@ -26,6 +26,13 @@ public class Orders {
     @NotBlank(message = "Address is required")
     String reciverAdress;
 
+    @NotBlank(message = "Sender address is required")
+    String senderAddress;
+
+    @NotBlank(message = "Sender phone is required")
+    @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
+    String senderPhoneNumber;
+
     Date expDeliveryDate;
 
     Date actDeliveryDate;
