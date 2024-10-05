@@ -19,9 +19,6 @@ public class BoxDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @NotBlank(message = "Box name is required")
-    String boxSize;
-
     @Size(min = 0,message = "Box color must positive number")
-    float boxColor;
+    float boxPrice;
 }
