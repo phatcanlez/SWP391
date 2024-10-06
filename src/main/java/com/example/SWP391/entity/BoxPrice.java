@@ -1,7 +1,6 @@
 package com.example.SWP391.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,19 +15,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class ExtraService {
+public class BoxPrice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long extraServiceId;
-
-    @NotBlank(message = "Service name is required")
-    String nameService;
+    long boxId;
 
     @Size(min = 0,message = "Price must positive number")
     float price;
 
-    @OneToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
+    @Size(min = 0,message = "Surcharge must positive number")
+    float surcharge;
+
+    @OneToMany(mappedBy = "boxPrice",cascade = CascadeType.ALL)
     List<OrderDetail> orderDetail = new ArrayList<>();
 
 }

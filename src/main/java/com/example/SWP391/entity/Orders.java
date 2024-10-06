@@ -71,4 +71,7 @@ public class Orders {
     @JoinColumn(name = "customer_id")
     @JsonIgnore
     Account account;
+
+    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
+    OrderDetail orderDetail;
 }
