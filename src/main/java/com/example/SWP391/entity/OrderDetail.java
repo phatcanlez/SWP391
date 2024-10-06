@@ -2,6 +2,7 @@ package com.example.SWP391.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,19 +19,19 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.UUID)
     String ordDetailId;
 
-    @Size(min = 0, message = "box must be positive number")
+    @Min(value = 0, message = "box must be positive number")
     int smallBox;
 
-    @Size(min = 0, message = "box must be positive number")
+    @Min(value = 0, message = "box must be positive number")
     int mediumBox;
 
-    @Size(min = 0, message = "box must be positive number")
+    @Min(value = 0, message = "box must be positive number")
     int largeBox;
 
-    @Size(min = 0, message = "box must be positive number")
+    @Min(value = 0, message = "box must be positive number")
     int extraLargeBox;
 
-    @Size(min = 0, message = "kilometer must be positive number")
+    @Min(value = 0, message = "kilometer must be positive number")
     float kilometer;
 
     @ManyToOne
