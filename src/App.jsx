@@ -10,6 +10,9 @@ import Dashboard from "./components/dashboard";
 import ManageOrder from "./pages/admin/manage-order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import CustomerService from "./components/customer-service";
+import CreateOrder from "./pages/customer/order/create-order";
+import DeliveryMethod from "./pages/customer/order/delivery-method";
 
 function App() {
 
@@ -20,8 +23,9 @@ function App() {
     if (user && user?.role === "MANAGER") {
       return children;
     }
-    toast.error("You are not allow");
-    return <Navigate to={"/login"} />
+    else
+      toast.error("You are not allow");
+    return <Navigate to={"/"} />
   }
 
 
@@ -54,14 +58,35 @@ function App() {
       path: "dashboard",
       element: <ProtectRouteAuth>
         <Dashboard />
-      </ProtectRouteAuth>,
+      </ProtectRouteAuth>
+      ,
       children: [
         {
-          path: "customer",
+          path: "order",
           element: <ManageOrder />,
         },
       ],
     },
+
+    {
+      path: "customer-service",
+      element:
+        <CustomerService />
+      ,
+      children: [
+        {
+          path: "order",
+          element: <CreateOrder />,
+        },
+        {
+          path: "delivery-method",
+          element: <DeliveryMethod />,
+        },
+      ],
+    },
+
+
+
   ]);
   return <RouterProvider router={router} />;
 }
