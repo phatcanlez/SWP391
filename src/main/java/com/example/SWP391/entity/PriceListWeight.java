@@ -1,9 +1,7 @@
 package com.example.SWP391.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -27,5 +25,10 @@ public class PriceListWeight {
 
     @Size(min = 0,message = "Price must be positive number")
     float price;
+
+    @ManyToOne
+    @JoinColumn(name = "ship_method_id")
+    @JsonIgnore
+    ShipMethod shipMethod;
 
 }
