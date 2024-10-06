@@ -52,8 +52,8 @@ public class OrderService {
         }
     }
 
-        public Orders viewOrderById(long id) {
-            Orders order = orderRepository.findById(id);
+        public Orders viewOrderById(String id) {
+            Orders order = orderRepository.findOrderByOrderID(id);
             if (order == null) {
                 throw new NotFoundException("Not found this order");
             } else {
@@ -67,8 +67,8 @@ public class OrderService {
         }
 
 
-        public Orders updateOrder (Orders order,long id){
-            Orders existingOrder = orderRepository.findById(id);
+        public Orders updateOrder (Orders order,String id){
+            Orders existingOrder = orderRepository.findOrderByOrderID(id);
             if (existingOrder == null) {
                 throw new NotFoundException("Not found!");
             }

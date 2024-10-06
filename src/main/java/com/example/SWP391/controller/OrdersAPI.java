@@ -31,13 +31,13 @@ public class OrdersAPI {
         }
 
         @GetMapping("/api/orders/{id}")
-        public ResponseEntity getLicenseById(@PathVariable long id) {
+        public ResponseEntity getLicenseById(@PathVariable String id) {
             return ResponseEntity.ok(orderService.viewOrderById(id));
         }
 
 
         @PutMapping("/api/orders")
-        public ResponseEntity updateLicense(@RequestBody @Valid Orders order, long id) {
+        public ResponseEntity updateLicense(@RequestBody @Valid Orders order, String id) {
             return ResponseEntity.ok(orderService.updateOrder(order, id));
         }
 

@@ -46,15 +46,14 @@ public class StatusService {
         }
     }
 
-    public Status updateStatus(Status status, long Id){
+    public Status updateStatus(StatusRequest statusRequest, long Id){
         Status oldStatus = statusRepository.findById(Id);
         if(oldStatus == null){
             throw new NotFoundException("Not found!");
         }
         try{
-            oldStatus.setStatusInfo(status.getStatusInfo());
-            oldStatus.setDate(status.getDate());
-            oldStatus.setDescription(status.getDescription());
+            oldStatus.setStatusInfo(statusRequest.getStatusInfo());
+            oldStatus.setDescription(statusRequest.getDescription());
             return statusRepository.save(oldStatus);
         }catch (Exception e){
             throw new DuplicateException("Update fail");
