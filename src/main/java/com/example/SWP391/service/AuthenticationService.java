@@ -102,13 +102,14 @@ public class AuthenticationService implements UserDetailsService {
                 account.setPassword(oAuth.getUid());
                 String originPass = account.getPassword();
                 account.setPassword(passwordEncoder.encode(originPass));
-                account.setUsername(oAuth.getUid());
+                account.setUsername(oAuth.getEmail());
                 account.setRole(Role.CUSTOMER);
+                account.setAvatar(oAuth.getAvatar());
                 account.setStatus(true);
                 accountRepository.save(account);
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    oAuth.getUid(),
+                    oAuth.getEmail(),
                     oAuth.getUid())); //kh có thì catch exception
             account = (Account) authentication.getPrincipal(); //lấy thông tin ng dùng và cast về account
             AccountResponse accountResponse = modelMapper.map(account, AccountResponse.class);

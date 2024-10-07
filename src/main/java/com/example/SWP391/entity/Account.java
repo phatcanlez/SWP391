@@ -56,6 +56,7 @@ public class Account implements UserDetails {
     String password;
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<Orders> orders = new ArrayList<>();
 
 
