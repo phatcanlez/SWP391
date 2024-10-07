@@ -1,9 +1,7 @@
 package com.example.SWP391.controller;
 
 import com.example.SWP391.model.DTO.reportDTO.ReportRequest;
-import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.service.ReportService;
-import com.example.SWP391.service.StatusService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

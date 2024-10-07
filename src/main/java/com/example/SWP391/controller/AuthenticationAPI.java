@@ -2,7 +2,6 @@ package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.Account;
 import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
-import com.example.SWP391.model.DTO.authenticatonDTO.CustomerResponse;
 import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
 import com.example.SWP391.model.DTO.authenticatonDTO.RegisterRequest;
 import com.example.SWP391.service.AuthenticationService;
