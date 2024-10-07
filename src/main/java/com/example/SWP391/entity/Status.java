@@ -4,6 +4,7 @@ import com.example.SWP391.model.Enum.StatusInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,15 +21,12 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @NotBlank(message = "Status name is required")
-    @Column(name = "status_name", nullable = false)
-    String description;
-
-    Date date;
-
+    Date time;
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
+
+    String employId;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

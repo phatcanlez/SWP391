@@ -1,6 +1,8 @@
 package com.example.SWP391.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,13 +23,14 @@ public class BoxPrice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long boxId;
 
-    @Size(min = 0,message = "Price must positive number")
+    @Min(value = 0,message = "Price must positive number")
     float price;
 
-    @Size(min = 0,message = "Surcharge must positive number")
+    @Min(value = 0,message = "Surcharge must positive number")
     float surcharge;
 
     @OneToMany(mappedBy = "boxPrice",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<OrderDetail> orderDetail = new ArrayList<>();
 
 }

@@ -24,9 +24,10 @@ public class StatusService {
     public Status createStatus(StatusRequest statusRequest){
         try{
             Status status = modelMapper.map(statusRequest, Status.class);
-            status.setDate(new Date(System.currentTimeMillis()));
+            status.setTime(new Date(System.currentTimeMillis()));
             return statusRepository.save(status);
         }catch (Exception e){
+            e.printStackTrace();
             throw new DuplicateException("This status is existed!!");
         }
     }
@@ -53,7 +54,6 @@ public class StatusService {
         }
         try{
             oldStatus.setStatusInfo(statusRequest.getStatusInfo());
-            oldStatus.setDescription(statusRequest.getDescription());
             return statusRepository.save(oldStatus);
         }catch (Exception e){
             throw new DuplicateException("Update fail");
