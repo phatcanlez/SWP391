@@ -1,5 +1,5 @@
 
-package com.example.SWP391.model.DTO.authenticatonDTO;
+package com.example.SWP391.service;
 
 import com.example.SWP391.entity.Account;
 import com.example.SWP391.repository.AccountRepository;
@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Service
 // thằng này giúp tạo ra token và verify token
-public class TokenService<T> {
+public class TokenService {
 
     public final String SECRET_KEY = "4bb6d1dfbafb64a681139d1586b6f1160d18159afd57c8c79136d7490630407c";
 

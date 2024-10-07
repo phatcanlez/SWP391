@@ -1,5 +1,6 @@
 package com.example.SWP391.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -25,11 +26,14 @@ public class ShipMethod {
     String description;
 
     @OneToMany(mappedBy = "shipMethod",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<OrderDetail> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "shipMethod",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<PriceListDistance> priceListDistances = new ArrayList<>();
 
     @OneToMany(mappedBy = "shipMethod",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<PriceListWeight> priceListWeights = new ArrayList<>();
 }

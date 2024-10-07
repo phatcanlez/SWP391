@@ -5,7 +5,6 @@ import com.example.SWP391.entity.Report;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.reportDTO.ReportRequest;
-import com.example.SWP391.repository.BoxPriceRepository;
 import com.example.SWP391.repository.ReportRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
