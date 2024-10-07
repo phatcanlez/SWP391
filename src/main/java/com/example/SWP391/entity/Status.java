@@ -26,6 +26,7 @@ public class Status {
 
     Date date;
 
+    String empId;
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;

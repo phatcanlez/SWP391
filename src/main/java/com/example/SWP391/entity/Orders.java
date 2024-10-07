@@ -21,8 +21,6 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.UUID)
     String orderID;
 
-    Date orderDate;
-
     @NotBlank(message = "Address is required")
     String reciverAdress;
 
@@ -69,6 +67,5 @@ public class Orders {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    @JsonIgnore
     Account account;
 }
