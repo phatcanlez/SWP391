@@ -5,8 +5,25 @@ import { Button } from 'antd';
 import Header from '../../components/header';
 import Footer from '../../components/footer';
 import '../register/register.css';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import api from '../../config/axios';
+import { toast } from 'react-toastify';
 function RegisterPage() {
+
+    const navigate = useNavigate();
+
+    const handleRegister = async (values) => {
+        try {
+            values.role = "CUSTOMER"
+            const response = await api.post("register", values);
+            toast.success("Successfull")
+            navigate("/login")
+        } catch (err) {
+            toast.error(err.response.data);
+        }
+    };
+
+
     return (
         <div>
             <Header />
@@ -16,7 +33,18 @@ function RegisterPage() {
                     labelCol={{
                         span: 24,
                     }}
+                    onFinish={handleRegister}
                 >
+                    <Form.Item
+                        label="Name"
+                        name="name"
+                        rules={[
+                            { required: true, message: 'Please input your name!' },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+
                     <Form.Item
                         label="User name"
                         name="username"
@@ -27,22 +55,13 @@ function RegisterPage() {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item
-                        label="Full name"
-                        name="fullname"
-                        rules={[
-                            { required: true, message: 'Please input your full name!' },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
 
                     <Form.Item
                         label="Password"
                         name="password"
                         rules={[
                             { required: true, message: 'Please input your password!' },
-                            { min: 6, message: 'Password must be at least 6 characters long!' },
+                            { min: 3, message: 'Password must be at least 3 characters long!' },
                         ]}
                         hasFeedback
                     >
@@ -73,13 +92,9 @@ function RegisterPage() {
 
                     <Form.Item
                         label="Phone number"
-                        name="phone"
+                        name="phoneNumber"
                         rules={[
-                            { required: true, message: 'Please input your phone number!' },
-                            {
-                                pattern: /^((\+84)|0)([1-9]{1}[0-9]{8})$/,
-                                message: 'Please enter a valid Vietnamese phone number!',
-                            },
+
                         ]}
                     >
                         <Input />
@@ -108,15 +123,9 @@ function RegisterPage() {
                         <Input />
                     </Form.Item>
 
-                    <Form.Item
-                        label="Date of number"
-                        name="DatePicker"
-                        rules={[{ required: true, message: 'Please input!' }]}
-                    >
-                        <DatePicker className='date'/>
-                    </Form.Item>
+
+                    <Button htmlType='submit' className='register__btn'>Register</Button>
                 </Form>
-                <Button className='register__btn'>Register</Button>
             </AuthenTemplate>
             <Footer />
         </div>
