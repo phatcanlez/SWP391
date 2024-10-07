@@ -4,6 +4,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.License;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.License.DTO.LicenseRequest;
 import com.example.SWP391.repository.LicenseRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,10 @@ public class LicenseService {
         return list;
     }
 
-    public License createLicense(License license){
+    public License createLicense(LicenseRequest license){
         try{
-            License newLicense = licenseRepository.save(license);
-            return newLicense;
+            License newLicense = modelMapper.map(license, License.class);
+            return licenseRepository.save(newLicense);
         }catch (Exception e){
             throw new DuplicateException("This license is existed!!");
         }
@@ -43,7 +44,7 @@ public class LicenseService {
         }
     }
 
-    public License updateLicense(License license, long Id){
+    public License updateLicense(LicenseRequest license, long Id){
         License oldLicense = licenseRepository.findLicenseById(Id);
         if(oldLicense == null){
             throw new NotFoundException("Not found!");
@@ -57,6 +58,7 @@ public class LicenseService {
             throw new DuplicateException("Update fail");
         }
     }
+
 
 
 }
