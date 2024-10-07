@@ -17,6 +17,7 @@ function BillOfLading() {
           <Form.Item rules={[{ require: true, message: "Please input " }]}>
             <Input placeholder="EX: 0123456789" />
           </Form.Item>
+          <ReCAPTCHA sitekey="6LduEFcqAAAAALROUg7Occw7kEn0vLV_CR59nZjX" />
           <button type="submit">Tracking</button>
         </Form>
       </div>
@@ -112,5 +113,5 @@ function BillOfLading() {
 
 export default BillOfLading;
 //<ReCAPTCHA sitekey = {process.env.REACT_APP_SITE_KEY}/>
-//REACT_APP_SECRET_KEY = "6LduEFcqAAAAALROUg7Occw7kEn0vLV_CR59nZjX"
-//REACT_APP_SITE_KEY = "6LduEFcqAAAAAErK_kQv5VGSIgAedz6l_2g1Q5QO"
+//REACT_APP_SITE_KEY = "6LduEFcqAAAAALROUg7Occw7kEn0vLV_CR59nZjX"
+//REACT_APP_SECRET_KEY = "6LduEFcqAAAAAErK_kQv5VGSIgAedz6l_2g1Q5QO"
