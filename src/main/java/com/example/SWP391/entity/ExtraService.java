@@ -1,6 +1,8 @@
 package com.example.SWP391.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -25,10 +27,11 @@ public class ExtraService {
     @NotBlank(message = "Service name is required")
     String nameService;
 
-    @Size(min = 0,message = "Price must positive number")
+    @Min(value = 0,message = "Price must positive number")
     float price;
 
     @OneToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<OrderDetail> orderDetail = new ArrayList<>();
 
 }

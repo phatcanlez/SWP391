@@ -2,6 +2,7 @@ package com.example.SWP391.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,7 @@ public class PriceListDistance {
     @NotBlank(message = "Distance is required")
     String distance;
 
-    @Size(min = 0, message = "Price must be positive number")
+    @Min(value = 0, message = "Price must be positive number")
     float price;
 
     @ManyToOne

@@ -49,9 +49,9 @@ public class FeedbackService {
             throw new NotFoundException("Not found!");
         }
         try{
-            oldFeedback.setFeedbackDate(feedback.getFeedbackDate());
+
             oldFeedback.setRating(feedback.getRating());
-            oldFeedback.setDescription(feedback.getDescription());
+            oldFeedback.setComment(feedback.getComment());
             return feedbackRepository.save(oldFeedback);
         }catch (Exception e){
             throw new DuplicateException("Invalid data");

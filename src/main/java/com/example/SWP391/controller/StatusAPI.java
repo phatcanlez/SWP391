@@ -3,6 +3,7 @@ package com.example.SWP391.controller;
 import com.example.SWP391.entity.Status;
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.service.StatusService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class StatusAPI {
     StatusService statusService;
 
     @PostMapping("/api/status")
-    public ResponseEntity createStatus(StatusRequest statusRequest) {
+    public ResponseEntity createStatus(@RequestBody @Valid StatusRequest statusRequest) {
         return ResponseEntity.ok(statusService.createStatus(statusRequest));
     }
 
