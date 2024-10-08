@@ -4,9 +4,9 @@ import "./index.css";
 import { Button } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
-
-// Import ảnh logo
 import logo from "../../img/logo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/features/userSlice";
 
 function Header() {
   const items = [
@@ -19,6 +19,10 @@ function Header() {
       key: "1",
     },
   ];
+
+  const user = useSelector((store) => store.user);
+
+  const dispatch = useDispatch();
 
   return (
     <header className="header">
@@ -60,9 +64,20 @@ function Header() {
           </Dropdown>
         </ul>
       </nav>
-      <Link to={"/login"}>
-        <Button className="header__btn">LOGIN</Button>
-      </Link>
+      <div>
+        {
+          user == null ? (
+            <Link to={"/login"}>
+              <Button className="header__btn">LOGIN</Button>
+            </Link>
+          ) : (
+            <Link to={"/login"}>
+              <Button className="header__btn" onClick={() => dispatch(logout())}>LOGOUT</Button>
+            </Link>
+          )
+        }
+      </div>
+
     </header>
   );
 }

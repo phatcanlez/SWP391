@@ -1,4 +1,4 @@
-import "./index.css";
+import "../../service/dosmetic/index.css";
 
 function Dosmetic() {
   const rec1 = { marginLeft: 50 };
