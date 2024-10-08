@@ -1,6 +1,8 @@
 package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.Orders;
+import com.example.SWP391.entity.Status;
+import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,8 @@ public class OrdersAPI {
         private OrderService orderService;
 
         @PostMapping("/api/orders")
-        public ResponseEntity createLicense(@Valid @RequestBody Orders orders) {
-            return ResponseEntity.ok(orderService.createOrder(orders));
+        public ResponseEntity createLicense(@Valid @RequestBody OrderRequest orders) {
+                return ResponseEntity.ok(orderService.createOrder(orders));
         }
 
         @GetMapping("/api/orders")
@@ -31,12 +33,14 @@ public class OrdersAPI {
         @GetMapping("/api/orders/{id}")
         public ResponseEntity getLicenseById(@PathVariable String id) {
             return ResponseEntity.ok(orderService.viewOrderById(id));
+
         }
 
+        @GetMapping("/api/orders/{id}/status")
 
         @PutMapping("/api/orders")
-        public ResponseEntity updateLicense(@RequestBody @Valid Orders order, String id) {
-            return ResponseEntity.ok(orderService.updateOrder(order, id));
+        public ResponseEntity updateLicense(@RequestBody @Valid OrderRequest order, String id) {
+                return ResponseEntity.ok(orderService.updateOrder(order, id));
         }
 
 }
