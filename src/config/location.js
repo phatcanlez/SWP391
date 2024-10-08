@@ -1,6 +1,9 @@
 // promise + async await + class
 //..../path/?query parameter=
-const baseUrl = "https://provinces.open-api.vn/api";
+
+const api = location.create({
+  baseURL: "https://provinces.open-api.vn/api"
+});
 
 class Http {
   async get(url) {
