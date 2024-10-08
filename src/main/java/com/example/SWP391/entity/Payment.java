@@ -20,9 +20,12 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long paymentId;
 
-    Date paymentDate;
+    Date timeOfPay;
 
-    @NotBlank(message = "Payment method is required")
+    @NotBlank(message = "Type of payment method is required")
+    String typeOfPay;
+
+    @NotBlank(message = "Status is required")
     String status;
 
     @OneToOne(cascade = CascadeType.ALL)
