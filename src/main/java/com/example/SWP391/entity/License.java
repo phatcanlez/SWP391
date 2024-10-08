@@ -22,13 +22,13 @@ public class License {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    Date date;
+    Date dateOfIssue;
 
     @NotBlank(message = "License name is required")
-    String name;
+    String nameOfLicense;
 
     @NotBlank(message = "License type is required")
-    String type;
+    String typeOfLicense;
 
     @Size(min = 0, max = 200, message = "Description must be between 0 and 200 characters")
     String description;
