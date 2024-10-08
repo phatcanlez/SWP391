@@ -8,26 +8,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class PriceListWeight {
+public class BoxPrice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long priceListId;
+    long boxId;
 
-    @Min(value = 0,message = "weight must be positive number")
-    float weight;
-
-    @Min(value = 0,message = "Price must be positive number")
+    @Min(value = 0,message = "Price must positive number")
     float price;
 
-    @ManyToOne
-    @JoinColumn(name = "ship_method_id")
+    @Min(value = 0,message = "Surcharge must positive number")
+    float surcharge;
+
+    @OneToMany(mappedBy = "boxPrice",cascade = CascadeType.ALL)
     @JsonIgnore
-    ShipMethod shipMethod;
+    List<OrderDetail> orderDetail = new ArrayList<>();
 
 }

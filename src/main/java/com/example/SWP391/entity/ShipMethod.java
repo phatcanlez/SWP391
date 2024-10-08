@@ -1,14 +1,15 @@
 package com.example.SWP391.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,5 +23,17 @@ public class ShipMethod {
     long shipMethodId;
 
     @NotBlank(message = "Type of ship is required")
-    String typeOfShip;
+    String description;
+
+    @OneToMany(mappedBy = "shipMethod",cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<OrderDetail> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shipMethod",cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<PriceListDistance> priceListDistances = new ArrayList<>();
+
+    @OneToMany(mappedBy = "shipMethod",cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<PriceListWeight> priceListWeights = new ArrayList<>();
 }

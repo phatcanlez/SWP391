@@ -23,9 +23,10 @@ public class StatusService {
     public Status createStatus(StatusRequest statusRequest){
         try{
             Status status = modelMapper.map(statusRequest, Status.class);
-            status.setDate(new Date(System.currentTimeMillis()));
+            status.setTime(new Date(System.currentTimeMillis()));
             return statusRepository.save(status);
         }catch (Exception e){
+            e.printStackTrace();
             throw new DuplicateException("This status is existed!!");
         }
     }
@@ -45,15 +46,13 @@ public class StatusService {
         }
     }
 
-    public Status updateStatus(Status status, long Id){
+    public Status updateStatus(StatusRequest statusRequest, long Id){
         Status oldStatus = statusRepository.findById(Id);
         if(oldStatus == null){
             throw new NotFoundException("Not found!");
         }
         try{
-            oldStatus.setStatusInfo(status.getStatusInfo());
-            oldStatus.setDate(status.getDate());
-            oldStatus.setDescription(status.getDescription());
+            oldStatus.setStatusInfo(statusRequest.getStatusInfo());
             return statusRepository.save(oldStatus);
         }catch (Exception e){
             throw new DuplicateException("Update fail");
