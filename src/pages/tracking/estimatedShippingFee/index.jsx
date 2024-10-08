@@ -1,13 +1,118 @@
-import { Button, Form, Input, Modal, Select, Table } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Table,
+  Space,
+  Typography,
+} from "antd";
 import "./index.css";
 import { useForm } from "antd/es/form/Form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const { Option } = Select;
+const { Text } = Typography;
+
 function EstimatedShippingFee() {
   const [shippingCost, setShippingCost] = useState(0);
   const [mediumBoxNeeded, setMediumBoxNeeded] = useState(0);
   const [noOfBoxesLarge, setNoOfBoxesLarge] = useState(0);
   const [extraLargeBoxesQuantity, setExtraLargeBoxesQuantity] = useState(0);
   const [specialLargeBoxesQuantity, setSpecialLargeBoxesQuantity] = useState(0);
+  const [data, setData] = useState([]);
+  const [selectedCity, setSelectedCity] = useState(undefined);
+  const [selectedDistrict, setSelectedDistrict] = useState(undefined);
+  const [selectedWard, setSelectedWard] = useState(undefined);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  const [tempSelections, setTempSelections] = useState({
+    cityName: "",
+    districtName: "",
+    wardName: "",
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
+        );
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCity) {
+      const cityData = data.find((city) => city.Id === selectedCity);
+      setDistricts(cityData ? cityData.Districts : []);
+    }
+  }, [selectedCity, data]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      const cityData = data.find((city) => city.Id === selectedCity);
+      const districtData = cityData?.Districts.find(
+        (district) => district.Id === selectedDistrict
+      );
+      setWards(districtData ? districtData.Wards : []);
+    }
+  }, [selectedDistrict, selectedCity, data]);
+
+  const handleCityChange = (value, option) => {
+    setSelectedCity(value);
+    setSelectedDistrict(undefined);
+    setSelectedWard(undefined);
+    setTempSelections((prev) => ({
+      ...prev,
+      cityName: option.children,
+      districtName: "",
+      wardName: "",
+    }));
+  };
+
+  const handleDistrictChange = (value, option) => {
+    setSelectedDistrict(value);
+    setSelectedWard(undefined);
+    setTempSelections((prev) => ({
+      ...prev,
+      districtName: option.children,
+      wardName: "",
+    }));
+  };
+
+  const handleWardChange = (value, option) => {
+    setSelectedWard(value);
+    setTempSelections((prev) => ({ ...prev, wardName: option.children }));
+  };
+
+  const handleConfirm = () => {
+    // Here you can perform any action with the confirmed selections
+    setSelectedCity(undefined);
+    setSelectedDistrict(undefined);
+    setSelectedWard(undefined);
+    setDistricts([]);
+    setWards([]);
+    console.log("Confirmed selections:", tempSelections);
+  };
+
+  const handleCancel = () => {
+    // Reset to the initial state
+    setSelectedCity(undefined);
+    setSelectedDistrict(undefined);
+    setSelectedWard(undefined);
+    setDistricts([]);
+    setWards([]);
+    setTempSelections({ cityName: "", districtName: "", wardName: "" });
+  };
+
   let sizeInCM = [
     "-19.9",
     "20-25",
@@ -185,15 +290,18 @@ function EstimatedShippingFee() {
       shippingCostMediumBox +
       shippingCostExtraLargeBox +
       shippingCostSpecialLargeBox;
+    setMediumBoxNeeded(mediumBoxNeeded);
+    setNoOfBoxesLarge(noOfBoxesLarge);
+    setExtraLargeBoxesQuantity(extraLargeBoxesQuantity);
+    setSpecialLargeBoxesQuantity(specialLargeBoxesQuantity);
     setShippingCost(shippingCost);
-    console.log(extraLargeBoxesQuantity);
   }
 
   const [form] = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const [desForm, setdesForm] = useState("");
 
-  const data = [
+  const dataFish = [
     {
       sizeInCM: "-19.9",
       sizeInInch: "7.86",
@@ -268,6 +376,7 @@ function EstimatedShippingFee() {
 
   function handleHideModal() {
     setIsOpen(false);
+    console.log();
   }
 
   function handleSubmit(values) {
@@ -289,7 +398,7 @@ function EstimatedShippingFee() {
             estimate.
           </p>
           <Form>
-            <Table columns={columns} dataSource={data} pagination={false} />
+            <Table columns={columns} dataSource={dataFish} pagination={false} />
           </Form>
         </div>
         <div className="estimatedshippingfee__products__right">
@@ -297,7 +406,22 @@ function EstimatedShippingFee() {
             <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
             <div>Number of box you need</div>
             <div id="boxesNeeded"></div>
-            <div style={{ color: "red", paddingTop: 50 }}>_ boxes</div>
+            <div style={{ color: "red", paddingTop: 50 }}>
+              {mediumBoxNeeded +
+                noOfBoxesLarge +
+                extraLargeBoxesQuantity +
+                specialLargeBoxesQuantity ===
+              0
+                ? "_ boxes"
+                : Math.floor(noOfBoxesLarge) +
+                  " small boxes , " +
+                  mediumBoxNeeded +
+                  " medium boxes, " +
+                  extraLargeBoxesQuantity +
+                  " large boxes and " +
+                  specialLargeBoxesQuantity +
+                  " extra large boxes"}
+            </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
             <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
@@ -323,44 +447,6 @@ function EstimatedShippingFee() {
               <Button onClick={handleShowModal} value="Form">
                 Select location
               </Button>
-              <Modal
-                open={isOpen}
-                title="Select location"
-                onCancel={handleHideModal}
-                onOk={handleOK}
-              >
-                <Form
-                  labelCol={{
-                    span: 6,
-                  }}
-                  form={form}
-                  onFinish={handleSubmit}
-                >
-                  <Form.Item label="Country" name={"country" + desForm}>
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    label="Province / City"
-                    name={"province/city" + desForm}
-                  >
-                    <Select
-                      showSearch
-                      style={{ width: 200 }}
-                      placeholder="select"
-                    />
-                    <Input />
-                  </Form.Item>
-                  <Form.Item
-                    label="Urban district"
-                    name={"urbanDistrict" + desForm}
-                  >
-                    <Input />
-                  </Form.Item>
-                  <Form.Item label="Commune" name={"commune" + desForm}>
-                    <Input />
-                  </Form.Item>
-                </Form>
-              </Modal>
             </li>
             <li>
               <p>Country</p>
@@ -380,7 +466,9 @@ function EstimatedShippingFee() {
           <ul>
             <li>
               <p className="estimatedshippingfee__destination__title">TO</p>
-              <Button>Select location</Button>
+              <Button onClick={handleShowModal} value="To">
+                Select location
+              </Button>
             </li>
 
             <li>
@@ -397,6 +485,65 @@ function EstimatedShippingFee() {
             </li>
           </ul>
         </div>
+        <Modal
+          open={isOpen}
+          title="Select location"
+          onCancel={handleHideModal}
+          onOk={handleOK}
+        >
+          <Form
+            labelCol={{
+              span: 6,
+            }}
+            form={form}
+            onFinish={handleSubmit}
+          >
+            <Form.Item label="Province / City" name={"province/city" + desForm}>
+              <Select
+                style={{ width: 200 }}
+                value={selectedCity}
+                onChange={handleCityChange}
+                placeholder="Select City"
+              >
+                {data.map((city) => (
+                  <Option key={city.Id} value={city.Id}>
+                    {city.Name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="District" name={"district" + desForm}>
+              <Select
+                style={{ width: 200 }}
+                value={selectedDistrict}
+                onChange={handleDistrictChange}
+                placeholder="Select District"
+                disabled={!selectedCity}
+              >
+                {districts.map((district) => (
+                  <Option key={district.Id} value={district.Id}>
+                    {district.Name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Ward" name={"Ward" + desForm}>
+              <Select
+                style={{ width: 200 }}
+                value={selectedWard}
+                onChange={handleWardChange}
+                placeholder="Select Ward"
+                disabled={!selectedDistrict}
+              >
+                {wards.map((ward) => (
+                  <Option key={ward.Id} value={ward.Id}>
+                    {ward.Name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
       <div className="estimatedshippingfee__calculating">
         <button onClick={calculatePoints}>Tracking</button>
