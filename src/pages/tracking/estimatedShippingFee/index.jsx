@@ -1,20 +1,10 @@
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Select,
-  Table,
-  Space,
-  Typography,
-} from "antd";
+import { Button, Form, Input, Modal, Select, Table } from "antd";
 import "./index.css";
 import { useForm } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
 const { Option } = Select;
-const { Text } = Typography;
 
 function EstimatedShippingFee() {
   const [shippingCost, setShippingCost] = useState(0);
@@ -28,6 +18,22 @@ function EstimatedShippingFee() {
   const [selectedWard, setSelectedWard] = useState(undefined);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const [where, setWhere] = useState("");
+  // const [tempSelectionsFrom, setTempSelectionsFrom] = useState({
+  //   cityName: "",
+  //   districtName: "",
+  //   wardName: "",
+  //   address: "",
+  // });
+  // const [tempSelectionsTo, setTempSelectionsTo] = useState({
+  //   cityName: "",
+  //   districtName: "",
+  //   wardName: "",
+  //   address: "",
+  // });
+
+  const [tempSelectionsFrom, setTempSelectionsFrom] = useState("");
+  const [tempSelectionsTo, setTempSelectionsTo] = useState("");
 
   const [tempSelections, setTempSelections] = useState({
     cityName: "",
@@ -95,11 +101,6 @@ function EstimatedShippingFee() {
 
   const handleConfirm = () => {
     // Here you can perform any action with the confirmed selections
-    setSelectedCity(undefined);
-    setSelectedDistrict(undefined);
-    setSelectedWard(undefined);
-    setDistricts([]);
-    setWards([]);
     console.log("Confirmed selections:", tempSelections);
   };
 
@@ -299,7 +300,6 @@ function EstimatedShippingFee() {
 
   const [form] = useForm();
   const [isOpen, setIsOpen] = useState(false);
-  const [desForm, setdesForm] = useState("");
 
   const dataFish = [
     {
@@ -368,20 +368,58 @@ function EstimatedShippingFee() {
     },
   ];
 
-  function handleShowModal(value) {
+  function handleShowModal(values) {
+    setWhere(values.currentTarget.getAttribute("value"));
     setIsOpen(true);
-    setdesForm(value);
-    console.log(desForm);
   }
+  useEffect(() => {
+    if (where !== "") {
+      console.log("Where:", where);
+    }
+  }, [where]);
 
   function handleHideModal() {
     setIsOpen(false);
-    console.log();
   }
 
   function handleSubmit(values) {
-    console.log(values);
+    if (where === "From") {
+      setTempSelectionsFrom(
+        values.address +
+          ", " +
+          tempSelections.cityName +
+          ", " +
+          tempSelections.districtName +
+          ", " +
+          tempSelections.wardName
+      );
+    }
+    if (where === "To") {
+      setTempSelectionsTo(
+        values.address +
+          ", " +
+          tempSelections.cityName +
+          ", " +
+          tempSelections.districtName +
+          ", " +
+          tempSelections.wardName
+      );
+    }
+    form.resetFields();
+    handleHideModal();
   }
+
+  useEffect(() => {
+    if (tempSelectionsFrom) {
+      //console.log("All locations selected:", tempSelectionsLocation);
+    }
+  }, [tempSelectionsFrom]);
+
+  useEffect(() => {
+    if (tempSelectionsTo) {
+      //console.log("All locations selected:", tempSelectionsTo);
+    }
+  }, [tempSelectionsTo]);
 
   function handleOK() {
     form.submit();
@@ -444,21 +482,12 @@ function EstimatedShippingFee() {
           <ul>
             <li>
               <p className="estimatedshippingfee__destination__title">From</p>
-              <Button onClick={handleShowModal} value="Form">
+              <Button onClick={handleShowModal} value="From">
                 Select location
               </Button>
             </li>
             <li>
-              <p>Country</p>
-            </li>
-            <li>
-              <p>Province / City</p>
-            </li>
-            <li>
-              <p>Urban district</p>
-            </li>
-            <li>
-              <p>Commune</p>
+              <p>Your selection: {tempSelectionsFrom}</p>
             </li>
           </ul>
         </div>
@@ -472,16 +501,7 @@ function EstimatedShippingFee() {
             </li>
 
             <li>
-              <p>Country</p>
-            </li>
-            <li>
-              <p>Province / City</p>
-            </li>
-            <li>
-              <p>Urban district</p>
-            </li>
-            <li>
-              <p>Commune</p>
+              <p>Your selection: {tempSelectionsTo}</p>
             </li>
           </ul>
         </div>
@@ -498,8 +518,13 @@ function EstimatedShippingFee() {
             form={form}
             onFinish={handleSubmit}
           >
-            <Form.Item label="Province / City" name={"province/city" + desForm}>
+            <Form.Item
+              label="Province / City"
+              name={"province_city"}
+              rules={[{ require: true }]}
+            >
               <Select
+                showSearch
                 style={{ width: 200 }}
                 value={selectedCity}
                 onChange={handleCityChange}
@@ -512,8 +537,13 @@ function EstimatedShippingFee() {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item label="District" name={"district" + desForm}>
+            <Form.Item
+              label="District"
+              name={"district"}
+              rules={[{ require: true }]}
+            >
               <Select
+                showSearch
                 style={{ width: 200 }}
                 value={selectedDistrict}
                 onChange={handleDistrictChange}
@@ -527,8 +557,9 @@ function EstimatedShippingFee() {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item label="Ward" name={"Ward" + desForm}>
+            <Form.Item label="Ward" name={"ward"} rules={[{ require: true }]}>
               <Select
+                showSearch
                 style={{ width: 200 }}
                 value={selectedWard}
                 onChange={handleWardChange}
@@ -541,6 +572,13 @@ function EstimatedShippingFee() {
                   </Option>
                 ))}
               </Select>
+            </Form.Item>
+            <Form.Item
+              label="Address"
+              name={"address"}
+              rules={[{ require: true }]}
+            >
+              <Input />
             </Form.Item>
           </Form>
         </Modal>
