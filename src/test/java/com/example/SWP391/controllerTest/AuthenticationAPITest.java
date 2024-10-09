@@ -1,5 +1,6 @@
-package com.example.SWP391.controller;
+package com.example.SWP391.controllerTest;
 
+import com.example.SWP391.controller.AuthenticationAPI;
 import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
 import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
 import com.example.SWP391.model.DTO.authenticatonDTO.RegisterRequest;

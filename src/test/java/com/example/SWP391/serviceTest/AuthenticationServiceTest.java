@@ -1,7 +1,6 @@
-package com.example.SWP391.service;
+package com.example.SWP391.serviceTest;
 
 import com.example.SWP391.entity.Account;
-import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
 import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
@@ -42,7 +41,7 @@ class AuthenticationServiceTest {
     private TokenService tokenService;
 
     @InjectMocks
-    private AuthenticationService authenticationService;
+    private com.example.SWP391.service.AuthenticationService authenticationService;
 
     @BeforeEach
     void setUp() {
