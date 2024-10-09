@@ -43,11 +43,6 @@ function FormDisabledDemo() {
                     maxWidth: 1000,
                 }}
             >
-                <Form.Item label="Oder ID" name="orderID">
-                    <Input />
-                </Form.Item>
-
-
                 <Form.Item label="Your Address" name="senderAddress">
                     <Input />
                 </Form.Item>
