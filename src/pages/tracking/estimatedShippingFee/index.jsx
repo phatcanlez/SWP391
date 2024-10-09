@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, Select, Table } from "antd";
+import { Button, Form, Input, Modal, Select, Table, Space } from "antd";
 import "./index.css";
 import { useForm } from "antd/es/form/Form";
 import { useEffect, useState } from "react";
@@ -7,6 +7,21 @@ import axios from "axios";
 const { Option } = Select;
 
 function EstimatedShippingFee() {
+  let map;
+  let directionsService;
+  let directionsRenderer;
+
+  function initMap() {
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    const center = { lat: 21.0285, lng: 105.8542 }; // Hà Nội, Việt Nam
+    map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 7,
+      center: center,
+    });
+    directionsRenderer.setMap(map);
+  }
+
   const [shippingCost, setShippingCost] = useState(0);
   const [mediumBoxNeeded, setMediumBoxNeeded] = useState(0);
   const [noOfBoxesLarge, setNoOfBoxesLarge] = useState(0);
@@ -76,6 +91,8 @@ function EstimatedShippingFee() {
     setSelectedCity(value);
     setSelectedDistrict(undefined);
     setSelectedWard(undefined);
+    setDistricts([]);
+    setWards([]);
     setTempSelections((prev) => ({
       ...prev,
       cityName: option.children,
@@ -379,32 +396,41 @@ function EstimatedShippingFee() {
   }, [where]);
 
   function handleHideModal() {
+    setSelectedCity(undefined);
+    setSelectedDistrict(undefined);
+    setSelectedWard(undefined);
+    setDistricts([]);
+    setWards([]);
+    setTempSelections({ cityName: "", districtName: "", wardName: "" });
     setIsOpen(false);
   }
 
   function handleSubmit(values) {
-    if (where === "From") {
-      setTempSelectionsFrom(
+    let selectedAddress = "";
+    if (values.address !== undefined) {
+      selectedAddress =
         values.address +
-          ", " +
-          tempSelections.cityName +
-          ", " +
-          tempSelections.districtName +
-          ", " +
-          tempSelections.wardName
-      );
+        ", " +
+        tempSelections.cityName +
+        ", " +
+        tempSelections.districtName +
+        ", " +
+        tempSelections.wardName;
+    } else {
+      selectedAddress =
+        tempSelections.cityName +
+        ", " +
+        tempSelections.districtName +
+        ", " +
+        tempSelections.wardName;
+    }
+    if (where === "From") {
+      setTempSelectionsFrom(selectedAddress);
     }
     if (where === "To") {
-      setTempSelectionsTo(
-        values.address +
-          ", " +
-          tempSelections.cityName +
-          ", " +
-          tempSelections.districtName +
-          ", " +
-          tempSelections.wardName
-      );
+      setTempSelectionsTo(selectedAddress);
     }
+
     form.resetFields();
     handleHideModal();
   }
@@ -413,12 +439,14 @@ function EstimatedShippingFee() {
     if (tempSelectionsFrom) {
       //console.log("All locations selected:", tempSelectionsLocation);
     }
+    console.log(tempSelectionsFrom);
   }, [tempSelectionsFrom]);
 
   useEffect(() => {
     if (tempSelectionsTo) {
       //console.log("All locations selected:", tempSelectionsTo);
     }
+    console.log(tempSelectionsTo);
   }, [tempSelectionsTo]);
 
   function handleOK() {
@@ -465,7 +493,7 @@ function EstimatedShippingFee() {
             <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
             <div>Total shipping cost</div>
             <div style={{ color: "red", paddingTop: 50 }}>
-              $ {shippingCost === 0 ? "-" : shippingCost}
+              {shippingCost === 0 ? "$-" : "~$ " + shippingCost}
             </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
@@ -523,55 +551,61 @@ function EstimatedShippingFee() {
               name={"province_city"}
               rules={[{ require: true }]}
             >
-              <Select
-                showSearch
-                style={{ width: 200 }}
-                value={selectedCity}
-                onChange={handleCityChange}
-                placeholder="Select City"
-              >
-                {data.map((city) => (
-                  <Option key={city.Id} value={city.Id}>
-                    {city.Name}
-                  </Option>
-                ))}
-              </Select>
+              <Space>
+                <Select
+                  showSearch
+                  style={{ width: 200 }}
+                  value={selectedCity}
+                  onChange={handleCityChange}
+                  placeholder="Select City"
+                >
+                  {data.map((city) => (
+                    <Option key={city.Id} value={city.Id}>
+                      {city.Name}
+                    </Option>
+                  ))}
+                </Select>
+              </Space>
             </Form.Item>
             <Form.Item
               label="District"
               name={"district"}
               rules={[{ require: true }]}
             >
-              <Select
-                showSearch
-                style={{ width: 200 }}
-                value={selectedDistrict}
-                onChange={handleDistrictChange}
-                placeholder="Select District"
-                disabled={!selectedCity}
-              >
-                {districts.map((district) => (
-                  <Option key={district.Id} value={district.Id}>
-                    {district.Name}
-                  </Option>
-                ))}
-              </Select>
+              <Space>
+                <Select
+                  showSearch
+                  style={{ width: 200 }}
+                  value={selectedDistrict}
+                  onChange={handleDistrictChange}
+                  placeholder="Select District"
+                  disabled={!selectedCity}
+                >
+                  {districts.map((district) => (
+                    <Option key={district.Id} value={district.Id}>
+                      {district.Name}
+                    </Option>
+                  ))}
+                </Select>
+              </Space>
             </Form.Item>
             <Form.Item label="Ward" name={"ward"} rules={[{ require: true }]}>
-              <Select
-                showSearch
-                style={{ width: 200 }}
-                value={selectedWard}
-                onChange={handleWardChange}
-                placeholder="Select Ward"
-                disabled={!selectedDistrict}
-              >
-                {wards.map((ward) => (
-                  <Option key={ward.Id} value={ward.Id}>
-                    {ward.Name}
-                  </Option>
-                ))}
-              </Select>
+              <Space>
+                <Select
+                  showSearch
+                  style={{ width: 200 }}
+                  value={selectedWard}
+                  onChange={handleWardChange}
+                  placeholder="Select Ward"
+                  disabled={!selectedDistrict}
+                >
+                  {wards.map((ward) => (
+                    <Option key={ward.Id} value={ward.Id}>
+                      {ward.Name}
+                    </Option>
+                  ))}
+                </Select>
+              </Space>
             </Form.Item>
             <Form.Item
               label="Address"
@@ -586,6 +620,8 @@ function EstimatedShippingFee() {
       <div className="estimatedshippingfee__calculating">
         <button onClick={calculatePoints}>Tracking</button>
       </div>
+      <div id="map"></div>
+      <Button onClick={initMap}>Init</Button>
     </div>
   );
 }
