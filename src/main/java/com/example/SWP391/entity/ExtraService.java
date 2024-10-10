@@ -1,15 +1,16 @@
 package com.example.SWP391.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,4 +28,8 @@ public class ExtraService {
 
     @Size(min = 0,message = "Price must positive number")
     float price;
+
+    @OneToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<OrderDetail> orderDetail = new ArrayList<>();
 }

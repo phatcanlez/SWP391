@@ -5,5 +5,5 @@ import com.example.SWP391.entity.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    Payment findById(long id);
+    Payment findPaymentByPaymentId(long id);
 }
