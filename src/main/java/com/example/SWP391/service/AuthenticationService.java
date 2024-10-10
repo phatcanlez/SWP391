@@ -8,13 +8,17 @@ import com.example.SWP391.model.DTO.authenticatonDTO.AccountResponse;
 import com.example.SWP391.model.DTO.authenticatonDTO.LoginRequest;
 import com.example.SWP391.model.DTO.authenticatonDTO.RegisterRequest;
 
+import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
+import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AuthenticationService implements UserDetailsService {
     //xử lý logic, xử lý nghiệp vụ
@@ -77,7 +82,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public AccountResponse login(LoginRequest loginRequest) {
         try {
-
+            log.info("login");
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword())); //kh có thì catch exception
@@ -102,4 +107,26 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository.findByUsername(username);
     }
+
+    //lấy thông tin account dc lưu từ token trong SecurityContextHolder
+    public Account getCurrentAccount(){
+        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return accountRepository.findAccountById(account.getId());
+    }
+
+    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest){
+        Account account = accountRepository.findAccountByEmail(forgotPasswordRequest.getEmail());
+        if(account == null){
+            throw new NotFoundException("Account not found");
+        }
+        else{
+            EmailDetail emailDetail = new EmailDetail();
+            emailDetail.setReceiver(account);
+            emailDetail.setSubject("Reset Your Password");
+            emailDetail.setLink("https://www.google.com/?token=" + tokenService.generateToken(account));
+            emailService.sendEmail(emailDetail);
+        }
+    }
+
+
 }
