@@ -47,7 +47,7 @@ function StaffOrder() {
     {
       title: "View",
       dataIndex: "note",
-      key: "not",
+      key: "note",
       render: (record, value) => (
         <Button onClick={() => navigate(`/staff/view/${value.orderID}`)}>
           View

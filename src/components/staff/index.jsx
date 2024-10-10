@@ -3,6 +3,7 @@ import { PieChartOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { Link, Outlet } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
+import logo from "../../img/logolayout.png";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -14,7 +15,6 @@ function getItem(label, key, icon, children) {
 const items = [getItem("All Orders", "order", <PieChartOutlined />)];
 
 const Staff = () => {
-  const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -24,11 +24,11 @@ const Staff = () => {
         minHeight: "100vh",
       }}
     >
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-      >
+      <Sider>
+        <div>
+          <img src={logo} alt="" />
+        </div>
+        <h4>KOIKICHI</h4>
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
@@ -38,18 +38,11 @@ const Staff = () => {
         />
       </Sider>
       <Layout>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-          }}
-        />
         <Content
           style={{
             margin: "0 16px",
           }}
         >
-          <h3>All Orders</h3>
           <div
             style={{
               padding: 24,

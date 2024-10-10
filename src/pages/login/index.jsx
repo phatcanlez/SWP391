@@ -79,6 +79,7 @@ function LoginPage() {
             uid: user.uid,
           });
           toast.success("Successful");
+          dispatch(login(response.data));
           const { role, token } = response.data;
           localStorage.setItem("token", token);
           console.log(response);
