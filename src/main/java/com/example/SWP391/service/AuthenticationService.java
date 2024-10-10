@@ -104,7 +104,7 @@ public class AuthenticationService implements UserDetailsService {
     public AccountResponse loginGoogle(OAuth oAuth) {
         Account account = modelMapper.map(oAuth, Account.class);
         try {
-            Account acc = accountRepository.findByUsername(oAuth.getEmail());
+            Account acc = accountRepository.findByUsername(oAuth.getUid());
             if (acc == null) {
                 account.setPassword(oAuth.getUid());
                 String originPass = account.getPassword();
@@ -114,12 +114,6 @@ public class AuthenticationService implements UserDetailsService {
                 account.setAvatar(oAuth.getAvatar());
                 account.setStatus(true);
                 accountRepository.save(account);
-                //đăng ký thành công, gửi mail cho người dùng
-                EmailDetail emailDetail = new EmailDetail();
-                emailDetail.setReceiver(account);
-                emailDetail.setSubject("Welcome to KOIKICHI");
-                emailDetail.setLink("https://www.google.com.vn/");
-                emailService.sendEmail(emailDetail);
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     oAuth.getEmail(),
