@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -59,6 +58,7 @@ public class OrderService {
             Payment payment = new Payment();
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
+
             paymentRepository.save(payment);
 
             orderRepository.save(newOrder);
@@ -100,30 +100,6 @@ public class OrderService {
             return orderRepository.save(existingOrder);
         } catch (Exception e) {
             throw new DuplicateException("Unexpected error!");
-        }
-    }
-
-    public List<Orders> viewOrderByStatus(String status) {
-        try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
-            List<Orders> list = new ArrayList<>();
-            for (Status s : statuses) {
-                list.add(s.getOrders());
-            }
-            return list;
-        } catch (Exception e) {
-            throw new NotFoundException("Error");
-        }
-    }
-
-    public List<Orders> viewOrderByAccount(String username) {
-        try {
-            Account account = accountRepository.findByUsername(username);
-            List<Orders> list = orderRepository.findByAccount(account);
-            return list;
-        } catch (Exception e) {
-            throw new NotFoundException("Error");
         }
     }
 }

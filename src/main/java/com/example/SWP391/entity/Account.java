@@ -38,7 +38,7 @@ public class Account implements UserDetails {
     @Column(unique = true)
     String username;
 
-    @Email(message = "Email not valid or have been used")
+    @Email(message = "Email not valid")
     @Column(unique = true)
     String email;
 
