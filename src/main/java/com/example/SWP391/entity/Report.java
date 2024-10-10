@@ -18,20 +18,18 @@ import java.util.Date;
 public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long report_id;
+    long id;
 
     Date time;
 
-    @NotBlank(message = "Status name is required")
-    String statusInfo;
+    @NotBlank(message = "Status is required")
+    String status;
 
-    @NotBlank(message = "Employ ID is required")
-    String employId;
+    @NotBlank(message = "Content is required")
+    String reportContent;
 
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonIgnore
     Orders orders;
-
-
 }

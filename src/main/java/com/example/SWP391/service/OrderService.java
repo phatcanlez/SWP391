@@ -59,7 +59,6 @@ public class OrderService {
             Payment payment = new Payment();
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
-
             paymentRepository.save(payment);
 
             orderRepository.save(newOrder);
