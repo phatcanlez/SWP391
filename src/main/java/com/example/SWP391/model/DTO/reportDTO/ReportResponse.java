@@ -3,15 +3,13 @@ package com.example.SWP391.model.DTO.reportDTO;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class ReportRequest {
-
-    @NotBlank(message = "Status is required")
+public class ReportResponse {
+    long id;
+    Date time;
     String status;
-
-    @NotBlank(message = "Content is required")
     String reportContent;
-
-    @NotBlank(message = "Order ID is required")
     String orderID;
 }
