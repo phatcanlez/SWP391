@@ -4,7 +4,7 @@ import Dosmetic from "./dosmetic";
 import International from "./international";
 //import "./index.scss";
 import { useState } from "react";
-import "../service/index.css";
+import '../service/international/index.css';
 
 function Service() {
   const [service, setService] = useState(1);

@@ -16,7 +16,7 @@ function RegisterPage() {
         try {
             values.role = "CUSTOMER"
             const response = await api.post("register", values);
-            toast.success("Successfully")
+            toast.success("Successfull")
             navigate("/login")
         } catch (err) {
             toast.error(err.response.data);
