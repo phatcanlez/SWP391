@@ -46,7 +46,7 @@ public class Account implements UserDetails {
 
     Boolean status;
 
-    @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
+    @Pattern(regexp = "^$|\\d{10}", message = "Invalid phone number!")
     String phoneNumber;
 
     @NotBlank(message = "Password can not be blank")
@@ -54,6 +54,7 @@ public class Account implements UserDetails {
     String password;
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<Orders> orders = new ArrayList<>();
 
 
