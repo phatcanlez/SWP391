@@ -36,7 +36,15 @@ public class OrdersAPI {
 
         }
 
-        @GetMapping("/api/orders/{id}/status")
+        @GetMapping("/api/orders/status")
+        public ResponseEntity getOrderByStatus(@RequestParam String status) {
+                return ResponseEntity.ok(orderService.viewOrderByStatus(status));
+        }
+
+        @GetMapping("/api/orders/account")
+        public ResponseEntity getOrderByAccount(@RequestParam String username) {
+                return ResponseEntity.ok(orderService.viewOrderByAccount(username));
+        }
 
         @PutMapping("/api/orders")
         public ResponseEntity updateLicense(@RequestBody @Valid OrderRequest order, String id) {
