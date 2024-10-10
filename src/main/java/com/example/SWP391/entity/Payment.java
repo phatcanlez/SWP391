@@ -22,9 +22,9 @@ public class Payment {
 
     Date timeOfPay;
 
+    @NotBlank(message = "Type of payment method is required")
     String typeOfPay;
 
-    @NotBlank(message = "Status is required")
     @NotBlank(message = "Status is required")
     String status;
 
