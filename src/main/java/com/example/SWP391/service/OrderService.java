@@ -6,13 +6,9 @@ import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
-import com.example.SWP391.repository.StatusRepository;
-import org.aspectj.weaver.ast.Or;
-import org.hibernate.query.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
