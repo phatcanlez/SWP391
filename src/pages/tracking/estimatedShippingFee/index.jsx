@@ -1,27 +1,14 @@
 import { Button, Form, Input, Modal, Select, Table, Space } from "antd";
 import "./index.css";
 import { useForm } from "antd/es/form/Form";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import App from "./google";
 
 const { Option } = Select;
 
 function EstimatedShippingFee() {
-  let map;
-  let directionsService;
-  let directionsRenderer;
-
-  function initMap() {
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
-    const center = { lat: 21.0285, lng: 105.8542 }; // Hà Nội, Việt Nam
-    map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 7,
-      center: center,
-    });
-    directionsRenderer.setMap(map);
-  }
-
+  const appRef = useRef();
   const [shippingCost, setShippingCost] = useState(0);
   const [mediumBoxNeeded, setMediumBoxNeeded] = useState(0);
   const [noOfBoxesLarge, setNoOfBoxesLarge] = useState(0);
@@ -411,18 +398,18 @@ function EstimatedShippingFee() {
       selectedAddress =
         values.address +
         ", " +
-        tempSelections.cityName +
+        tempSelections.wardName +
         ", " +
         tempSelections.districtName +
         ", " +
-        tempSelections.wardName;
+        tempSelections.cityName;
     } else {
       selectedAddress =
-        tempSelections.cityName +
+        tempSelections.wardName +
         ", " +
         tempSelections.districtName +
         ", " +
-        tempSelections.wardName;
+        tempSelections.cityName;
     }
     if (where === "From") {
       setTempSelectionsFrom(selectedAddress);
@@ -533,6 +520,7 @@ function EstimatedShippingFee() {
             </li>
           </ul>
         </div>
+
         <Modal
           open={isOpen}
           title="Select location"
@@ -617,11 +605,19 @@ function EstimatedShippingFee() {
           </Form>
         </Modal>
       </div>
+      <div className="estimatedshippingfee__map">
+        <App ref={appRef} />
+      </div>
       <div className="estimatedshippingfee__calculating">
         <button onClick={calculatePoints}>Tracking</button>
       </div>
-      <div id="map"></div>
-      <Button onClick={initMap}>Init</Button>
+      <Button
+        onClick={() =>
+          appRef.current.setLocations(tempSelectionsFrom, tempSelectionsTo)
+        }
+      >
+        Calculate Distance
+      </Button>
     </div>
   );
 }

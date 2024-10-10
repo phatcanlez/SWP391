@@ -56,7 +56,7 @@
     }
     .estimatedshippingfee__destination {
         background: rgba(255, 255, 255, 1);
-        height: 60dvh;
+        height: 150px;
         align-content: center;
         display: flex;
         padding-top: 5%;
@@ -84,6 +84,10 @@
         .estimatedshippingfee__destination__to {
             width: 50%;
         }
+    }
+    .estimatedshippingfee__map {
+        height: 600px;
+        background-color: #fff;
     }
     .estimatedshippingfee__calculating {
         height: 20vh;
