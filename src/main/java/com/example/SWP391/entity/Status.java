@@ -3,7 +3,6 @@ package com.example.SWP391.entity;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +29,8 @@ public class Status {
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
+
+    String employId;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

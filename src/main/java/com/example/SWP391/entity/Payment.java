@@ -25,6 +25,7 @@ public class Payment {
     String typeOfPay;
 
     @NotBlank(message = "Status is required")
+    @NotBlank(message = "Status is required")
     String status;
 
     @OneToOne(cascade = CascadeType.ALL)

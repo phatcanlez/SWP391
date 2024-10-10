@@ -5,7 +5,6 @@ import com.example.SWP391.entity.Status;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.service.OrderService;
 import jakarta.validation.Valid;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +32,8 @@ public class OrdersAPI {
 
         @GetMapping("/api/orders/{id}")
         public ResponseEntity getLicenseById(@PathVariable String id) {
-                return ResponseEntity.ok(orderService.viewOrderById(id));
+            return ResponseEntity.ok(orderService.viewOrderById(id));
+
         }
 
         @GetMapping("/api/orders/status")

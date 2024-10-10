@@ -68,4 +68,7 @@ public class Orders {
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     Account account;
+
+    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
+    OrderDetail orderDetail;
 }
