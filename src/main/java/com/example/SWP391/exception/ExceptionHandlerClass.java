@@ -26,6 +26,13 @@ public class ExceptionHandlerClass {
     }
 
     @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity duplicate(Exception ex) {
+        error = new HashMap<>();
+        error.put("Error", ex.getMessage());
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
     public ResponseEntity notFound(Exception ex) {
         error = new HashMap<>();
         error.put("Error", ex.getMessage());

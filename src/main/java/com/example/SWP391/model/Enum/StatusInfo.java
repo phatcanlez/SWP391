@@ -4,4 +4,5 @@ public enum StatusInfo {
     FAIL,
     PENDING,
     WAITING,
+    APPROVED,
 }
