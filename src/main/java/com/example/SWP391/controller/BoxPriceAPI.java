@@ -1,7 +1,6 @@
 package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.BoxPrice;
-import com.example.SWP391.model.DTO.BoxPriceDTO.BoxPriceRequest;
 import com.example.SWP391.service.BoxPriceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ public class BoxPriceAPI {
         private BoxPriceService boxPriceService;
 
         @PostMapping("/api/boxprice")
-        public ResponseEntity createOrderDetail(@Valid @RequestBody BoxPriceRequest boxPrice) {
+        public ResponseEntity createOrderDetail(@Valid @RequestBody BoxPrice boxPrice) {
             return ResponseEntity.ok(boxPriceService.createBoxPrice(boxPrice));
         }
 
