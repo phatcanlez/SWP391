@@ -1,5 +1,9 @@
 import React from "react";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import HomePage from "./pages/home";
@@ -13,21 +17,19 @@ import { toast } from "react-toastify";
 import CustomerService from "./components/customer-service";
 import CreateOrder from "./pages/customer/order/create-order";
 import DeliveryMethod from "./pages/customer/order/delivery-method";
+import StaffOrder from "./pages/staff/order/manage-order";
+import Staff from "./components/staff";
+import OrderDetail from "./pages/staff/order/order-detail";
 
 function App() {
-
-
   const ProtectRouteAuth = ({ children }) => {
     const user = useSelector((store) => store);
-    console.log(user)
-    if (user && user?.role === "MANAGER") {
+    console.log(user);
+    if (user && user.user?.role === "MANAGER") {
       return children;
-    }
-    else
-      toast.error("You are not allow");
-    return <Navigate to={"/"} />
-  }
-
+    } else toast.error("You are not allow");
+    return <Navigate to={"/"} />;
+  };
 
   const router = createBrowserRouter([
     {
@@ -56,10 +58,11 @@ function App() {
     },
     {
       path: "dashboard",
-      element: <ProtectRouteAuth>
-        <Dashboard />
-      </ProtectRouteAuth>
-      ,
+      element: (
+        <ProtectRouteAuth>
+          <Dashboard />
+        </ProtectRouteAuth>
+      ),
       children: [
         {
           path: "order",
@@ -70,9 +73,7 @@ function App() {
 
     {
       path: "customer-service",
-      element:
-        <CustomerService />
-      ,
+      element: <CustomerService />,
       children: [
         {
           path: "order",
@@ -85,8 +86,20 @@ function App() {
       ],
     },
 
-
-
+    {
+      path: "staff",
+      element: <Staff />,
+      children: [
+        {
+          path: "order",
+          element: <StaffOrder />,
+        },
+        {
+          path: "view/:id",
+          element: <OrderDetail />,
+        },
+      ],
+    },
   ]);
   return <RouterProvider router={router} />;
 }
