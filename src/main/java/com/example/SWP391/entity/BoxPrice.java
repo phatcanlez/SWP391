@@ -22,9 +22,6 @@ public class BoxPrice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long boxId;
 
-    @Column(unique = true)
-    String boxSize;
-
     @Min(value = 0,message = "Price must positive number")
     float price;
 
@@ -34,4 +31,5 @@ public class BoxPrice {
     @OneToMany(mappedBy = "boxPrice",cascade = CascadeType.ALL)
     @JsonIgnore
     List<OrderDetail> orderDetail = new ArrayList<>();
+
 }
