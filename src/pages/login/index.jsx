@@ -111,6 +111,7 @@ function LoginPage() {
       localStorage.setItem("token", token);
 
       if (role === "MANAGER") navigate("/dashboard");
+      if (role === "STAFF") navigate("/staff");
       if (role === "CUSTOMER") navigate("/customer-service");
     } catch (err) {
       toast.error(err.response.data);

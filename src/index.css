@@ -44,3 +44,11 @@ h5 {
     font-size: 25px;
     font-weight: 300;
 }
+
+.color {
+    color: rgba(226, 88, 34, 1);
+}
+
+p{
+    font-weight: 500;
+}
