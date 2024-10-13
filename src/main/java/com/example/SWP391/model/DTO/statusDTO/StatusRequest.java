@@ -9,9 +9,6 @@ import lombok.Data;
 
 @Data
 public class StatusRequest {
-    @NotBlank(message = "Status name is required")
-    @Column(name = "status_name", nullable = false)
-    String description;
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
