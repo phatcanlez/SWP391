@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
-@Service
 // thằng này giúp tạo ra token và verify token
+@Service
 public class TokenService {
 
     public final String SECRET_KEY = "4bb6d1dfbafb64a681139d1586b6f1160d18159afd57c8c79136d7490630407c";

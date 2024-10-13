@@ -5,10 +5,12 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.repository.StatusRepository;
+import com.example.SWP391.util.DateConversionUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class StatusService {
     public Status createStatus(StatusRequest statusRequest){
         try{
             Status status = modelMapper.map(statusRequest, Status.class);
-            status.setTime(new Date(System.currentTimeMillis()));
+            status.setDate(DateConversionUtil.convertToDate(LocalDateTime.now()));
             return statusRepository.save(status);
         }catch (Exception e){
             e.printStackTrace();
