@@ -5,12 +5,14 @@ import com.example.SWP391.model.DTO.authenticatonDTO.*;
 import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @CrossOrigin("*") //cho phép tất cả code truy cập
 @SecurityRequirement(name = "api") //bắt buộc có, nên nhớ
@@ -30,6 +32,7 @@ public class AuthenticationAPI {
     @PostMapping("/api/login")
     public ResponseEntity login(@RequestBody LoginRequest loginRequest)
     {
+        log.info("login api");
         AccountResponse a = authenticationService.login(loginRequest);
         return ResponseEntity.ok(a);
     }

@@ -6,9 +6,9 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
-import com.example.SWP391.model.DTO.authenticatonDTO.TokenService;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AuthenticationService implements UserDetailsService {
 
@@ -77,8 +78,8 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public AccountResponse login(LoginRequest loginRequest) {
+        log.info("login service");
         try {
-
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword())); //kh có thì catch exception
@@ -124,6 +125,7 @@ public class AuthenticationService implements UserDetailsService {
 
         } catch (Exception e) {
             //error => throw new exception
+            e.printStackTrace();
             throw new NotFoundException("Email or Password is invalid!!");
         }
     }

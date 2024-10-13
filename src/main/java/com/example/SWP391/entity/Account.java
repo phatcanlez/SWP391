@@ -1,6 +1,7 @@
 package com.example.SWP391.entity;
 
 import com.example.SWP391.model.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
