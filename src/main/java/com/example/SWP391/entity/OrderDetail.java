@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -33,20 +37,26 @@ public class OrderDetail {
     @Min(value = 0, message = "kilometer must be positive number")
     float kilometer;
 
-    @ManyToOne
-    @JoinColumn(name = "ship_method_id")
+    @OneToOne
+    @JoinColumn(name = "ship_method_id", referencedColumnName = "shipMethodId")
     @JsonIgnore
     ShipMethod shipMethod;
 
-    @ManyToOne
-    @JoinColumn(name = "box_id")
-    @JsonIgnore
-    BoxPrice boxPrice;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "order_detail_box_price",
+            joinColumns = @JoinColumn(name = "ord_detail_id"),
+            inverseJoinColumns = @JoinColumn(name = "box_price_id")
+    )
+    Set<BoxPrice> boxPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "extra_service_id")
-    @JsonIgnore
-    ExtraService extraService;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "order_detail_extra_service",
+            joinColumns = @JoinColumn(name = "ord_detail_id"),
+            inverseJoinColumns = @JoinColumn(name = "extra_service_id")
+    )
+    Set<ExtraService> extraService;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ord_id", referencedColumnName = "orderID", unique = true)

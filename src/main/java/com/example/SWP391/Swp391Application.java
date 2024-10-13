@@ -1,5 +1,7 @@
 package com.example.SWP391;
 
+import com.example.SWP391.entity.PriceListDistance;
+import com.example.SWP391.util.TrackingUtil;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
@@ -9,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
+import java.util.List;
+
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @OpenAPIDefinition(info = @Info(title = "Student API", version = "1.0", description = "Information"))
 @SecurityScheme(name = "api", scheme = "bearer", type = SecuritySchemeType.HTTP, in = SecuritySchemeIn.HEADER)
@@ -16,6 +20,11 @@ public class Swp391Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Swp391Application.class, args);
+//		TrackingUtil<PriceListDistance> trackingUtil = new TrackingUtil<>();
+//		List<PriceListDistance> list = trackingUtil.getTrackingList(1);
+//		for (PriceListDistance priceListDistance : list) {
+//			System.out.println(priceListDistance.getDistance());
+//		}
 	}
 
 }

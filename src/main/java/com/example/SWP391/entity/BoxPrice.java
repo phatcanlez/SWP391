@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,7 +32,7 @@ public class BoxPrice {
     @Min(value = 0,message = "Surcharge must positive number")
     float surcharge;
 
-    @OneToMany(mappedBy = "boxPrice",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "boxPrice",cascade = CascadeType.ALL)
     @JsonIgnore
-    List<OrderDetail> orderDetail = new ArrayList<>();
+    Set<OrderDetail> orderDetail;
 }

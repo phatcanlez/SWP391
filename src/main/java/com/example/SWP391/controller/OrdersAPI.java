@@ -3,6 +3,7 @@ package com.example.SWP391.controller;
 import com.example.SWP391.entity.Orders;
 import com.example.SWP391.entity.Status;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
+import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.service.OrderService;
 import jakarta.validation.Valid;
 import org.aspectj.weaver.ast.Or;
@@ -27,7 +28,7 @@ public class OrdersAPI {
 
         @GetMapping("/api/orders")
         public ResponseEntity getAllOrders() {
-                List<Orders> list = orderService.getAllOrders();
+                List<OrderResponse> list = orderService.getAllOrders();
                 return ResponseEntity.ok(list);
         }
 
