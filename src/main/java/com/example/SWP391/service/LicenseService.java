@@ -2,6 +2,7 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.License;
+import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.License.DTO.LicenseRequest;
 import com.example.SWP391.repository.LicenseRepository;
@@ -49,8 +50,8 @@ public class LicenseService {
             throw new NotFoundException("Not found!");
         }
         try{
-            oldLicense.setNameOfLicense(license.getNameOfLicense());
-            oldLicense.setTypeOfLicense(license.getTypeOfLicense());
+            oldLicense.setNameOfLicense(license.getName());
+            oldLicense.setTypeOfLicense(license.getType());
             oldLicense.setDescription(license.getDescription());
             return licenseRepository.save(oldLicense);
         }catch (Exception e){

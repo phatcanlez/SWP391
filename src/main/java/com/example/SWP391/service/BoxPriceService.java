@@ -2,6 +2,7 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.BoxPrice;
+import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.BoxPriceDTO.BoxPriceRequest;
 import com.example.SWP391.repository.BoxPriceRepository;

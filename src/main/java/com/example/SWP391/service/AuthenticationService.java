@@ -2,10 +2,10 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.Account;
+import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
-import com.example.SWP391.model.DTO.authenticatonDTO.TokenService;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
 import org.modelmapper.ModelMapper;

@@ -3,6 +3,7 @@ package com.example.SWP391.service;
 
 import com.example.SWP391.entity.Orders;
 import com.example.SWP391.entity.Report;
+import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.reportDTO.ReportRequest;
 import com.example.SWP391.model.DTO.reportDTO.ReportResponse;

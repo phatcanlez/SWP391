@@ -13,5 +13,6 @@ public class StatusRequest {
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
 
-    String
+    @NotBlank(message = "OrderID is required")
+    String orderID;
 }
