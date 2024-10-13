@@ -38,7 +38,7 @@ public class Account implements UserDetails {
     @Column(unique = true)
     String username;
 
-    @Email(message = "Email not valid")
+    @Email(message = "Email not valid or have been used")
     @Column(unique = true)
     String email;
 
@@ -54,6 +54,7 @@ public class Account implements UserDetails {
     String password;
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @JsonIgnore
     List<Orders> orders = new ArrayList<>();
 
 

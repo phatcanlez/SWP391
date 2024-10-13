@@ -32,6 +32,4 @@ public class Report {
     @JoinColumn(name = "order_id")
     @JsonIgnore
     Orders orders;
-
-
 }

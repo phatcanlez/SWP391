@@ -6,6 +6,7 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
+import com.example.SWP391.model.DTO.authenticatonDTO.TokenService;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
 import org.modelmapper.ModelMapper;
@@ -96,18 +97,25 @@ public class AuthenticationService implements UserDetailsService {
     public AccountResponse loginGoogle(OAuth oAuth) {
         Account account = modelMapper.map(oAuth, Account.class);
         try {
-            Account acc = accountRepository.findByUsername(oAuth.getUid());
+            Account acc = accountRepository.findByUsername(oAuth.getEmail());
             if (acc == null) {
                 account.setPassword(oAuth.getUid());
                 String originPass = account.getPassword();
                 account.setPassword(passwordEncoder.encode(originPass));
-                account.setUsername(oAuth.getUid());
+                account.setUsername(oAuth.getEmail());
                 account.setRole(Role.CUSTOMER);
+                account.setAvatar(oAuth.getAvatar());
                 account.setStatus(true);
                 accountRepository.save(account);
+                //đăng ký thành công, gửi mail cho người dùng
+                EmailDetail emailDetail = new EmailDetail();
+                emailDetail.setReceiver(account);
+                emailDetail.setSubject("Welcome to KOIKICHI");
+                emailDetail.setLink("https://www.google.com.vn/");
+                emailService.sendEmail(emailDetail);
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    oAuth.getUid(),
+                    oAuth.getEmail(),
                     oAuth.getUid())); //kh có thì catch exception
             account = (Account) authentication.getPrincipal(); //lấy thông tin ng dùng và cast về account
             AccountResponse accountResponse = modelMapper.map(account, AccountResponse.class);
