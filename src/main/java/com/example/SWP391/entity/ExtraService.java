@@ -12,9 +12,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -35,4 +32,5 @@ public class ExtraService {
     @OneToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
     @JsonIgnore
     List<OrderDetail> orderDetail = new ArrayList<>();
+
 }
