@@ -39,9 +39,13 @@ public class OrderService {
     @Autowired
     PaymentRepository paymentRepository;
 
-    public List<Orders> getAllOrders() {
+    public List<OrderResponse> getAllOrders() {
         List<Orders> list = orderRepository.findAll();
-        return list;
+        return list.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            return orderResponse;
+        }).toList();
     }
 
     public OrderResponse createOrder(OrderRequest order) {
@@ -60,9 +64,10 @@ public class OrderService {
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
             paymentRepository.save(payment);
-
             orderRepository.save(newOrder);
-            return modelMapper.map(newOrder, OrderResponse.class);
+            OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
+            orderResponse.setStatus(newOrder.getStatus().getLast());
+            return orderResponse;
         } catch (Exception e) {
             e.printStackTrace();
             throw new DuplicateException("Unexpected error!");
@@ -77,13 +82,6 @@ public class OrderService {
             return order;
         }
     }
-
-    public List<Orders> getAllOrder() {
-        List<Orders> list = orderRepository.findAll();
-        return list;
-    }
-
-
 
     public Orders updateOrder (OrderRequest order,String id){
         Orders existingOrder = orderRepository.findByorderID(id);
@@ -103,7 +101,7 @@ public class OrderService {
         }
     }
 
-    public List<Orders> viewOrderByStatus(String status) {
+    public List<OrderResponse> viewOrderByStatus(String status) {
         try {
             StatusInfo statusInfo = StatusInfo.valueOf(status);
             List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
@@ -111,17 +109,25 @@ public class OrderService {
             for (Status s : statuses) {
                 list.add(s.getOrders());
             }
-            return list;
+            return list.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                return orderResponse;
+            }).toList();
         } catch (Exception e) {
             throw new NotFoundException("Error");
         }
     }
 
-    public List<Orders> viewOrderByAccount(String username) {
+    public List<OrderResponse> viewOrderByAccount(String username) {
         try {
             Account account = accountRepository.findByUsername(username);
             List<Orders> list = orderRepository.findByAccount(account);
-            return list;
+            return list.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                return orderResponse;
+            }).toList();
         } catch (Exception e) {
             throw new NotFoundException("Error");
         }

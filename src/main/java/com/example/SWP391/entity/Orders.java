@@ -65,6 +65,9 @@ public class Orders {
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     List<Feedback> feedbacks = new ArrayList<>();
 
+    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
+    OrderDetail orderDetail;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     Account account;

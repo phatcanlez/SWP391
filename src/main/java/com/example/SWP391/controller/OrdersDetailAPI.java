@@ -1,6 +1,7 @@
 package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.OrderDetail;
+import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.service.OrderDetailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class OrdersDetailAPI {
         private OrderDetailService orderDetailService;
 
         @PostMapping("/api/orders-detail")
-        public ResponseEntity createOrderDetail(@Valid @RequestBody OrderDetail orderDetail) {
-            return ResponseEntity.ok(orderDetailService.createOrder(orderDetail));
+        public ResponseEntity createOrderDetail(@Valid @RequestBody OrderDetailRequest orderDetail) {
+            return ResponseEntity.ok(orderDetailService.createOrderDetail(orderDetail));
         }
 
         @GetMapping("/api/orders-detail")
@@ -35,8 +36,8 @@ public class OrdersDetailAPI {
 
 
         @PutMapping("/api/orders-detail")
-        public ResponseEntity updateLicense(@RequestBody @Valid OrderDetail orderDetail, String id) {
-            return ResponseEntity.ok(orderDetailService.updateOrder(orderDetail, id));
+        public ResponseEntity updateLicense(@RequestBody @Valid OrderDetailRequest orderDetail, String id) {
+            return ResponseEntity.ok(orderDetailService.updateOrderDetail(orderDetail, id));
         }
 
 }
