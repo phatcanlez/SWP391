@@ -34,7 +34,7 @@ public class FeedbackService {
     public FeedbackResponse createFeedback(FeedbackRequest feedback){
         try{
             Feedback newFeedback = modelMapper.map(feedback, Feedback.class);
-            newFeedback.setFeedbackDate(new Date(System.currentTimeMillis()));
+            newFeedback.setTime(new Date(System.currentTimeMillis()));
             newFeedback.setOrders(orderRepository.findByorderID(feedback.getOrderID()));
             return modelMapper.map(feedbackRepository.save(newFeedback), FeedbackResponse.class);
         }catch (Exception e){
@@ -60,7 +60,7 @@ public class FeedbackService {
         }
         try{
             oldFeedback.setRating(feedback.getRating());
-            oldFeedback.setDescription(feedback.getDescription());
+            oldFeedback.setComment(feedback.getDescription());
             return modelMapper.map(feedbackRepository.save(oldFeedback), FeedbackResponse.class);
         }catch (Exception e){
             throw new DuplicateException("Invalid data");

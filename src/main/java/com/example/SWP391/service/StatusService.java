@@ -23,7 +23,7 @@ public class StatusService {
     public Status createStatus(StatusRequest statusRequest){
         try{
             Status status = modelMapper.map(statusRequest, Status.class);
-            status.setTime(new Date(System.currentTimeMillis()));
+            status.setDate(new Date(System.currentTimeMillis()));
             return statusRepository.save(status);
         }catch (Exception e){
             throw new DuplicateException("This status is existed!!");

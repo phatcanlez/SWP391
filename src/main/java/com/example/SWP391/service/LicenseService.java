@@ -50,8 +50,8 @@ public class LicenseService {
             throw new NotFoundException("Not found!");
         }
         try{
-            oldLicense.setNameOfLicense(license.getNameOfLicense());
-            oldLicense.setTypeOfLicense(license.getTypeOfLicense());
+            oldLicense.setNameOfLicense(license.getName());
+            oldLicense.setTypeOfLicense(license.getType());
             oldLicense.setDescription(license.getDescription());
             return licenseRepository.save(oldLicense);
         }catch (Exception e){

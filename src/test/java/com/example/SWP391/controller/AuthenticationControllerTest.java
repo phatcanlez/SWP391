@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 public class AuthenticationControllerTest {
 
-
     @Autowired  
     private MockMvc mockMvc;
 
@@ -50,8 +49,6 @@ public class AuthenticationControllerTest {
        accountResponse = new AccountResponse();
        accountResponse.setUsername("quoc");
        accountResponse.setToken("dummyToken");
-
-
     }
 
 
