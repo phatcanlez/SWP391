@@ -1,0 +1,149 @@
+[33mcommit 0f90e3e87cd52b4d7297edd7d7b3188a613509dd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mBE-quoc[m[33m)[m
+Merge: ed3c82d b8e43c5
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Sun Oct 13 16:32:42 2024 +0700
+
+    Merge branch 'refs/heads/BE' into BE-quoc
+    
+    # Conflicts:
+    #       src/main/java/com/example/SWP391/service/AuthenticationService.java
+
+[33mcommit ed3c82d9ecd91e578969984a4e61d1e41faff688[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Fri Oct 11 02:56:52 2024 +0700
+
+    add
+
+[33mcommit 3b019a939dd49cbbb9563de3a732e3440ec467ef[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Fri Oct 11 02:33:52 2024 +0700
+
+    add
+
+[33mcommit 6636b9fa9adebfc521bd89ad2d12241e96e4605c[m
+Merge: 0aee07e dde9fed
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Fri Oct 11 02:23:57 2024 +0700
+
+    Resolve merge conflicts
+
+[33mcommit 0aee07ecfe4e9aa5c9419180894e058bcf2e8c2a[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Thu Oct 10 13:51:38 2024 +0700
+
+    add code
+
+[33mcommit 1c938aaa9bce9655f43189423b05ed3d7bf037cd[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Tue Oct 8 04:12:14 2024 +0700
+
+    crud API update
+
+[33mcommit f31661435e88801a2608d593d76a015817de445b[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Oct 7 14:35:46 2024 +0700
+
+    add API
+
+[33mcommit 8d65d6a8c7947b1695b57fb916c93401b3938c67[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Oct 7 14:34:43 2024 +0700
+
+    update entity
+
+[33mcommit 9502d457547b6c04e9a888e77bad03ded11f66f0[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Oct 7 05:43:36 2024 +0700
+
+    orderDetail API
+
+[33mcommit bbff2810afbadfa486b1e3f54750263e6cd9f210[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Oct 7 05:43:11 2024 +0700
+
+    update orderDetail entity
+
+[33mcommit c19c38df0a9421e03cb70143109b9a578c58172e[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Sun Oct 6 15:14:43 2024 +0700
+
+    entity relationship
+
+[33mcommit 9b7b37a270b0b360f89ca901b68bedb52112301a[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Sun Oct 6 13:30:43 2024 +0700
+
+    update order + status
+
+[33mcommit 6354292d7f6ca8f3a12469ccece7aa9fdcb57c32[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Sat Oct 5 14:16:55 2024 +0700
+
+    update entity
+
+[33mcommit 05dfa1eb34154cbe0cb2074079edc8a8c0d1f4cf[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Sat Oct 5 14:16:55 2024 +0700
+
+    update entity
+
+[33mcommit 6568c5ac89d66beb947bc68f6a06fbe66ebcf809[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Thu Oct 3 14:33:35 2024 +0700
+
+    crud entity
+
+[33mcommit 05efb17a280dd7cddc1ce5cde5b895430d311f56[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Tue Oct 1 06:17:35 2024 +0700
+
+    OrdersAPI
+
+[33mcommit 9704155d09aae4441a7f232918531182148b18a0[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Tue Oct 1 06:15:41 2024 +0700
+
+    update status entity
+
+[33mcommit 83a48ec5c531e89e39daaddfd936415c557f4fae[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Tue Oct 1 01:35:23 2024 +0700
+
+    email sender
+
+[33mcommit 29b81d65844c551e345c5b7932b9ecb2c1c5d5e6[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Sep 30 14:50:00 2024 +0700
+
+    modify
+
+[33mcommit b7a5924805aa30d45a1ceb52f615c19c11940325[m
+Merge: 8a35888 eb946b1
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Sep 30 14:41:55 2024 +0700
+
+    add entity
+
+[33mcommit 8a35888f975e70b5622b10ce6bf859abd6c076d9[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Mon Sep 30 14:12:36 2024 +0700
+
+    test git
+
+[33mcommit d35c046a23f68e488cf611f3379719f070761fdb[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Sat Sep 28 01:34:36 2024 +0700
+
+    employeeAPI
+
+[33mcommit df4dd4c26e990187bb2722b450c6af636031c97a[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Thu Sep 26 23:13:37 2024 +0700
+
+    bug
+
+[33mcommit 232bbf0388c38143ce36e3b26a892cb682afdbc8[m
+Author: quoc10973 <[1;31mrumvle01667057271@gmail.com[m>
+Date:   Thu Sep 26 23:13:37 2024 +0700
+
+    fix bug entity
