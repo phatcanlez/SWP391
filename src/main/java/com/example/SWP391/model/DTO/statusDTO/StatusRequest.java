@@ -15,4 +15,6 @@ public class StatusRequest {
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
+
+    String
 }
