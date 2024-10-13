@@ -1,7 +1,6 @@
 package com.example.SWP391.service;
 
 import com.example.SWP391.entity.*;
-import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
@@ -12,14 +11,12 @@ import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
-import com.mysql.cj.util.TimeUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service

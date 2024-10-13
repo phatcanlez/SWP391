@@ -2,7 +2,6 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.PriceListDistance;
-import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.repository.PriceListDistanceRepository;
 import org.modelmapper.ModelMapper;

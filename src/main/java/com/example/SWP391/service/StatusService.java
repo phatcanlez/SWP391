@@ -1,7 +1,6 @@
 package com.example.SWP391.service;
 
 import com.example.SWP391.entity.Status;
-import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.repository.StatusRepository;

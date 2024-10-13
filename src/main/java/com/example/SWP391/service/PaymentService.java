@@ -3,7 +3,6 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.Payment;
-import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.paymentDTO.PaymentRequest;
 import com.example.SWP391.repository.PaymentRepository;
