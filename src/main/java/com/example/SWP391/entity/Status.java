@@ -19,7 +19,13 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    Date time;
+    @NotBlank(message = "Status name is required")
+    @Column(name = "status_name", nullable = false)
+    String description;
+
+    Date date;
+
+    String empId;
 
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
