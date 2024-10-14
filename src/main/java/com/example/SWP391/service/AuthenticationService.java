@@ -137,5 +137,27 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository.findByUsername(username);
     }
+
+    public Account updateAccount(String id, UpdateAccountRequest updatedAccount) {
+        try {
+            return accountRepository.findById(id).map(account -> {
+                account.setName(updatedAccount.getName());
+                account.setEmail(updatedAccount.getEmail());
+                account.setAvatar(updatedAccount.getAvatar());
+                account.setStatus(updatedAccount.isStatus());
+                account.setPhoneNumber(updatedAccount.getPhoneNumber());
+                account.setAddress(updatedAccount.getAddress());
+                account.setPassword(passwordEncoder.encode(updatedAccount.getPassword()));
+                return accountRepository.save(account);
+            }).orElseThrow(() -> new RuntimeException("Account not found with id " + id));
+        } catch (Exception e) {
+            throw new DuplicateException(e.getMessage());
+        }
+
+    }
+
+    public Account getAccountById(String id) {
+        return accountRepository.findAccountById(id);
+    }
 }
 

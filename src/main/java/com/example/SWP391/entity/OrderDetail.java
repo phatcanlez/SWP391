@@ -47,7 +47,6 @@ public class OrderDetail {
 
     @ManyToOne
     @JoinColumn(name = "ship_method_id")
-    @JsonIgnore
     ShipMethod shipMethod;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -56,6 +55,7 @@ public class OrderDetail {
             joinColumns = @JoinColumn(name = "ord_detail_id"),
             inverseJoinColumns = @JoinColumn(name = "box_price_id")
     )
+    @JsonIgnore
     Set<BoxPrice> boxPrice;
 
     @ManyToMany(cascade = CascadeType.ALL)

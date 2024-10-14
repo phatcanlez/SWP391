@@ -53,6 +53,16 @@ public class LicenseService {
         }
     }
 
+    public List<License> viewLicenseByOrderId(String id){
+        List<License> license = licenseRepository.findLicenseByOrdersOrderID(id);
+        if(license == null){
+            throw new DuplicateException("Not found this license");
+        }
+        else{
+            return license;
+        }
+    }
+
     public License updateLicense(LicenseRequest license, long Id){
         License oldLicense = licenseRepository.findLicenseById(Id);
         if(oldLicense == null){

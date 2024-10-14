@@ -25,8 +25,7 @@ public class OrdersDetailAPI {
 
         @GetMapping("/api/orders-detail")
         public ResponseEntity getAllOrdersDetail() {
-                List<OrderDetail> list = orderDetailService.getAllOrdersDetail();
-                return ResponseEntity.ok(list);
+                return ResponseEntity.ok(orderDetailService.getAllOrdersDetail());
         }
 
         @GetMapping("/api/orders-detail/{id}")

@@ -47,4 +47,13 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(list);
     }
 
+    @PutMapping("/api/account")
+    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest account, String id) {
+        return ResponseEntity.ok(authenticationService.updateAccount(id, account));
+    }
+
+    @GetMapping("/api/account/{id}")
+    public ResponseEntity getAccountById(@PathVariable String id) {
+        return ResponseEntity.ok(authenticationService.getAccountById(id));
+    }
 }

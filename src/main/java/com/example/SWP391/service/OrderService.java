@@ -5,6 +5,7 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
+import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.AccountRepository;
@@ -37,6 +38,9 @@ public class OrderService {
     @Autowired
     PaymentRepository paymentRepository;
 
+    @Autowired
+    OrderDetailService orderDetailService;
+
     public List<OrderResponse> getAllOrders() {
         List<Orders> list = orderRepository.findAll();
         return list.stream().map(order -> {
@@ -62,7 +66,12 @@ public class OrderService {
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
             paymentRepository.save(payment);
-            orderRepository.save(newOrder);
+            newOrder = orderRepository.save(newOrder);
+            OrderDetailRequest orderDetail = modelMapper.map(order, OrderDetailRequest.class);
+            orderDetail.setOrderID(newOrder.getOrderID());
+            orderDetail.setShipMethodId(order.getShipMethod());
+            orderDetail.setExtraServiceId(order.getExtraService());
+            orderDetailService.createOrderDetail(orderDetail);
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
             return orderResponse;

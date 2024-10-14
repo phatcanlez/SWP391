@@ -21,7 +21,7 @@ public class OrdersAPI {
         private OrderService orderService;
 
         @PostMapping("/api/orders")
-        public ResponseEntity createLicense(@Valid @RequestBody OrderRequest orders) {
+        public ResponseEntity createOrder(@Valid @RequestBody OrderRequest orders) {
                 return ResponseEntity.ok(orderService.createOrder(orders));
         }
 
