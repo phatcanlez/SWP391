@@ -30,14 +30,18 @@ public class LicenseAPI {
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/api/licence/{id}")
-    public ResponseEntity getLicenseById(@PathVariable long id) {
-        License license = licenseService.viewEmployeeById(id);
+    @GetMapping("/api/licence/id")
+    public ResponseEntity getLicenseById(@RequestParam long id) {
+        License license = licenseService.viewLicenseById(id);
         return ResponseEntity.ok(license);
     }
 
+    @GetMapping("/api/licence/order-id")
+    public ResponseEntity getLicenseByOrderId(@RequestParam String id) {
+        return ResponseEntity.ok(licenseService.viewLicenseByOrderId(id));
+    }
 
-    @PutMapping("/api/licence-update")
+    @PutMapping("/api/licence")
     public ResponseEntity updateLicense(@RequestBody @Valid LicenseRequest license, long id) {
         return ResponseEntity.ok(licenseService.updateLicense(license, id));
     }

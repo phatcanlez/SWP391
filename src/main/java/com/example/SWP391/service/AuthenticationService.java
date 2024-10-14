@@ -6,8 +6,6 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
-import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
-import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -83,6 +80,7 @@ public class AuthenticationService implements UserDetailsService {
     public AccountResponse login(LoginRequest loginRequest) {
         log.info("login service");
         try {
+
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword())); //kh có thì catch exception
@@ -144,29 +142,26 @@ public class AuthenticationService implements UserDetailsService {
         return accountRepository.findByUsername(username);
     }
 
-    public void forgotPassword(ForgotPasswordRequest forgotPassword){
-        Account account = accountRepository.findAccountByEmail(forgotPassword.getEmail());
-        if(account == null){
-            throw new NotFoundException("Account not found");
+    public Account updateAccount(String id, UpdateAccountRequest updatedAccount) {
+        try {
+            return accountRepository.findById(id).map(account -> {
+                account.setName(updatedAccount.getName());
+                account.setEmail(updatedAccount.getEmail());
+                account.setAvatar(updatedAccount.getAvatar());
+                account.setStatus(updatedAccount.isStatus());
+                account.setPhoneNumber(updatedAccount.getPhoneNumber());
+                account.setAddress(updatedAccount.getAddress());
+                account.setPassword(passwordEncoder.encode(updatedAccount.getPassword()));
+                return accountRepository.save(account);
+            }).orElseThrow(() -> new RuntimeException("Account not found with id " + id));
+        } catch (Exception e) {
+            throw new DuplicateException(e.getMessage());
         }
-        else{
-            EmailDetail emailDetail = new EmailDetail();
-            emailDetail.setReceiver(account);
-            emailDetail.setSubject("Reset Your Password");
-            emailDetail.setLink("https://www.google.com/?token=" + tokenService.generateToken(account));
-            emailService.sendEmail(emailDetail);
-        }
+
     }
 
-    public void resetPassword(ResetPasswordRequest request){
-        Account account = getCurrentAccount();
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
-        accountRepository.save(account);
-    }
-
-    public Account getCurrentAccount(){
-        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return accountRepository.findAccountById(account.getId());
+    public Account getAccountById(String id) {
+        return accountRepository.findAccountById(id);
     }
 }
 

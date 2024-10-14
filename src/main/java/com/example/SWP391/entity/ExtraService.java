@@ -11,6 +11,10 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,8 +33,8 @@ public class ExtraService {
     @Min(value = 0,message = "Price must positive number")
     float price;
 
-    @OneToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
     @JsonIgnore
-    List<OrderDetail> orderDetail = new ArrayList<>();
+    Set<OrderDetail> orderDetails;
 
 }

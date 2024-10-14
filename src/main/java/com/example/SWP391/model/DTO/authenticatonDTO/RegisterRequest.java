@@ -22,15 +22,13 @@ public class RegisterRequest {
 
     String avatar;
 
+    String address;
+
     @NotBlank(message = "Password is required")
     String password;
 
-    @NotBlank(message = "Confirm password is required")
-    String confirmPassword;
-
     @Email(message = "Email not valid")
     @NotBlank(message = "Email is required")
-    @Column(unique = true)
     String email;
 
     @Pattern(regexp = "STAFF|MANAGER|CUSTOMER", message = "Role must be STAFF, MANAGER, or CUSTOMER")

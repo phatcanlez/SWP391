@@ -20,8 +20,8 @@ public class PriceListDistance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long priceListId;
 
-    @NotBlank(message = "Distance is required")
-    String distance;
+    @Min(value = 0, message = "Distance must be positive number")
+    int distance;
 
     @Min(value = 0, message = "Price must be positive number")
     float price;
