@@ -6,6 +6,8 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
+import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
+import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -139,6 +142,31 @@ public class AuthenticationService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository.findByUsername(username);
+    }
+
+    public void forgotPassword(ForgotPasswordRequest forgotPassword){
+        Account account = accountRepository.findAccountByEmail(forgotPassword.getEmail());
+        if(account == null){
+            throw new NotFoundException("Account not found");
+        }
+        else{
+            EmailDetail emailDetail = new EmailDetail();
+            emailDetail.setReceiver(account);
+            emailDetail.setSubject("Reset Your Password");
+            emailDetail.setLink("https://www.google.com/?token=" + tokenService.generateToken(account));
+            emailService.sendEmail(emailDetail);
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request){
+        Account account = getCurrentAccount();
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        accountRepository.save(account);
+    }
+
+    public Account getCurrentAccount(){
+        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return accountRepository.findAccountById(account.getId());
     }
 }
 

@@ -25,9 +25,8 @@ public class OrdersAPI {
         }
 
         @GetMapping("/api/orders")
-        public ResponseEntity getAllOrders() {
-                List<Orders> list = orderService.getAllOrders();
-                return ResponseEntity.ok(list);
+        public ResponseEntity getAllOrders(@RequestParam int page, @RequestParam(defaultValue = "5") int size) {
+                return ResponseEntity.ok(orderService.getAllOrder(page, size));
         }
 
         @GetMapping("/api/orders/{id}")

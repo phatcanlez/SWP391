@@ -2,6 +2,8 @@ package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.Account;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
+import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
+import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -48,6 +50,18 @@ public class AuthenticationAPI {
     public ResponseEntity getAllAccounts() {
         List<Account> list = authenticationService.getAllAccounts();
         return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/api/forgot-password")
+    public ResponseEntity forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
+        authenticationService.forgotPassword(forgotPasswordRequest);
+        return ResponseEntity.ok("Email sent");
+    }
+
+    @PostMapping("/api/reset-password")
+    public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+        return ResponseEntity.ok("Password reset successfully");
     }
 
 }

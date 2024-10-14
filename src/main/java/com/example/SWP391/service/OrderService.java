@@ -5,6 +5,7 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
+import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.AccountRepository;
@@ -15,6 +16,8 @@ import com.example.SWP391.util.DateConversionUtil;
 import com.mysql.cj.util.TimeUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -56,6 +59,7 @@ public class OrderService {
             status.setEmpId("");
             newOrder.getStatus().add(status);
             Payment payment = new Payment();
+            payment.setTypeOfPay("BANKING");
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
 
@@ -78,9 +82,14 @@ public class OrderService {
         }
     }
 
-    public List<Orders> getAllOrder() {
-        List<Orders> list = orderRepository.findAll();
-        return list;
+    public OrdersReponsePage getAllOrder(int page, int size) {
+        Page ordersPage = orderRepository.findAll(PageRequest.of(page, size));
+        OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
+        ordersReponsePage.setContent(ordersPage.getContent());
+        ordersReponsePage.setPageNumbers(ordersPage.getNumber());
+        ordersReponsePage.setTotalElements(ordersPage.getNumberOfElements());
+        ordersReponsePage.setTotalPages(ordersPage.getTotalPages());
+        return ordersReponsePage;
     }
 
 

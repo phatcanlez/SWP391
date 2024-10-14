@@ -68,6 +68,7 @@ public class Orders {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JsonIgnore
     Account account;
 
     @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
