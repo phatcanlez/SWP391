@@ -23,6 +23,8 @@ import AllOrder, {
   ProcessingOrder,
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
+import StaffProfile from "./pages/staff/profile";
+import FAQ from "./components/faq";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -124,6 +126,14 @@ function App() {
         {
           path: "view/:id",
           element: <OrderDetail />,
+        },
+        {
+          path: "profile",
+          element: <StaffProfile />,
+        },
+        {
+          path: "FAQ",
+          element: <FAQ />,
         },
       ],
     },

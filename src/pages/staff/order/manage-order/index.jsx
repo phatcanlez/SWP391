@@ -1,3 +1,4 @@
+import {  useSelector } from "react-redux";
 import StaffOrder from "../../../../components/staff/order-template";
 
 function AllOrder() {
@@ -9,9 +10,12 @@ function AllOrder() {
 }
 
 function ProcessingOrder() {
+  const user = useSelector((store) => store);
   return (
     <div>
-      <StaffOrder path={"/orders"} />
+      <StaffOrder
+        path={`/orders/status-emp?status=APPROVED&empId=${user.user.id}`}
+      />
     </div>
   );
 }
@@ -19,7 +23,6 @@ function ProcessingOrder() {
 function WaitingOrder() {
   return (
     <div>
-      
       <StaffOrder path={"/orders/status?status=WAITING"} />
     </div>
   );

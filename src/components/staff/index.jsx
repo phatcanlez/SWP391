@@ -3,7 +3,7 @@ import { Link, Outlet } from "react-router-dom";
 const { Content, Sider } = Layout;
 import logo from "../../img/logolayout.png";
 import "../staff/index.css";
-import { MenuOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, CommentOutlined, MenuOutlined, QuestionCircleOutlined, UserOutlined } from "@ant-design/icons";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -17,6 +17,10 @@ const items = [
     getItem("Waiting", "waiting-order"),
     getItem("Processing", "processing-order"),
   ]),
+  getItem("Order History", "history", <ClockCircleOutlined />,),
+  getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
+  getItem("Support", "support", <CommentOutlined />),
+  getItem("My Profile", "profile", <UserOutlined />),
 ];
 
 const Staff = () => {
