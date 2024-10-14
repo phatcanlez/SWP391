@@ -38,4 +38,9 @@ public class ExceptionHandlerClass {
         error.put("Error", ex.getMessage());
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AuthenticateException.class)
+    public ResponseEntity authenticateException(Exception ex) {
+        return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
