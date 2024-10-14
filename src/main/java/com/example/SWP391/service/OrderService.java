@@ -5,7 +5,7 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
-import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
+import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.AccountRepository;
@@ -13,15 +13,12 @@ import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
-import com.mysql.cj.util.TimeUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,9 +38,16 @@ public class OrderService {
     @Autowired
     PaymentRepository paymentRepository;
 
-    public List<Orders> getAllOrders() {
+    @Autowired
+    OrderDetailService orderDetailService;
+
+    public List<OrderResponse> getAllOrders() {
         List<Orders> list = orderRepository.findAll();
-        return list;
+        return list.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            return orderResponse;
+        }).toList();
     }
 
     public OrderResponse createOrder(OrderRequest order) {
@@ -59,14 +63,18 @@ public class OrderService {
             status.setEmpId("");
             newOrder.getStatus().add(status);
             Payment payment = new Payment();
-            payment.setTypeOfPay("BANKING");
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
-
             paymentRepository.save(payment);
-
-            orderRepository.save(newOrder);
-            return modelMapper.map(newOrder, OrderResponse.class);
+            newOrder = orderRepository.save(newOrder);
+            OrderDetailRequest orderDetail = modelMapper.map(order, OrderDetailRequest.class);
+            orderDetail.setOrderID(newOrder.getOrderID());
+            orderDetail.setShipMethodId(order.getShipMethod());
+            orderDetail.setExtraServiceId(order.getExtraService());
+            orderDetailService.createOrderDetail(orderDetail);
+            OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
+            orderResponse.setStatus(newOrder.getStatus().getLast());
+            return orderResponse;
         } catch (Exception e) {
             e.printStackTrace();
             throw new DuplicateException("Unexpected error!");
@@ -81,18 +89,6 @@ public class OrderService {
             return order;
         }
     }
-
-    public OrdersReponsePage getAllOrder(int page, int size) {
-        Page ordersPage = orderRepository.findAll(PageRequest.of(page, size));
-        OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
-        ordersReponsePage.setContent(ordersPage.getContent());
-        ordersReponsePage.setPageNumbers(ordersPage.getNumber());
-        ordersReponsePage.setTotalElements(ordersPage.getNumberOfElements());
-        ordersReponsePage.setTotalPages(ordersPage.getTotalPages());
-        return ordersReponsePage;
-    }
-
-
 
     public Orders updateOrder (OrderRequest order,String id){
         Orders existingOrder = orderRepository.findByorderID(id);
@@ -109,6 +105,63 @@ public class OrderService {
             return orderRepository.save(existingOrder);
         } catch (Exception e) {
             throw new DuplicateException("Unexpected error!");
+        }
+    }
+
+    public List<OrderResponse> viewOrderByStatus(String status) {
+        try {
+            StatusInfo statusInfo = StatusInfo.valueOf(status);
+            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+            List<Orders> list = new ArrayList<>();
+            for (Status s : statuses) {
+                Orders orders = s.getOrders();
+                if (orders.getStatus().getLast().getStatusInfo() == statusInfo) {
+                    list.add(orders);
+                }
+            }
+            return list.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                return orderResponse;
+            }).toList();
+        } catch (Exception e) {
+            throw new NotFoundException("Error");
+        }
+    }
+
+    public List<OrderResponse> viewOrderByStatusAndEmpId(String status, String empId) {
+        try {
+            StatusInfo statusInfo = StatusInfo.valueOf(status);
+            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+            List<Orders> list = new ArrayList<>();
+            for (Status s : statuses) {
+                Orders orders = s.getOrders();
+                if (orders.getStatus().getLast().getStatusInfo() == statusInfo
+                        && orders.getStatus().getLast().getEmpId().equals(empId)) {
+                    list.add(orders);
+                }
+            }
+            return list.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                return orderResponse;
+            }).toList();
+        } catch (Exception e) {
+            throw new NotFoundException("Error");
+        }
+    }
+
+    public List<OrderResponse> viewOrderByAccount(String username) {
+        try {
+            Account account = accountRepository.findByUsername(username);
+            List<Orders> list = orderRepository.findByAccount(account);
+            return list.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                return orderResponse;
+            }).toList();
+        } catch (Exception e) {
+            throw new NotFoundException("Error");
         }
     }
 }

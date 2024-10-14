@@ -41,6 +41,8 @@ public class Orders {
 
     String note;
 
+    String image;
+
     @NotBlank(message = "Phone number of receiver is required")
     @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
     String reciverPhoneNumber;
@@ -66,11 +68,11 @@ public class Orders {
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL)
     List<Feedback> feedbacks = new ArrayList<>();
 
+    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
+    OrderDetail orderDetail;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @JsonIgnore
     Account account;
-
-    @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
-    OrderDetail orderDetail;
 }

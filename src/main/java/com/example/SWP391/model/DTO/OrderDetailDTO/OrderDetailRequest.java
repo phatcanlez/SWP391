@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class OrderDetailRequest {
@@ -24,10 +25,19 @@ public class OrderDetailRequest {
     @Min(value = 0, message = "kilometer must be positive number")
     float kilometer;
 
-    @NotBlank(message = "Ship method is required")
-    String shipMethodId;
+    @Min(value = 0, message = "total weight must be positive number")
+    double totalWeight;
 
-    List<ExtraService> extraServices;
+    @Min(value = 0, message = "quantity must be positive number")
+    int quantity;
+
+    @NotBlank(message = "Order type is required")
+    String type;
+
+    @Min(value = 0, message = "shipMethodId must be positive number")
+    long shipMethodId;
+
+    Set<Long> extraServiceId;
 
     @NotBlank(message = "Order ID is required")
     String orderID;

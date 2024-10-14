@@ -8,6 +8,7 @@ import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,16 +53,25 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(list);
     }
 
-    @PostMapping("/api/forgot-password")
-    public ResponseEntity forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
-        authenticationService.forgotPassword(forgotPasswordRequest);
-        return ResponseEntity.ok("Email sent");
+    @PutMapping("/api/account")
+    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest account, String id) {
+        return ResponseEntity.ok(authenticationService.updateAccount(id, account));
     }
 
-    @PostMapping("/api/reset-password")
-    public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest request) {
-        authenticationService.resetPassword(request);
-        return ResponseEntity.ok("Password reset successfully");
+    @GetMapping("/api/account/{id}")
+    public ResponseEntity getAccountById(@PathVariable String id) {
+        return ResponseEntity.ok(authenticationService.getAccountById(id));
     }
+//    @PostMapping("/api/forgot-password")
+//    public ResponseEntity forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
+//        authenticationService.forgotPassword(forgotPasswordRequest);
+//        return ResponseEntity.ok("Email sent");
+//    }
+//
+//    @PostMapping("/api/reset-password")
+//    public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest request) {
+//        authenticationService.resetPassword(request);
+//        return ResponseEntity.ok("Password reset successfully");
+//    }
 
 }
