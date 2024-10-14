@@ -105,7 +105,32 @@ public class OrderService {
             List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
-                list.add(s.getOrders());
+                Orders orders = s.getOrders();
+                if (orders.getStatus().getLast().getStatusInfo() == statusInfo) {
+                    list.add(orders);
+                }
+            }
+            return list.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                return orderResponse;
+            }).toList();
+        } catch (Exception e) {
+            throw new NotFoundException("Error");
+        }
+    }
+
+    public List<OrderResponse> viewOrderByStatusAndEmpId(String status, String empId) {
+        try {
+            StatusInfo statusInfo = StatusInfo.valueOf(status);
+            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+            List<Orders> list = new ArrayList<>();
+            for (Status s : statuses) {
+                Orders orders = s.getOrders();
+                if (orders.getStatus().getLast().getStatusInfo() == statusInfo
+                        && orders.getStatus().getLast().getEmpId().equals(empId)) {
+                    list.add(orders);
+                }
             }
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
