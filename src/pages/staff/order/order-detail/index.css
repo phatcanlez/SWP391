@@ -1,0 +1,29 @@
+
+.time-section {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-around;
+
+    .border {
+        width: 0%;
+        border-color: rgb(222 222 222);
+    }
+}
+.bg-w{
+    background-color: #ffff;
+    padding: 30px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.title{
+    margin-bottom: 15px;
+}
+.send-section{
+    display: flex;
+    justify-content: space-around;
+
+    .item{
+        display: flex;
+        gap: 30px;
+    }
+}
