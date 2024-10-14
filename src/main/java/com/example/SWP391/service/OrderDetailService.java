@@ -6,6 +6,7 @@ import com.example.SWP391.entity.OrderDetail;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
+import com.example.SWP391.model.Enum.OrderType;
 import com.example.SWP391.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +62,14 @@ public class OrderDetailService {
             }
             newOrder.setBoxPrice(boxPrices);
             Set<ExtraService> extraServices = new HashSet<>();
-            for (long extraService : orderDetail.getExtraServiceId()) {
-                extraServices.add(extraServiceRepository.findExtraServiceByExtraServiceId(extraService));
+
+            if (newOrder.getExtraService() == null){
+            }else {
+                for (long extraService : orderDetail.getExtraServiceId()) {
+                    extraServices.add(extraServiceRepository.findExtraServiceByExtraServiceId(extraService));
+                }
             }
             newOrder.setExtraService(extraServices);
-
 
             return orderDetailRepository.save(newOrder);
         } catch (Exception e) {
@@ -75,7 +79,7 @@ public class OrderDetailService {
     }
 
         public OrderDetail viewOrderDetailById(String id) {
-            OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdDetailId(id);
+            OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(id);
             if (orderDetail == null) {
                 throw new NotFoundException("Not found this order");
             } else {
@@ -85,7 +89,7 @@ public class OrderDetailService {
 
 
     public OrderDetail updateOrderDetail(OrderDetailRequest orderDetail, String id) {
-        OrderDetail existingOrder = orderDetailRepository.findOrderDetailByOrdDetailId(id);
+        OrderDetail existingOrder = orderDetailRepository.findOrderDetailByOrdersOrderID(id);
         if (existingOrder == null) {
             throw new NotFoundException("Not found!");
         }
@@ -95,19 +99,23 @@ public class OrderDetailService {
             existingOrder.setMediumBox(orderDetail.getMediumBox());
             existingOrder.setLargeBox(orderDetail.getLargeBox());
             existingOrder.setExtraLargeBox(orderDetail.getExtraLargeBox());
+            existingOrder.setTotalWeight(orderDetail.getTotalWeight());
+            existingOrder.setQuantity(orderDetail.getQuantity());
+            existingOrder.setType(OrderType.valueOf(orderDetail.getType()));
 
             List<BoxPrice> boxPrice = boxPriceRepository.findAll();
             Set<BoxPrice> boxPrices = new HashSet<>();
-            for (BoxPrice box : boxPrice) {
-                if (orderDetail.getSmallBox() > 0) {
-                    boxPrices.add(box);
-                } else if (orderDetail.getMediumBox() > 0) {
-                    boxPrices.add(box);
-                } else if (orderDetail.getLargeBox() > 0) {
-                    boxPrices.add(box);
-                } else if (orderDetail.getExtraLargeBox() > 0) {
-                    boxPrices.add(box);
-                }
+            if (orderDetail.getSmallBox() > 0) {
+                boxPrices.add(boxPrice.get(0));
+            }
+            if (orderDetail.getMediumBox() > 0) {
+                boxPrices.add(boxPrice.get(1));
+            }
+            if (orderDetail.getLargeBox() > 0) {
+                boxPrices.add(boxPrice.get(2));
+            }
+            if (orderDetail.getExtraLargeBox() > 0) {
+                boxPrices.add(boxPrice.get(3));
             }
             existingOrder.setBoxPrice(boxPrices);
 
