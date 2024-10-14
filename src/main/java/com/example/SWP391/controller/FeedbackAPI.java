@@ -1,8 +1,8 @@
 package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.Feedback;
-import com.example.SWP391.model.DTO.FeedbackDTO.FeedbackRequest;
-import com.example.SWP391.model.DTO.FeedbackDTO.FeedbackResponse;
+import com.example.SWP391.model.DTO.feedbackDTO.FeedbackRequest;
+import com.example.SWP391.model.DTO.feedbackDTO.FeedbackResponse;
 import com.example.SWP391.service.FeedbackService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,8 @@ public class FeedbackAPI {
     private FeedbackService feedbackService;
 
     @PostMapping("/api/feedback")
-    public ResponseEntity createFeedback(@Valid @RequestBody FeedbackRequest feedback) {
-        FeedbackResponse newFeedback = feedbackService.createFeedback(feedback);
-        return ResponseEntity.ok(newFeedback);
+    public ResponseEntity createFeedback(@Valid @RequestBody FeedbackRequest feedbackRequest) {
+        return ResponseEntity.ok(feedbackService.createFeedback(feedbackRequest));
     }
 
     @GetMapping("/api/feedback")

@@ -1,6 +1,7 @@
 package com.example.SWP391.entity;
 
 import com.example.SWP391.model.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,6 @@ public class Account implements UserDetails {
     String username;
 
     @Email(message = "Email not valid or have been used")
-    @Column(unique = true)
     String email;
 
     String avatar;
@@ -48,6 +48,8 @@ public class Account implements UserDetails {
 
     @Pattern(regexp = "^$|\\d{10}", message = "Invalid phone number!")
     String phoneNumber;
+
+    String address;
 
     @NotBlank(message = "Password can not be blank")
     @Size(min = 6, message = "Password must more than 6 letter")

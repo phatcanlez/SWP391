@@ -6,9 +6,9 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
-import com.example.SWP391.model.DTO.authenticatonDTO.TokenService;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AuthenticationService implements UserDetailsService {
 
@@ -77,6 +78,7 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public AccountResponse login(LoginRequest loginRequest) {
+        log.info("login service");
         try {
 
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -124,6 +126,7 @@ public class AuthenticationService implements UserDetailsService {
 
         } catch (Exception e) {
             //error => throw new exception
+            e.printStackTrace();
             throw new NotFoundException("Email or Password is invalid!!");
         }
     }
@@ -137,6 +140,28 @@ public class AuthenticationService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository.findByUsername(username);
+    }
+
+    public Account updateAccount(String id, UpdateAccountRequest updatedAccount) {
+        try {
+            return accountRepository.findById(id).map(account -> {
+                account.setName(updatedAccount.getName());
+                account.setEmail(updatedAccount.getEmail());
+                account.setAvatar(updatedAccount.getAvatar());
+                account.setStatus(updatedAccount.isStatus());
+                account.setPhoneNumber(updatedAccount.getPhoneNumber());
+                account.setAddress(updatedAccount.getAddress());
+                account.setPassword(passwordEncoder.encode(updatedAccount.getPassword()));
+                return accountRepository.save(account);
+            }).orElseThrow(() -> new RuntimeException("Account not found with id " + id));
+        } catch (Exception e) {
+            throw new DuplicateException(e.getMessage());
+        }
+
+    }
+
+    public Account getAccountById(String id) {
+        return accountRepository.findAccountById(id);
     }
 }
 
