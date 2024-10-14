@@ -1,29 +1,112 @@
-
-.time-section {
-    margin-top: 30px;
-    display: flex;
-    justify-content: space-around;
-
+.order-detail {
     .border {
         width: 0%;
         border-color: rgb(222 222 222);
     }
-}
-.bg-w{
-    background-color: #ffff;
-    padding: 30px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-.title{
-    margin-bottom: 15px;
-}
-.send-section{
-    display: flex;
-    justify-content: space-around;
 
-    .item{
+    .bg-w {
+
+        p {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 30px;
+        }
+
+        h5 {
+            font-size: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        h6 {
+            color: #838383;
+            font-size: 16px;
+            font-weight: 550;
+            text-align: left;
+            margin-bottom: 20px;
+
+        }
+    }
+
+    .time-section {
+        margin-top: 25px;
         display: flex;
-        gap: 30px;
+        justify-content: space-around;
+
+
+    }
+
+    .title {
+        margin-bottom: 15px;
+        font-size: 22px !important;
+        font-weight: 600;
+        padding-left: 25px;
+    }
+
+    .send-section {
+        display: flex;
+        justify-content: space-around;
+
+        .item {
+            display: flex;
+            gap: 30px;
+        }
+
+        .color {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+    }
+
+    .detail {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .box {
+        margin: 20px 0px 40px 0px;
+        display: flex;
+        justify-content: space-around;
+
+        .box__item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+    }
+
+    .border-width {
+        border: solid rgb(222 222 222) 1px;
+        width: 100%;
+        height: 0%;
+        margin-bottom: 25px;
+    }
+
+    .s-method {
+        margin-bottom: 50px;
+
+        .item {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 cột có kích thước bằng nhau */
+            /* Khoảng cách giữa các ô */
+            justify-items: center;
+            gap: 60px;
+            padding-bottom: 15px;
+        }
+
+        .item-cnt {
+            p {
+                font-size: 15px;
+            }
+        }
+
+
     }
 }
