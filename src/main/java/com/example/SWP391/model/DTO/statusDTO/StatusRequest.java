@@ -7,12 +7,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class StatusRequest {
 
-    @Enumerated(EnumType.STRING)
-    StatusInfo statusInfo;
+    String description;
+
+    @NotBlank(message = "Employee ID is required")
+    String empId;
+
+    String statusInfo;
 
     @NotBlank(message = "OrderID is required")
-    String orderID;
+    String order;
 }

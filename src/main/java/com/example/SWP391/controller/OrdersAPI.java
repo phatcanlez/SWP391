@@ -42,6 +42,11 @@ public class OrdersAPI {
                 return ResponseEntity.ok(orderService.viewOrderByStatus(status));
         }
 
+        @GetMapping("/api/orders/status-emp")
+        public ResponseEntity getOrderByStatusAndEmpId(@RequestParam String status, String empId) {
+                return ResponseEntity.ok(orderService.viewOrderByStatusAndEmpId(status, empId));
+        }
+
         @GetMapping("/api/orders/account")
         public ResponseEntity getOrderByAccount(@RequestParam String username) {
                 return ResponseEntity.ok(orderService.viewOrderByAccount(username));

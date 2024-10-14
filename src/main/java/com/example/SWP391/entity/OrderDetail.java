@@ -1,5 +1,6 @@
 package com.example.SWP391.entity;
 
+import com.example.SWP391.model.Enum.OrderType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -8,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -37,8 +36,17 @@ public class OrderDetail {
     @Min(value = 0, message = "kilometer must be positive number")
     float kilometer;
 
-    @OneToOne
-    @JoinColumn(name = "ship_method_id", referencedColumnName = "shipMethodId")
+    @Min(value = 0, message = "total weight must be positive number")
+    double totalWeight;
+
+    @Min(value = 0, message = "quantity must be positive number")
+    int quantity;
+
+    @Enumerated(EnumType.STRING)
+    OrderType type;
+
+    @ManyToOne
+    @JoinColumn(name = "ship_method_id")
     @JsonIgnore
     ShipMethod shipMethod;
 

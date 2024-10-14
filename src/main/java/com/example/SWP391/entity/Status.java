@@ -31,8 +31,6 @@ public class Status {
     @Enumerated(EnumType.STRING)
     StatusInfo statusInfo;
 
-    String employId;
-
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonIgnore
