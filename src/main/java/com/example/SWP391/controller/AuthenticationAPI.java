@@ -62,16 +62,17 @@ public class AuthenticationAPI {
     public ResponseEntity getAccountById(@PathVariable String id) {
         return ResponseEntity.ok(authenticationService.getAccountById(id));
     }
-//    @PostMapping("/api/forgot-password")
-//    public ResponseEntity forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
-//        authenticationService.forgotPassword(forgotPasswordRequest);
-//        return ResponseEntity.ok("Email sent");
-//    }
-//
-//    @PostMapping("/api/reset-password")
-//    public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest request) {
-//        authenticationService.resetPassword(request);
-//        return ResponseEntity.ok("Password reset successfully");
-//    }
+
+    @PostMapping("/api/forgot-password")
+    public ResponseEntity forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
+        authenticationService.forgotPassword(forgotPasswordRequest);
+        return ResponseEntity.ok("Email sent");
+    }
+
+    @PostMapping("/api/reset-password")
+    public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+        return ResponseEntity.ok("Password reset successfully");
+    }
 
 }
