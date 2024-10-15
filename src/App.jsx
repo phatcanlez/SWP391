@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import CustomerService from "./components/customer-service";
 import CreateOrder from "./pages/customer/order/create-order";
-import DeliveryMethod from "./pages/customer/order/delivery-method";
 import Account from "./pages/customer/account";
 
 function App() {
@@ -83,10 +82,7 @@ function App() {
           path: "order",
           element: <CreateOrder />,
         },
-        {
-          path: "delivery-method",
-          element: <DeliveryMethod />,
-        },
+        
       ],
     },
 
