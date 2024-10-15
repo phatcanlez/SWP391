@@ -1,4 +1,4 @@
-package com.example.SWP391.model.DTO.ExtraServiceDTO;
+package com.example.SWP391.model.DTO.extraServiceDTO;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;

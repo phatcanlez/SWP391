@@ -43,7 +43,7 @@ public class OrderRequest {
     @Min(value = 0, message = "Total price must be positive number")
     double totalPrice;
 
-    @NotBlank(message = "Username is required")
+    @NotBlank
     String Username;
 
     @Min(value = 0, message = "box must be positive number")

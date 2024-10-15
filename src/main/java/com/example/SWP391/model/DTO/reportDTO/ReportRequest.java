@@ -11,7 +11,4 @@ public class ReportRequest {
 
     @NotBlank(message = "Content is required")
     String reportContent;
-
-    @NotBlank(message = "Order ID is required")
-    String orderID;
 }

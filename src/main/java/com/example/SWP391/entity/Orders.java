@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,5 +73,6 @@ public class Orders {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JsonIgnore
     Account account;
 }
