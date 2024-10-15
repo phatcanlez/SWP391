@@ -4,6 +4,7 @@
         border-color: rgb(222 222 222);
     }
 
+
     .bg-w {
 
         p {
@@ -109,4 +110,32 @@
 
 
     }
+
+    .btn-wrap {
+        display: flex;
+        justify-content: space-evenly;
+        margin-top: 40px;
+        margin-bottom: 40px;
+
+        .btn {
+            color: white;
+            font-weight: 500;
+            width: 150px;
+            height: 50px;
+            font-size: 18px;
+
+
+        }
+
+        .btn-a {
+            background: #e25822;
+
+        }
+
+        .btn-r {
+            background: black !important;
+        }
+    }
+
+
 }

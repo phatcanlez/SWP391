@@ -19,6 +19,16 @@ function ProcessingOrder() {
     </div>
   );
 }
+function FailOrder() {
+  const user = useSelector((store) => store);
+  return (
+    <div>
+      <StaffOrder
+        path={`/orders/status-emp?status=FAIL&empId=${user.user.id}`}
+      />
+    </div>
+  );
+}
 
 function WaitingOrder() {
   return (
@@ -31,3 +41,5 @@ function WaitingOrder() {
 export default AllOrder;
 export { ProcessingOrder };
 export { WaitingOrder };
+export { FailOrder };
+
