@@ -1,7 +1,6 @@
 package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.ExtraService;
-import com.example.SWP391.model.DTO.ExtraServiceDTO.ExtraServiceRequest;
 import com.example.SWP391.service.ExtraServiceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ public class ExtraServiceAPI {
         private ExtraServiceService extraServiceService;
 
         @PostMapping("/api/extraservice")
-        public ResponseEntity createExtraService(@Valid @RequestBody ExtraServiceRequest extraService) {
+        public ResponseEntity createExtraService(@Valid @RequestBody ExtraService extraService) {
             return ResponseEntity.ok(extraServiceService.createExtraService(extraService));
         }
 
@@ -30,13 +29,13 @@ public class ExtraServiceAPI {
         }
 
         @GetMapping("/api/extraservice/{id}")
-        public ResponseEntity getExtraServiceById(@PathVariable long id) {
+        public ResponseEntity getLicenseById(@PathVariable long id) {
             return ResponseEntity.ok(extraServiceService.viewExtraServiceById(id));
         }
 
 
         @PutMapping("/api/extraservice")
-        public ResponseEntity updateLicense(@RequestBody @Valid ExtraServiceRequest extraService, long id) {
+        public ResponseEntity updateLicense(@RequestBody @Valid ExtraService extraService, long id) {
             return ResponseEntity.ok(extraServiceService.updateExtraService(extraService, id));
         }
 

@@ -1,4 +1,4 @@
-package com.example.SWP391.model.DTO.FeedbackDTO;
+package com.example.SWP391.model.DTO.feedbackDTO;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.example.SWP391.model.DTO.BoxPriceDTO;
+package com.example.SWP391.model.DTO.boxPriceDTO;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

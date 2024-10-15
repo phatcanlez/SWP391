@@ -2,11 +2,10 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.BoxPrice;
+
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
-import com.example.SWP391.model.DTO.BoxPriceDTO.BoxPriceRequest;
 import com.example.SWP391.repository.BoxPriceRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,18 +16,15 @@ public class BoxPriceService {
     @Autowired
     private BoxPriceRepository boxPriceRepository;
 
-    @Autowired
-    ModelMapper modelMapper;
 
     public List<BoxPrice> getAllBoxPrice(){
         List<BoxPrice> list = boxPriceRepository.findAll();
         return list;
     }
 
-    public BoxPrice createBoxPrice(BoxPriceRequest boxPrice){
+    public BoxPrice createBoxPrice(BoxPrice boxPrice){
         try{
-            BoxPrice newBoxPrice = modelMapper.map(boxPrice, BoxPrice.class);
-            return boxPriceRepository.save(newBoxPrice);
+            return boxPriceRepository.save(boxPrice);
         }catch (Exception e){
             throw new DuplicateException("This box price is existed!!");
         }

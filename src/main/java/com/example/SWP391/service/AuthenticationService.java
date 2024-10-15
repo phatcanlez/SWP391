@@ -6,13 +6,17 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
+import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
+import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AuthenticationService implements UserDetailsService {
 
@@ -57,6 +62,7 @@ public class AuthenticationService implements UserDetailsService {
             emailDetail.setReceiver(newAccount);
             emailDetail.setSubject("Welcome to KOIKICHI");
             emailDetail.setLink("https://www.google.com.vn/");
+            emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
             emailService.sendEmail(emailDetail);
             return modelMapper.map(newAccount, AccountResponse.class);
         } catch (Exception e) {
@@ -76,6 +82,7 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public AccountResponse login(LoginRequest loginRequest) {
+        log.info("login service");
         try {
 
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -110,7 +117,9 @@ public class AuthenticationService implements UserDetailsService {
                 EmailDetail emailDetail = new EmailDetail();
                 emailDetail.setReceiver(account);
                 emailDetail.setSubject("Welcome to KOIKICHI");
+                emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
                 emailDetail.setLink("https://www.google.com.vn/");
+                emailDetail.setButton("Go to home page");
                 emailService.sendEmail(emailDetail);
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -123,6 +132,7 @@ public class AuthenticationService implements UserDetailsService {
 
         } catch (Exception e) {
             //error => throw new exception
+            e.printStackTrace();
             throw new NotFoundException("Email or Password is invalid!!");
         }
     }
@@ -158,6 +168,33 @@ public class AuthenticationService implements UserDetailsService {
 
     public Account getAccountById(String id) {
         return accountRepository.findAccountById(id);
+    }
+
+    public Account getCurrentAccount(){
+        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return accountRepository.findAccountById(account.getId());
+    }
+
+    public void forgotPassword(ForgotPasswordRequest forgotPassword){
+        Account account = accountRepository.findAccountByEmail(forgotPassword.getEmail());
+        if(account == null){
+            throw new NotFoundException("Account not found");
+        }
+        else{
+            EmailDetail emailDetail = new EmailDetail();
+            emailDetail.setReceiver(account);
+            emailDetail.setSubject("Reset Your Password");
+            emailDetail.setLink("https://www.google.com/?token=" + tokenService.generateToken(account));
+            emailDetail.setContent("Click the link below to reset your password, if you did not request a password reset, please ignore this email.");
+            emailDetail.setButton("Reset Password");
+            emailService.sendEmail(emailDetail);
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request){
+        Account account = getCurrentAccount();
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        accountRepository.save(account);
     }
 }
 
