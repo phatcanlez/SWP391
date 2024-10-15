@@ -1,30 +1,22 @@
-
-import {
-    Button,
-    Form,
-    Input,
-    InputNumber,
-} from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import api from '../../../../config/axios';
-
+import { Button, Form, Input, InputNumber } from "antd";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import api from "../../../../config/axios";
 
 const { TextArea } = Input;
 
 function FormDisabledDemo() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleSubmit = async (values) => {
-        console.log(values);
-        try {
-            const response = await api.post("orders", values);
-            console.log(response)
-            toast.success("Successfull")
-            navigate("/customer-service/delivery-method")
-        } catch (err) {
-            toast.error(err.response.data)
-        }
+  const handleSubmit = async (values) => {
+    console.log(values);
+    try {
+      const response = await api.post("orders", values);
+      console.log(response);
+      toast.success("Successfull");
+      navigate("/customer-service/delivery-method");
+    } catch (err) {
+      toast.error(err.response.data);
     }
 
     return (
