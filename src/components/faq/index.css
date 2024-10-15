@@ -1,0 +1,12 @@
+.faq {
+    .ant-btn-default {
+        width: 100%;
+        height: fit-content;
+        white-space: normal;
+    }
+
+    .ant-dropdown-menu-title-content {
+        white-space: normal;
+        width: 100px;
+    }
+}

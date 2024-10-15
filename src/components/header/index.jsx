@@ -1,13 +1,9 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "./index.css";
-import { Button } from "antd";
-import { CaretDownOutlined } from "@ant-design/icons";
+import { Avatar, Button } from "antd";
+import { CaretDownOutlined, UserOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import logo from "../../img/logo.png";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/features/userSlice";
-
 function Header() {
   const items = [
     {
@@ -19,10 +15,6 @@ function Header() {
       key: "1",
     },
   ];
-
-  const user = useSelector((store) => store.user);
-
-  const dispatch = useDispatch();
 
   return (
     <header className="header">
@@ -65,19 +57,19 @@ function Header() {
         </ul>
       </nav>
       <div>
-        {
-          user == null ? (
-            <Link to={"/login"}>
-              <Button className="header__btn">LOGIN</Button>
-            </Link>
-          ) : (
-            <Link to={"/login"}>
-              <Button className="header__btn" onClick={() => dispatch(logout())}>LOGOUT</Button>
-            </Link>
-          )
-        }
+        {/* {user == null ? ( */}
+          <Link to={"/login"}>
+            <Button className="header__btn">LOGIN</Button>
+          </Link>
+        {/* ) : (
+          // <Link to={"/login"}>
+          //   <Button className="header__btn" onClick={() => dispatch(logout())}>LOGOUT</Button>
+          // </Link>
+          // <Link>
+          //   <Avatar size={50} icon={<UserOutlined />} />
+          // </Link>
+        )} */}
       </div>
-
     </header>
   );
 }

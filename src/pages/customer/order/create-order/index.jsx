@@ -1,3 +1,4 @@
+
 import {
     Button,
     Form,
@@ -7,13 +8,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../../../config/axios';
-import { Steps } from 'antd';
-import { useState, useRef, useEffect } from 'react';
-import Address from './address';
-import Fish from './fish';
-import Price from './price';
-import Payment from './payment';
-
 
 
 const { TextArea } = Input;
@@ -21,20 +15,16 @@ const { Step } = Steps;
 
 function FormDisabledDemo() {
     const navigate = useNavigate();
-    const [form] = Form.useForm();
-    const [current, setCurrent] = useState(0);
-    const formRefs = useRef([]);
-    const [stepData, setStepData] = useState({});
 
     const handleSubmit = async (values) => {
         console.log(values);
         try {
             const response = await api.post("orders", values);
             console.log(response)
-            toast.success("Successful")
+            toast.success("Successfull")
             navigate("/customer-service/delivery-method")
         } catch (err) {
-            toast.error(err.response?.data || "An error occurred")
+            toast.error(err.response.data)
         }
     }
 

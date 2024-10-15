@@ -6,7 +6,6 @@ import { googleProvider } from "../../config/firebase";
 import "../login/login.css";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
-import captcha from "../../img/captcha.png";
 import gg from "../../img/gg.png";
 import fb from "../../img/fb.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -17,8 +16,9 @@ import { login } from "../../redux/features/userSlice";
 
 function LoginPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleLoginGoogle = () => {
+  const handleLoginGoogle = async () => {
     const auth = getAuth();
     signInWithPopup(auth, googleProvider)
       .then(async (result) => {
@@ -28,26 +28,28 @@ function LoginPage() {
         // The signed-in user info.
         const user = result.user;
         console.log(user);
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
 
         try {
-          const value = {
-            displayName: user.displayName,
+          const response = await api.post("login/google", {
+            name: user.displayName,
+            avatar: user.photoURL,
             email: user.email,
-            photoURL: user.photoURL,
             uid: user.uid,
-          };
-          const response = await api.post("login/google", value);
-
-          console.log(response);
+          });
           toast.success("Successful");
+          dispatch(login(response.data));
+          const { role, token } = response.data;
+          localStorage.setItem("token", token);
+          console.log(response);
+          navigate("/customer-service");
         } catch (err) {
           toast.error(err.response.data);
         }
-        // IdP data available using getAdditionalUserInfo(result)
-        // ...
       })
+
       .catch((error) => {
-        console.log(error);
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -58,7 +60,6 @@ function LoginPage() {
         // ...
       });
   };
-  const navigate = useNavigate();
 
   const handleLogin = async (values) => {
     try {
@@ -70,6 +71,7 @@ function LoginPage() {
       localStorage.setItem("token", token);
 
       if (role === "MANAGER") navigate("/dashboard");
+      if (role === "STAFF") navigate("/staff/order");
       if (role === "CUSTOMER") navigate("/customer-service");
     } catch (err) {
       toast.error(err.response.data);
@@ -109,12 +111,6 @@ function LoginPage() {
           <Link to="/login"> </Link>
 
           <div className="submit">
-            {/* <div className='captcha'>
-                            <div><Checkbox><span className='robot'>I am not a robot</span> <br />
-                                <span className='reCaptcha'>reCaptcha</span></Checkbox>;</div>
-                            <div><img src={captcha} alt="" /></div>
-                        </div> */}
-
             <div className="submit__btn">
               <Button className="btn btn__login" htmlType="submit">
                 Login
