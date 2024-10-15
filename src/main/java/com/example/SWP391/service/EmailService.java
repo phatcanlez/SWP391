@@ -25,8 +25,9 @@ public class EmailService {
         try {
              Context context = new Context();
              context.setVariable("name",emailDetail.getReceiver().getEmail());
-             context.setVariable("button","Go to home page");
+             context.setVariable("button",emailDetail.getButton());
              context.setVariable("link",emailDetail.getLink());
+             context.setVariable("content",emailDetail.getContent());
             context.setVariable("subject",emailDetail.getSubject());
 
              String template = templateEngine.process("welcome-template", context);
