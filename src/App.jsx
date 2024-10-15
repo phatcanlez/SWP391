@@ -20,6 +20,7 @@ import DeliveryMethod from "./pages/customer/order/delivery-method";
 import Staff from "./components/staff";
 import OrderDetail from "./pages/staff/order/order-detail";
 import AllOrder, {
+  FailOrder,
   ProcessingOrder,
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
@@ -120,8 +121,12 @@ function App() {
           element: <WaitingOrder />,
         },
         {
-          path: "processing-order",
+          path: "approved-order",
           element: <ProcessingOrder />,
+        },
+        {
+          path: "rejected-order",
+          element: <FailOrder />,
         },
         {
           path: "view/:id",

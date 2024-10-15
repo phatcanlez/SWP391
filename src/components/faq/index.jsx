@@ -16,7 +16,7 @@ function FAQ() {
   ];
 
   return (
-    <div>
+    <div className="faq">
       <Dropdown
         menu={{
           items,

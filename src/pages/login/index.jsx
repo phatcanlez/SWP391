@@ -6,7 +6,6 @@ import { googleProvider } from "../../config/firebase";
 import "../login/login.css";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
-import captcha from "../../img/captcha.png";
 import gg from "../../img/gg.png";
 import fb from "../../img/fb.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -72,7 +71,7 @@ function LoginPage() {
       localStorage.setItem("token", token);
 
       if (role === "MANAGER") navigate("/dashboard");
-      if (role === "STAFF") navigate("/staff");
+      if (role === "STAFF") navigate("/staff/order");
       if (role === "CUSTOMER") navigate("/customer-service");
     } catch (err) {
       toast.error(err.response.data);
@@ -112,12 +111,6 @@ function LoginPage() {
           <Link to="/login"> </Link>
 
           <div className="submit">
-            {/* <div className='captcha'>
-                            <div><Checkbox><span className='robot'>I am not a robot</span> <br />
-                                <span className='reCaptcha'>reCaptcha</span></Checkbox>;</div>
-                            <div><img src={captcha} alt="" /></div>
-                        </div> */}
-
             <div className="submit__btn">
               <Button className="btn btn__login" htmlType="submit">
                 Login
