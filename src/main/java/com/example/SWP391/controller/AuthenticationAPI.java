@@ -8,7 +8,6 @@ import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +22,7 @@ public class AuthenticationAPI {
 
     @Autowired
     AuthenticationService authenticationService;   //tương tự new package: AuthenticationService a = new AuthenticationService();
+
     @PostMapping("/api/register")
     public ResponseEntity register(@RequestBody @Valid RegisterRequest registerRequest) {
         //api nhận request và object từ FE, sau đó nhờ service xử lý, thông qua lớp authenticationService
@@ -54,8 +54,8 @@ public class AuthenticationAPI {
     }
 
     @PutMapping("/api/account")
-    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest account, String id) {
-        return ResponseEntity.ok(authenticationService.updateAccount(id, account));
+    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest updateAccountRequest, String id) {
+        return ResponseEntity.ok(authenticationService.updateAccount(id, updateAccountRequest));
     }
 
     @GetMapping("/api/account/{id}")
