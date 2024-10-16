@@ -20,6 +20,13 @@ import DeliveryMethod from "./pages/customer/order/delivery-method";
 import StaffOrder from "./pages/staff/order/manage-order";
 import Staff from "./components/staff";
 import OrderDetail from "./pages/staff/order/order-detail";
+import ManageUser from "./pages/admin/manage-user";
+import Box from "./pages/admin/manage-price/box";
+import ExtraService from "./pages/admin/manage-service/extraService";
+import PriceListWeight from "./pages/admin/manage-price/priceListWeight";
+import PriceListDistance from "./pages/admin/manage-price/priceListDistance";
+import Feedback from "./pages/admin/feedback";
+import Delivery from "./pages/admin/manage-service/delivery";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -65,8 +72,32 @@ function App() {
       ),
       children: [
         {
-          path: "order",
-          element: <ManageOrder />,
+          path: "manage-user",
+          element: <ManageUser />,
+        },
+        {
+          path: "extra-service",
+          element: <ExtraService />,
+        },
+        {
+          path: "delivery",
+          element: <Delivery />,
+        },
+        {
+          path: "price-list-weight",
+          element: <PriceListWeight />,
+        },
+        {
+          path: "price-list-distance",
+          element: <PriceListDistance />,
+        },
+        {
+          path: "box",
+          element: <Box />,
+        },
+        {
+          path: "feedback",
+          element: <Feedback />,
         },
       ],
     },

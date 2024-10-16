@@ -466,9 +466,9 @@ function EstimatedShippingFee() {
                 specialLargeBoxesQuantity ===
               0
                 ? "_ boxes"
-                : Math.floor(noOfBoxesLarge) +
+                : mediumBoxNeeded +
                   " small boxes , " +
-                  mediumBoxNeeded +
+                  Math.floor(noOfBoxesLarge) +
                   " medium boxes, " +
                   extraLargeBoxesQuantity +
                   " large boxes and " +
