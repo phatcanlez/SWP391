@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { PieChartOutlined } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Layout, Menu, theme } from "antd";
 import { Link, Outlet } from "react-router-dom";
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
 import logo from "../../img/logolayout.png";
+import "../staff/index.css";
+import { MenuOutlined } from "@ant-design/icons";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -12,14 +12,21 @@ function getItem(label, key, icon, children) {
     label: <Link to={`/staff/${key}`}>{label}</Link>,
   };
 }
-const items = [getItem("All Orders", "order", <PieChartOutlined />)];
+const items = [
+  getItem("All Orders", "order", <MenuOutlined />, [
+    getItem("Waiting", "waiting-order"),
+    getItem("Processing", "processing-order"),
+  ]),
+];
 
 const Staff = () => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { borderRadiusLG },
   } = theme.useToken();
   return (
+    
     <Layout
+      className="sider"
       style={{
         minHeight: "100vh",
       }}
@@ -29,15 +36,10 @@ const Staff = () => {
           <img src={logo} alt="" />
         </div>
         <h4>KOIKICHI</h4>
-        <div className="demo-logo-vertical" />
-        <Menu
-          theme="dark"
-          defaultSelectedKeys={["1"]}
-          mode="inline"
-          items={items}
-        />
+        <Menu mode="inline" items={items} />
       </Sider>
       <Layout>
+        
         <Content
           style={{
             margin: "0 16px",
@@ -47,7 +49,6 @@ const Staff = () => {
             style={{
               padding: 24,
               minHeight: 360,
-              background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
           >

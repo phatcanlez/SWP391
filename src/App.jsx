@@ -1,8 +1,8 @@
-import React from "react";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
+  useLocation,
 } from "react-router-dom";
 import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
@@ -17,7 +17,6 @@ import { toast } from "react-toastify";
 import CustomerService from "./components/customer-service";
 import CreateOrder from "./pages/customer/order/create-order";
 import DeliveryMethod from "./pages/customer/order/delivery-method";
-import StaffOrder from "./pages/staff/order/manage-order";
 import Staff from "./components/staff";
 import OrderDetail from "./pages/staff/order/order-detail";
 import ManageUser from "./pages/admin/manage-user";
@@ -27,12 +26,28 @@ import PriceListWeight from "./pages/admin/manage-price/priceListWeight";
 import PriceListDistance from "./pages/admin/manage-price/priceListDistance";
 import Feedback from "./pages/admin/feedback";
 import Delivery from "./pages/admin/manage-service/delivery";
+import AllOrder, {
+  ProcessingOrder,
+  WaitingOrder,
+} from "./pages/staff/order/manage-order";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
+    const location = useLocation();
     const user = useSelector((store) => store);
     console.log(user);
-    if (user && user.user?.role === "MANAGER") {
+    if (
+      user &&
+      user.user?.role === "MANAGER" &&
+      location.pathname.startsWith("/dashboard")
+    ) {
+      return children;
+    }
+    if (
+      user &&
+      user.user?.role === "STAFF" &&
+      location.pathname.startsWith("/staff")
+    ) {
       return children;
     } else toast.error("You are not allow");
     return <Navigate to={"/"} />;
@@ -119,11 +134,23 @@ function App() {
 
     {
       path: "staff",
-      element: <Staff />,
+      element: (
+        <ProtectRouteAuth>
+          <Staff />
+        </ProtectRouteAuth>
+      ),
       children: [
         {
           path: "order",
-          element: <StaffOrder />,
+          element: <AllOrder />,
+        },
+        {
+          path: "waiting-order",
+          element: <WaitingOrder />,
+        },
+        {
+          path: "processing-order",
+          element: <ProcessingOrder />,
         },
         {
           path: "view/:id",
