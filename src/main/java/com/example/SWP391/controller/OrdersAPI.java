@@ -5,6 +5,7 @@ import com.example.SWP391.entity.Status;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +16,22 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class OrdersAPI {
 
         @Autowired
         private OrderService orderService;
 
         @PostMapping("/api/orders")
-        public ResponseEntity createOrder(@Valid @RequestBody OrderRequest orders) {
+        public ResponseEntity createOrder(@Valid @RequestBody OrderRequest orders) throws Exception {
                 return ResponseEntity.ok(orderService.createOrder(orders));
         }
 
+
+
         @GetMapping("/api/orders")
-        public ResponseEntity getAllOrders() {
-                List<OrderResponse> list = orderService.getAllOrders();
-                return ResponseEntity.ok(list);
+        public ResponseEntity getAllOrders(@RequestParam int page, @RequestParam int size) {
+                return ResponseEntity.ok(orderService.getAllOrders(page,size));
         }
 
         @GetMapping("/api/orders/{id}")

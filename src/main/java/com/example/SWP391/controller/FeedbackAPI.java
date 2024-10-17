@@ -4,6 +4,7 @@ import com.example.SWP391.entity.Feedback;
 import com.example.SWP391.model.DTO.feedbackDTO.FeedbackRequest;
 import com.example.SWP391.model.DTO.feedbackDTO.FeedbackResponse;
 import com.example.SWP391.service.FeedbackService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class FeedbackAPI {
     @Autowired
     private FeedbackService feedbackService;

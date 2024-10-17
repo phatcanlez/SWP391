@@ -13,6 +13,8 @@ import com.example.SWP391.repository.AccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -137,9 +139,15 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
-    public List<Account> getAllAccounts() {
-        List<Account> list = accountRepository.findAll(); // findAll() lấy tất cả account trong DB
-        return list;
+    public AccountResponsePage getAllAccounts(int page, int size) {
+        Page<Account> accounts = accountRepository.findAll(PageRequest.of(page,size)); // findAll() lấy tất cả account trong DB
+        AccountResponsePage accountResponsePage = new AccountResponsePage();
+        accountResponsePage.setContent(accounts.getContent());
+        accountResponsePage.setPageNumbers(accounts.getNumber());
+        accountResponsePage.setNummberOfElement(accounts.getNumberOfElements());
+        accountResponsePage.setTotalElements(accounts.getTotalElements());
+        accountResponsePage.setTotalPages(accounts.getTotalPages());
+        return accountResponsePage;
     }
 
 
