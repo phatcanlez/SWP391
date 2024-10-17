@@ -12,6 +12,21 @@ function ManageUser() {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      filters: [
+        {
+          text: "CUSTOMER",
+          value: "CUSTOMER",
+        },
+        {
+          text: "STAFF",
+          value: "STAFF",
+        },
+        {
+          text: "ADMIN",
+          value: "ADMIN",
+        },
+      ],
+      onFilter: (value, record) => record.role.indexOf(value) === 0,
     },
     {
       title: "Name",

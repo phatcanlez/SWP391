@@ -62,6 +62,13 @@ function CRUDTemplate({ columns, formItems, path, field }) {
       };
       delete values.boxId;
     }
+    if (field === "extraservice") {
+      values = {
+        id: values.extraServiceId,
+        ...values,
+      };
+      delete values.extraServiceId;
+    }
 
     console.log(values);
     try {
@@ -100,7 +107,11 @@ function CRUDTemplate({ columns, formItems, path, field }) {
 
   return (
     <div>
-      <Button onClick={() => setShowModal(true)}>Add</Button>
+      {field === "box" || field === "order" ? (
+        ""
+      ) : (
+        <Button onClick={() => setShowModal(true)}>Add</Button>
+      )}
       <Table
         dataSource={data}
         columns={tableColumn}

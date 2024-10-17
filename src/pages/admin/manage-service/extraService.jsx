@@ -1,3 +1,4 @@
+import { Form, Input } from "antd";
 import CRUDTemplate from "../../../components/crud-template";
 
 function ExtraService() {
@@ -19,13 +20,40 @@ function ExtraService() {
     },
   ];
 
-  const formItems = <></>;
+  const formItems = (
+    <>
+      <Form.Item name="extraServiceId" hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="nameService"
+        label="Service Name"
+        rules={[{ required: true }]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="price"
+        label="Price"
+        rules={[
+          {
+            pattern: new RegExp(/^[0-9]+$/),
+            required: true,
+            message: "Wrong number",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+    </>
+  );
 
   return (
     <CRUDTemplate
       columns={columns}
       formItems={formItems}
       path="/extraservice"
+      field="extraservice"
     />
   );
 }

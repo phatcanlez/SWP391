@@ -30,17 +30,8 @@ function Box() {
       <Form.Item name="boxId" hidden>
         <Input />
       </Form.Item>
-      <Form.Item
-        name="boxSize"
-        label="Size"
-        rules={[
-          {
-            required: true,
-            message: "please input boxSize!",
-          },
-        ]}
-      >
-        <Input />
+      <Form.Item name="boxSize" label="Size">
+        <Input readOnly />
       </Form.Item>
       <Form.Item
         name="price"

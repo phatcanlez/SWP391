@@ -10,25 +10,37 @@ function getItem(label, key, icon, children) {
     key,
     icon,
     children,
-    label: <Link to={`/dashboard/${key === "sub" ? "" : key}`}>{label}</Link>,
+    label: (
+      <Link
+        to={`/dashboard/${
+          key === "sub1" || key === "sub2" || key === "sub3" ? "" : key
+        }`}
+      >
+        {label}
+      </Link>
+    ),
   };
 }
 const items = [
-  getItem("Dashboard", "", <PieChartOutlined />),
-  getItem("Manage Order", "", <PieChartOutlined />),
+  getItem("Dashboard", "report", <PieChartOutlined />),
+  getItem("Manage Order", "sub1", <PieChartOutlined />, [
+    getItem("Order", "order"),
+    getItem("Order Details", "order-details"),
+  ]),
   getItem("Manage User", "manage-user", <PieChartOutlined />),
-  getItem("Manage Service", "sub", <PieChartOutlined />, [
+  getItem("Manage Service", "sub2", <PieChartOutlined />, [
     getItem("Extra service", "extra-service"),
     getItem("Delivery", "delivery"),
   ]),
-  getItem("Manage Price", "", <PieChartOutlined />, [
+  getItem("Manage Price", "sub3", <PieChartOutlined />, [
     getItem("Price list weight", "price-list-weight"),
     getItem("Price list distance", "price-list-distance"),
     getItem("Box price", "box"),
+    getItem("Payment", "payment"),
   ]),
   getItem("Feedback", "feedback", <PieChartOutlined />),
-  getItem("FAQs", "", <PieChartOutlined />),
-  getItem("Customer Care", "", <PieChartOutlined />),
+  getItem("FAQs", "/", <PieChartOutlined />),
+  getItem("Customer Care", "//", <PieChartOutlined />),
 ];
 
 function Dashboard() {

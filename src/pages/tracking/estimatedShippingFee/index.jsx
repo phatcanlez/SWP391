@@ -43,6 +43,19 @@ function EstimatedShippingFee() {
     wardName: "",
   });
 
+  const [shipMethods, setShipMethods] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.api.get("shipmethod");
+        setShipMethods(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -456,7 +469,7 @@ function EstimatedShippingFee() {
         </div>
         <div className="estimatedshippingfee__products__right">
           <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
+            <img src="https://www.kodamakoifarm.com/wp-content/themes/kkf/calculator/box.svg" />
             <div>Number of box you need</div>
             <div id="boxesNeeded"></div>
             <div style={{ color: "red", paddingTop: 50 }}>
@@ -477,7 +490,7 @@ function EstimatedShippingFee() {
             </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
+            <img src="https://www.kodamakoifarm.com/wp-content/themes/kkf/calculator/airplane.svg" />
             <div>Total shipping cost</div>
             <div style={{ color: "red", paddingTop: 50 }}>
               {shippingCost === 0 ? "$-" : "~$ " + shippingCost}
@@ -489,6 +502,18 @@ function EstimatedShippingFee() {
               You can purchase this many more koi, of each size, to fit in the
               same size box shown above.
             </div>
+            <Select
+              style={{ width: 200 }}
+              value={""}
+              onChange={""}
+              placeholder="Select"
+            >
+              {shipMethods.map((method) => (
+                <Option key={method.shipMethodId} value={method.shipMethodId}>
+                  {method.description}
+                </Option>
+              ))}
+            </Select>
           </div>
         </div>
       </div>
