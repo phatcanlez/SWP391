@@ -1,3 +1,4 @@
+
 import {
     Button,
     Form,
@@ -20,6 +21,7 @@ const { TextArea } = Input;
 const { Step } = Steps;
 
 function FormDisabledDemo() {
+
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [current, setCurrent] = useState(0);
@@ -36,6 +38,7 @@ function FormDisabledDemo() {
         } catch (err) {
             toast.error(err.response?.data || "An error occurred")
         }
+
     }
 
     const steps = [
@@ -157,5 +160,4 @@ function FormDisabledDemo() {
         </Form>
     );
 };
-
 export default FormDisabledDemo;
