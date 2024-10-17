@@ -47,7 +47,7 @@ public class FeedbackAPI {
     }
 
 
-    @PutMapping("/api/feedback/{id}")
+    @PutMapping("/api/feedback")
     public ResponseEntity updateFeedback(@RequestBody @Valid FeedbackUpdateRequest feedback) {
         return ResponseEntity.ok(feedbackService.updateFeedback(feedback));
     }

@@ -36,8 +36,8 @@ public class BoxPriceAPI {
         }
 
 
-        @PutMapping("/api/boxprice")
-        public ResponseEntity updateLicense(@RequestBody @Valid BoxPrice boxPrice, long id) {
+        @PutMapping("/api/boxprice/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid BoxPrice boxPrice,@PathVariable long id) {
             return ResponseEntity.ok(boxPriceService.updateBoxPrice(boxPrice, id));
         }
 

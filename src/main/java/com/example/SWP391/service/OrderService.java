@@ -55,6 +55,11 @@ public class OrderService {
         try {
             Orders newOrder = modelMapper.map(order, Orders.class);
             Account account = accountRepository.findByUsername(order.getUsername());
+
+            if (account == null) {
+                throw new NotFoundException("Account not found");
+            }
+
             newOrder.setAccount(account);
             Status status = new Status();
             status.setStatusInfo(StatusInfo.WAITING);
@@ -76,8 +81,12 @@ public class OrderService {
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
             return orderResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NotFoundException e) {
+
+
+            throw new NotFoundException(" Account not found");
+        }catch (Exception e) {
+
             throw new DuplicateException("Unexpected error!");
         }
     }
