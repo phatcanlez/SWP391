@@ -13,6 +13,7 @@ import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -129,14 +130,14 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatusAndEmpId(String status, String empId) {
+    public List<OrderResponse> viewOrderByStatusAndEmpId(StatusInfo status, String empId) {
         try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == statusInfo
+                if (orders.getStatus().getLast().getStatusInfo() == status
                         && orders.getStatus().getLast().getEmpId().equals(empId)) {
                     list.add(orders);
                 }
@@ -162,6 +163,19 @@ public class OrderService {
             }).toList();
         } catch (Exception e) {
             throw new NotFoundException("Error");
+        }
+    }
+
+    public void createOrdersFromJson(String jsonArray) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OrderRequest> orders = objectMapper.readValue(jsonArray, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderRequest.class));
+            for (OrderRequest order : orders) {
+                createOrder(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create orders from JSON array", e);
         }
     }
 }

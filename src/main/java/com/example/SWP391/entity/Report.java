@@ -28,6 +28,10 @@ public class Report {
     @NotBlank(message = "Content is required")
     String reportContent;
 
+    String employeeId;
+
+    String empReply;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonIgnore
