@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-public class Filter  extends OncePerRequestFilter  {
+public class Filter extends OncePerRequestFilter  {
     @Autowired
     TokenService tokenService;
 
@@ -37,7 +37,8 @@ public class Filter  extends OncePerRequestFilter  {
             "/swagger-resources/**",
             "/api/login",
             "/api/register",
-            "/api/forgot-password"
+            "/api/forgot-password",
+            "/api/login/google"
     );
 
     public boolean isPublicAPI(String uri){
@@ -54,11 +55,16 @@ public class Filter  extends OncePerRequestFilter  {
         //check xem api mà người dùng yêu cầu có phải là 1 public api hay không?(ai cũng dùng được)
 
         boolean isPublicAPI = isPublicAPI(request.getRequestURI());
+
+        String token1 = getToken(request);
+
+
         if(isPublicAPI){
             filterChain.doFilter(request,response);
         }
         else{
             String token = getToken(request);
+
             if(token == null){
                 //không đươc phép truy cập
                 resolver.resolveException(request, response, null, new AuthenticateException("Empty token"));

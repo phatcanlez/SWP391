@@ -3,6 +3,7 @@ package com.example.SWP391.controller;
 import com.example.SWP391.entity.License;
 import com.example.SWP391.model.DTO.License.DTO.LicenseRequest;
 import com.example.SWP391.service.LicenseService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class LicenseAPI {
 
     @Autowired
@@ -22,6 +24,16 @@ public class LicenseAPI {
     public ResponseEntity createLicense(@Valid @RequestBody LicenseRequest license) {
         License newLicense = licenseService.createLicense(license);
         return ResponseEntity.ok(newLicense);
+    }
+
+    @PostMapping("/api/license/create-from-json")
+    public ResponseEntity<String> createLicenseFromJson(@RequestBody String jsonString) {
+        try {
+            licenseService.createLicenseFromJson(jsonString);
+            return ResponseEntity.ok("License created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to create license from JSON string");
+        }
     }
 
     @GetMapping("/api/licence")

@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class FeedbackResponse {
-    private int feedbackId;
-    private int rating;
-    private String description;
-    private String feedbackDate;
-    private String orderID;
+     int feedbackId;
+     int rating;
+     String comment;
+     String time;
+     String orderID;
 }
