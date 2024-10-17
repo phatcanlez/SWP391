@@ -8,7 +8,6 @@ import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +22,7 @@ public class AuthenticationAPI {
 
     @Autowired
     AuthenticationService authenticationService;   //tương tự new package: AuthenticationService a = new AuthenticationService();
+
     @PostMapping("/api/register")
     public ResponseEntity register(@RequestBody @Valid RegisterRequest registerRequest) {
         //api nhận request và object từ FE, sau đó nhờ service xử lý, thông qua lớp authenticationService
@@ -53,9 +53,20 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(list);
     }
 
-    @PutMapping("/api/account")
-    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest account, String id) {
-        return ResponseEntity.ok(authenticationService.updateAccount(id, account));
+    @PostMapping("/api/account/create-from-json")
+    public ResponseEntity<String> createOrdersFromJson(@RequestBody String jsonArray) {
+        try {
+            authenticationService.createAccountsFromJson(jsonArray);
+            return ResponseEntity.ok("Orders created successfully");
+        } catch (Exception e) {
+
+            return ResponseEntity.status(500).body("Failed to create account from JSON array");
+        }
+    }
+
+    @PutMapping("/api/account/{id}")
+    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest updateAccountRequest, @PathVariable String id) {
+        return ResponseEntity.ok(authenticationService.updateAccount(id, updateAccountRequest));
     }
 
     @GetMapping("/api/account/{id}")

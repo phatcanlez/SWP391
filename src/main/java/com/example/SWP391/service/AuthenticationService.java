@@ -5,11 +5,13 @@ import com.example.SWP391.entity.Account;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.EmailDetail;
+import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
 import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
 import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +100,19 @@ public class AuthenticationService implements UserDetailsService {
             throw new NotFoundException("Email or Password is invalid!!");
         }
 
+    }
+
+    public void createAccountsFromJson(String jsonArray) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<RegisterRequest> login = objectMapper.readValue(jsonArray, objectMapper.getTypeFactory().constructCollectionType(List.class, RegisterRequest.class));
+            for (RegisterRequest acc : login) {
+                register(acc);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create Account from JSON array", e);
+        }
     }
 
     public AccountResponse loginGoogle(OAuth oAuth) {

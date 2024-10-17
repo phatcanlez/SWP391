@@ -3,6 +3,7 @@ package com.example.SWP391.controller;
 import com.example.SWP391.entity.Payment;
 import com.example.SWP391.model.DTO.paymentDTO.PaymentRequest;
 import com.example.SWP391.service.PaymentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class PaymentAPI {
 
         @Autowired
