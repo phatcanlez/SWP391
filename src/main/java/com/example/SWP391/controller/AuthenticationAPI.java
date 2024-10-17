@@ -53,8 +53,19 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(list);
     }
 
-    @PutMapping("/api/account")
-    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest updateAccountRequest, String id) {
+    @PostMapping("/api/account/create-from-json")
+    public ResponseEntity<String> createOrdersFromJson(@RequestBody String jsonArray) {
+        try {
+            authenticationService.createAccountsFromJson(jsonArray);
+            return ResponseEntity.ok("Orders created successfully");
+        } catch (Exception e) {
+
+            return ResponseEntity.status(500).body("Failed to create account from JSON array");
+        }
+    }
+
+    @PutMapping("/api/account/{id}")
+    public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest updateAccountRequest, @PathVariable String id) {
         return ResponseEntity.ok(authenticationService.updateAccount(id, updateAccountRequest));
     }
 

@@ -1,6 +1,5 @@
 package com.example.SWP391.model.DTO.OrderDTO;
 
-import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
