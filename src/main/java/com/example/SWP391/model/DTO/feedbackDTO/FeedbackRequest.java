@@ -13,7 +13,7 @@ public class FeedbackRequest {
     int rating;
 
     @Size(min = 0, max = 200, message = "Feedback must be between 0 and 200 characters")
-    String description;
+    String comment;
 
     @NotBlank(message = "Order ID is required")
     String orderID;

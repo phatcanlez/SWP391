@@ -32,8 +32,8 @@ public class StatusAPI {
         return ResponseEntity.ok(statusService.viewStatusById(id));
     }
 
-    @PutMapping("/api/status")
-    public ResponseEntity updateStatus(StatusRequest statusRequest, long Id) {
+    @PutMapping("/api/status/{id}")
+    public ResponseEntity updateStatus(StatusRequest statusRequest,@PathVariable long Id) {
         return ResponseEntity.ok(statusService.updateStatus(statusRequest, Id));
     }
 }

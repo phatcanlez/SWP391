@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class ReportRequest {
 
-    @NotBlank(message = "Status is required")
-    String status;
-
     @NotBlank(message = "Content is required")
     String reportContent;
+
+    @NotBlank(message = "Order ID is required")
+    String order;
 }

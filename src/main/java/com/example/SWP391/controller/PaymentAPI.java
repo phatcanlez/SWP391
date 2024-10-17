@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @RestController
@@ -39,6 +38,9 @@ public class PaymentAPI {
         }
 
 
+        @PutMapping("/api/payment/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest,@PathVariable long id) {
+            return ResponseEntity.ok(paymentService.updatePayment(paymentRequest, id));
         @PutMapping("/api/payment")
         public ResponseEntity updatePaymentUser(@RequestBody @Valid PaymentRequest paymentRequest) {
             return ResponseEntity.ok(paymentService.updatePayment(paymentRequest));

@@ -26,6 +26,16 @@ public class LicenseAPI {
         return ResponseEntity.ok(newLicense);
     }
 
+    @PostMapping("/api/license/create-from-json")
+    public ResponseEntity<String> createLicenseFromJson(@RequestBody String jsonString) {
+        try {
+            licenseService.createLicenseFromJson(jsonString);
+            return ResponseEntity.ok("License created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to create license from JSON string");
+        }
+    }
+
     @GetMapping("/api/licence")
     public ResponseEntity getAllLicense() {
         List<License> list = licenseService.getAllLicense();
@@ -43,8 +53,8 @@ public class LicenseAPI {
         return ResponseEntity.ok(licenseService.viewLicenseByOrderId(id));
     }
 
-    @PutMapping("/api/licence")
-    public ResponseEntity updateLicense(@RequestBody @Valid LicenseRequest license, long id) {
+    @PutMapping("/api/licence/{id}")
+    public ResponseEntity updateLicense(@RequestBody @Valid LicenseRequest license,@PathVariable long id) {
         return ResponseEntity.ok(licenseService.updateLicense(license, id));
     }
 

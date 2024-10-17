@@ -1,0 +1,63 @@
+.profile{
+    h6 {
+        font-size: 23px;
+        color: black;
+        text-align: start;
+    }
+
+    
+    p {
+        font-size: 20px;
+        color: #79747E;
+    }
+
+    .header__btn {
+        background-color: #E25822;
+        border-radius: 5px;
+        width: 141px  ;
+        height: 50px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
+        color: white;
+    
+    }
+}
+
+
+.avatar {
+    width: 120px;
+    height: 120px;
+}
+
+.head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+
+    h4 {
+        color: #e25822;
+    }
+
+
+}
+
+.border {
+    margin-top: 20px;
+}
+
+.information {
+    padding-left: 100px;
+    padding-right: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .item {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    
+}

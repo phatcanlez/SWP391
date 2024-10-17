@@ -2,13 +2,15 @@ package com.example.SWP391.service;
 
 
 import com.example.SWP391.entity.License;
+import com.example.SWP391.entity.Orders;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.License.DTO.LicenseRequest;
-import com.example.SWP391.model.Enum.OrderType;
+import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.repository.LicenseRepository;
 import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.util.DateConversionUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ public class LicenseService {
     private LicenseRepository licenseRepository;
 
     @Autowired
-    OrderRepository orderRepository;
+    private OrderRepository orderRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -40,6 +42,23 @@ public class LicenseService {
             return licenseRepository.save(newLicense);
         }catch (Exception e){
             throw new DuplicateException(e.getMessage());
+        }
+    }
+
+    public void createLicenseFromJson(String jsonString) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<LicenseRequest> list = objectMapper.readValue(jsonString, objectMapper.getTypeFactory().constructCollectionType(List.class, LicenseRequest.class));
+
+            for (LicenseRequest license : list) {
+                License newLicense = modelMapper.map(license, License.class);
+                newLicense.setOrders(orderRepository.findByorderID(license.getOrder()));
+                newLicense.setDate(DateConversionUtil.convertToDate(LocalDateTime.now()));
+                licenseRepository.save(newLicense);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create license from JSON string", e);
         }
     }
 

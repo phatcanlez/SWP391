@@ -14,22 +14,16 @@ import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 @Service
 public class OrderService {
@@ -67,10 +61,15 @@ public class OrderService {
         return ordersReponsePage;
     }
 
-    public Orders createOrder(OrderRequest order) {
+    public OrderResponse createOrder(OrderRequest order) {
         try {
             Orders newOrder = modelMapper.map(order, Orders.class);
             Account account = accountRepository.findByUsername(order.getUsername());
+
+            if (account == null) {
+                throw new NotFoundException("Account not found");
+            }
+
             newOrder.setAccount(account);
             Status status = new Status();
             status.setStatusInfo(StatusInfo.WAITING);
@@ -89,11 +88,15 @@ public class OrderService {
             orderDetail.setShipMethodId(order.getShipMethod());
             orderDetail.setExtraServiceId(order.getExtraService());
             orderDetailService.createOrderDetail(orderDetail);
-//            OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
-//            orderResponse.setStatus(newOrder.getStatus().getLast());
-            return newOrder;
-        } catch (Exception e) {
-            e.printStackTrace();
+            OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
+            orderResponse.setStatus(newOrder.getStatus().getLast());
+            return orderResponse;
+        } catch (NotFoundException e) {
+
+
+            throw new NotFoundException(" Account not found");
+        }catch (Exception e) {
+
             throw new DuplicateException("Unexpected error!");
         }
     }
@@ -146,14 +149,14 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatusAndEmpId(String status, String empId) {
+    public List<OrderResponse> viewOrderByStatusAndEmpId(StatusInfo status, String empId) {
         try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == statusInfo
+                if (orders.getStatus().getLast().getStatusInfo() == status
                         && orders.getStatus().getLast().getEmpId().equals(empId)) {
                     list.add(orders);
                 }
@@ -182,5 +185,17 @@ public class OrderService {
         }
     }
 
+    public void createOrdersFromJson(String jsonArray) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OrderRequest> orders = objectMapper.readValue(jsonArray, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderRequest.class));
+            for (OrderRequest order : orders) {
+                createOrder(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create orders from JSON array", e);
+        }
+    }
 }
 
