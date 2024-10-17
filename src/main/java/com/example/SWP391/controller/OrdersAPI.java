@@ -67,8 +67,8 @@ public class OrdersAPI {
                 return ResponseEntity.ok(orderService.viewOrderByAccount(username));
         }
 
-        @PutMapping("/api/orders")
-        public ResponseEntity updateLicense(@RequestBody @Valid OrderRequest order, String id) {
+        @PutMapping("/api/orders/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid OrderRequest order,@PathVariable String id) {
                 return ResponseEntity.ok(orderService.updateOrder(order, id));
         }
 

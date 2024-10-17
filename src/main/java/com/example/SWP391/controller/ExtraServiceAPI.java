@@ -36,8 +36,8 @@ public class ExtraServiceAPI {
         }
 
 
-        @PutMapping("/api/extraservice")
-        public ResponseEntity updateLicense(@RequestBody @Valid ExtraService extraService, long id) {
+        @PutMapping("/api/extraservice/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid ExtraService extraService,@PathVariable long id) {
             return ResponseEntity.ok(extraServiceService.updateExtraService(extraService, id));
         }
 

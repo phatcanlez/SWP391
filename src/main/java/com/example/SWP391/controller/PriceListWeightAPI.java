@@ -36,8 +36,8 @@ public class PriceListWeightAPI {
         }
 
 
-        @PutMapping("/api/pricelistweight")
-        public ResponseEntity updatePriceWeight(@RequestBody @Valid PriceListWeight priceListWeight, long id) {
+        @PutMapping("/api/pricelistweight/{id}")
+        public ResponseEntity updatePriceWeight(@RequestBody @Valid PriceListWeight priceListWeight,@PathVariable long id) {
             return ResponseEntity.ok(priceListWeightService.updatePriceWeight(priceListWeight, id));
         }
 
