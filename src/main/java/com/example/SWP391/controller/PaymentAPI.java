@@ -37,8 +37,8 @@ public class PaymentAPI {
         }
 
 
-        @PutMapping("/api/payment")
-        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest, long id) {
+        @PutMapping("/api/payment/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest,@PathVariable long id) {
             return ResponseEntity.ok(paymentService.updatePayment(paymentRequest, id));
         }
 

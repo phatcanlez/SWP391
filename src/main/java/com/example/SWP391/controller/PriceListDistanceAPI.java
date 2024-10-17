@@ -36,8 +36,8 @@ public class PriceListDistanceAPI {
         }
 
 
-        @PutMapping("/api/pricelistdistance")
-        public ResponseEntity updatePriceDistance(@RequestBody @Valid PriceListDistance priceListDistance, long id) {
+        @PutMapping("/api/pricelistdistance/{id}")
+        public ResponseEntity updatePriceDistance(@RequestBody @Valid PriceListDistance priceListDistance,@PathVariable long id) {
             return ResponseEntity.ok(priceListDistanceService.updatePriceDistance(priceListDistance, id));
         }
 
