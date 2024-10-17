@@ -16,7 +16,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import CustomerService from "./components/customer-service";
 import CreateOrder from "./pages/customer/order/create-order";
-import DeliveryMethod from "./pages/customer/order/delivery-method";
 import Staff from "./components/staff";
 import OrderDetail from "./pages/staff/order/order-detail";
 import AllOrder, {
@@ -26,6 +25,9 @@ import AllOrder, {
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
 import FAQ from "./components/faq";
+
+import Account from "./pages/customer/account";
+
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -94,13 +96,14 @@ function App() {
       element: <CustomerService />,
       children: [
         {
+          path: "account",
+          element: <Account />,
+        },
+        {
           path: "order",
           element: <CreateOrder />,
         },
-        {
-          path: "delivery-method",
-          element: <DeliveryMethod />,
-        },
+        
       ],
     },
 
