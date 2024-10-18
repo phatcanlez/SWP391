@@ -38,10 +38,9 @@ function OrderDetail() {
 
   useEffect(() => {
     if (id) {
-      fetchOrderDetail(id); // Fetch the order details by ID
+      fetchOrderDetail(id);
     }
   }, []);
-  // Trigger the effect when `id` changes
 
   /////////////////////////////
 
@@ -233,6 +232,9 @@ function OrderDetail() {
                   {order?.payment?.status}
                 </span>
               </p>
+
+
+              
             </div>
           </div>
         </div>
@@ -253,8 +255,10 @@ function OrderDetail() {
           </Button>
         </div>
       ) : (
-        <div>
-          <InProcess />
+        <div className="btn-wrap">
+          <Button className="btn btn-r" onClick={showModal}>
+            REJECT
+          </Button>
         </div>
       )}
       {status == "FAIL" ? (
@@ -269,7 +273,9 @@ function OrderDetail() {
           </Button>
         </div>
       ) : (
-        <div></div>
+        <div>
+          
+        </div>
       )}
 
       {/* <span>Price: {order.price}</span>            */}

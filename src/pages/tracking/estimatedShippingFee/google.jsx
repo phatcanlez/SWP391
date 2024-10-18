@@ -13,7 +13,7 @@ class App extends Component {
 
   componentDidMount() {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg`; // Load Google Maps API
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDmWSNu6hMOQAR5zovTt7meDWECV1uE6aU`; // Load Google Maps API
     script.async = true;
     script.defer = true;
     script.onload = () => {
