@@ -1,12 +1,22 @@
 .faq {
     .ant-btn-default {
         width: 100%;
-        height: fit-content;
+        height: 60px;
         white-space: normal;
+        margin: 10px 0px;
+        font-weight: 500;
+        font-size: 18px;
     }
 
-    .ant-dropdown-menu-title-content {
-        white-space: normal;
-        width: 100px;
+    h5 {
+        font-weight: 550;
+        padding: 20px;
+        color: #E25822;
     }
+}
+
+.ant-dropdown-menu {
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 1000px;
 }

@@ -8,7 +8,6 @@ import { Button, Form, Input, Modal } from "antd";
 import { useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useParams } from "react-router-dom";
-import InProcess from "../processing/process";
 
 function OrderDetail() {
   const { id } = useParams();
