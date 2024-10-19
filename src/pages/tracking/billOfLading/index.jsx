@@ -1,10 +1,10 @@
-import { Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import "./index.css";
 import ReCAPTCHA from "react-google-recaptcha";
 
 function BillOfLading() {
   const handleTracking = async (values) => {
-    const response = await values;
+    console.log(values);
   };
   return (
     <div className="billoflading">
@@ -14,11 +14,20 @@ function BillOfLading() {
           className="billoflading__tracking__form"
           onFinish={handleTracking}
         >
-          <Form.Item rules={[{ require: true, message: "Please input " }]}>
+          <Form.Item
+            name="orderId"
+            rules={[{ require: true, message: "Please input " }]}
+          >
             <Input placeholder="EX: 0123456789" />
           </Form.Item>
-          <ReCAPTCHA sitekey="6LduEFcqAAAAALROUg7Occw7kEn0vLV_CR59nZjX" />
-          <button type="submit">Tracking</button>
+          <Form.Item
+            rules={[{ require: true, message: "captcha not complete " }]}
+          >
+            <ReCAPTCHA sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_KEY} />
+          </Form.Item>
+          <Button className="billoflading__tracking__button" htmlType="submit">
+            Tracking
+          </Button>
         </Form>
       </div>
       <div className="billoflading__result">

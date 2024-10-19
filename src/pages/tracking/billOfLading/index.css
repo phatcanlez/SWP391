@@ -25,24 +25,19 @@
                 padding-left: 50px;
                 margin-bottom: 20px;
             }
-            button {
-                margin-top: 20px;
-                cursor: pointer;
-                background: rgba(226, 88, 34, 1);
-                border: none;
-                border-radius: 5px;
-                text-align: center;
-                font-size: 20px;
-                font-weight: 600;
-                line-height: 20px;
-                color: #fff;
-                width: 162px;
-                height: 49px;
-                top: 949px;
-                left: 173px;
-                gap: 0px;
-                opacity: 0px;
-            }
+        }
+        .billoflading__tracking__button {
+            margin-top: 20px;
+            cursor: pointer;
+            background: rgba(226, 88, 34, 1);
+            border-radius: 5px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 20px;
+            color: #fff;
+            width: 162px;
+            height: 49px;
         }
     }
     .billoflading__result {
