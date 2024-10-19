@@ -231,51 +231,31 @@ function OrderDetail() {
                   {order?.payment?.status}
                 </span>
               </p>
-
-
-              
             </div>
           </div>
         </div>
       </div>
 
-      {status == "WAITING" ? (
-        <div className="btn-wrap">
-          <Button className="btn btn-r" onClick={showModal}>
-            REJECT
-          </Button>
-          <Button
-            className="btn btn-a"
-            onClick={() => {
-              handleAddApprove();
-            }}
-          >
+      <div className="btn-wrap">
+        {status === "WAITING" && (
+          <>
+            <Button className="btn btn-r" onClick={showModal}>
+              REJECT
+            </Button>
+            <Button className="btn btn-a" onClick={handleAddApprove}>
+              APPROVE
+            </Button>
+          </>
+        )}
+
+        {status === "FAIL" && (
+          <Button className="btn btn-a" onClick={handleAddApprove}>
             APPROVE
           </Button>
-        </div>
-      ) : (
-        <div className="btn-wrap">
-          <Button className="btn btn-r" onClick={showModal}>
-            REJECT
-          </Button>
-        </div>
-      )}
-      {status == "FAIL" ? (
-        <div className="btn-wrap">
-          <Button
-            className="btn btn-a"
-            onClick={() => {
-              handleAddApprove();
-            }}
-          >
-            APPROVE
-          </Button>
-        </div>
-      ) : (
-        <div>
-          
-        </div>
-      )}
+        )}
+
+        {status !== "WAITING" && status !== "FAIL" && <div></div>}
+      </div>
 
       {/* <span>Price: {order.price}</span>            */}
 

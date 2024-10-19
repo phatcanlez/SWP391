@@ -21,6 +21,7 @@ import Staff from "./components/staff";
 import OrderDetail from "./pages/staff/order/order-detail";
 import AllOrder, {
   FailOrder,
+  History,
   ProcessingOrder,
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
@@ -131,6 +132,10 @@ function App() {
         {
           path: "view/:id",
           element: <OrderDetail />,
+        },
+        {
+          path: "history",
+          element: <History />,
         },
         {
           path: "profile",

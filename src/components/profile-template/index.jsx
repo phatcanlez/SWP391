@@ -13,9 +13,11 @@ function Profile() {
   const [checkForm] = Form.useForm();
   const user = useSelector((store) => store);
   console.log(user);
+
   const dispatch = useDispatch();
   const [showForm1, setShowForm1] = useState("fasle");
   const [showForm2, setShowForm2] = useState("fasle");
+  const [userValue, setUserValue] = useState([]);
 
   const toggleForm = () => {
     setShowForm1(!showForm1);
@@ -24,15 +26,6 @@ function Profile() {
   const toggleForm2 = () => {
     setShowForm2(!showForm2);
     if (!showForm2) setShowForm1(false);
-  };
-
-  const handleResetValue = async (value) => {
-    try {
-      value.status = user.user.status;
-      await api.put(`account/${user.user.id}`, value);
-    } catch (error) {
-      toast.error(error.response.data);
-    }
   };
 
   const checkPassword = async (values) => {
@@ -58,23 +51,34 @@ function Profile() {
   const fetchUserData = async () => {
     try {
       const response = await api.get(`account/${user.user.id}`);
-
-      const setValue = response.data;
+      console.log(response.data);
+      const value = response.data;
       form.setFieldsValue({
-        name: setValue.name,
-        username: user.user.username,
-        email: user.user.email,
-        phoneNumber: user.user.phoneNumber,
-        address: user.user.address,
+        name: value.name,
+        username: value.username,
+        email: value.email,
+        phoneNumber: value.phoneNumber,
+        address: value.address,
       });
+      setUserValue(value);
     } catch (error) {
       toast.error(error.data, "Không thể tải dữ liệu người dùng.");
     }
   };
+
   useEffect(() => {
     fetchUserData();
   }, []);
 
+  const handleResetValue = async (value) => {
+    try {
+      value.status = user.user.status;
+      await api.put(`account/${user.user.id}`, value);
+      fetchUserData();
+    } catch (error) {
+      toast.error(error.response.data);
+    }
+  };
   const [passwordForm] = Form.useForm();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -92,23 +96,23 @@ function Profile() {
     <div className="profile">
       <div className="head bg-w">
         <img className="avatar" src={userr} alt="" />
-        <h4>{user.user.name}</h4>
-        <p>{user.user.email}</p>
+        <h4>{userValue.name}</h4>
+        <p>{userValue.email}</p>
       </div>
       <h6>INFORMATION</h6>
       <div className="bg-w ">
         <div className="information">
           <div className="item">
             <p>User Name: </p>
-            <p>{user.user.username}</p>
+            <p>{userValue.username}</p>
           </div>
           <div className="item">
             <p>Phone Number: </p>
-            <p>{user.user.phoneNumber}</p>
+            <p>{userValue.phoneNumber}</p>
           </div>
           <div className="item">
             <p>Address: </p>
-            <p>{user.user.address}</p>
+            <p>{userValue.address}</p>
           </div>
         </div>
       </div>
