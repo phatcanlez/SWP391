@@ -1,3 +1,4 @@
+import { Form, Input } from "antd";
 import CRUDTemplate from "../../../components/crud-template";
 
 function Delivery() {
@@ -14,7 +15,20 @@ function Delivery() {
     },
   ];
 
-  const formItems = <></>;
+  const formItems = (
+    <>
+      <Form.Item name="shipMethodId" hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="description"
+        label="Description"
+        rules={[{ required: true }]}
+      >
+        <Input />
+      </Form.Item>
+    </>
+  );
 
   return (
     <CRUDTemplate columns={columns} formItems={formItems} path="/shipmethod" />

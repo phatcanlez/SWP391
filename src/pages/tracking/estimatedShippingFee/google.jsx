@@ -3,41 +3,65 @@ import { Component } from "react";
 class App extends Component {
   constructor(props) {
     super(props);
+    this.directionsService = null;
+    this.directionsRenderer = null;
     this.state = {
       distance: "",
       duration: "",
-      origin: "",
-      destination: "",
     };
   }
 
   componentDidMount() {
-    // No need to load a script for MapQuest, we will use fetch for API calls
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${
+      import.meta.env.VITE_GOOGLE_API_KEY
+    }`; // Load Google Maps API
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      this.initializeMap(); // Call a function to initialize your map
+    };
+    document.body.appendChild(script);
+  }
+
+  initializeMap() {
+    this.directionsService = new google.maps.DirectionsService(); // Now google is defined
+    this.directionsRenderer = new google.maps.DirectionsRenderer();
+    const center = { lat: 21.0285, lng: 105.8542 }; // Hà Nội, Việt Nam
+
+    const map = new google.maps.Map(document.getElementById("map"), {
+      center: center,
+      zoom: 12,
+    });
+    this.directionsRenderer.setMap(map); // Set the map for the directions renderer
+
+    // Example addresses
+    const origin =
+      "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000, Vietnam";
+    const destination = "Xã Má Lé, Huyện Đồng Văn, Tỉnh Hà Giang";
+    this.calculateDistance(origin, destination);
   }
 
   calculateDistance(origin, destination) {
-    const apiKey = "q2nZLaYsfNSKkjKB3ovJuaTnAwK3KX3i"; // Replace with your MapQuest API key
-    const requestUrl = `http://www.mapquestapi.com/directions/v2/route?key=${apiKey}&from=${encodeURIComponent(
-      origin
-    )}&to=${encodeURIComponent(destination)}`;
+    const request = {
+      origin: origin,
+      destination: destination,
+      travelMode: google.maps.TravelMode.DRIVING,
+    };
 
-    fetch(requestUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.info.statuscode === 0) {
-          const distance = data.route.distance; // Distance in miles
-          const duration = data.route.formattedTime; // Duration in HH:MM:SS
-          const distanceInKm = (distance * 1.60934).toFixed(2); // Convert miles to kilometers
-          this.setState({ distance: distanceInKm, duration });
-        } else {
-          console.error("Error fetching directions", data.info.messages);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching directions", error);
-      });
+    this.directionsService.route(request, (result, status) => {
+      if (status === google.maps.DirectionsStatus.OK) {
+        this.directionsRenderer.setDirections(result);
+        const distance = result.routes[0].legs[0].distance.text;
+        const duration = result.routes[0].legs[0].duration.text;
+        this.setState({ distance, duration }, () => {
+          this.props.getDistance(distance);
+        });
+      } else {
+        console.error("Error fetching directions", status);
+      }
+    });
   }
-
   // New method to set origin and destination from outside
   setLocations = (origin, destination) => {
     this.setState({ origin, destination }, () => {
@@ -48,13 +72,22 @@ class App extends Component {
   render() {
     return (
       <div>
+        <div
+          id="map"
+          style={{
+            height: "500px",
+            width: "80%",
+            marginLeft: "10%",
+            marginRight: "10%",
+          }}
+        ></div>{" "}
+        {/* Map container */}
         <div>
-          <h3>Distance: {this.state.distance} km</h3>
+          <h3>Distance: {this.state.distance}</h3>
           <h3>Duration: {this.state.duration}</h3>
         </div>
       </div>
     );
   }
 }
-
 export default App;

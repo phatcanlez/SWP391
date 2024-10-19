@@ -22,8 +22,8 @@ function ManageUser() {
           value: "STAFF",
         },
         {
-          text: "ADMIN",
-          value: "ADMIN",
+          text: "MANAGER",
+          value: "MANAGER",
         },
       ],
       onFilter: (value, record) => record.role.indexOf(value) === 0,
@@ -44,11 +44,6 @@ function ManageUser() {
       key: "email",
     },
     {
-      title: "Avatar",
-      dataIndex: "avatar",
-      key: "avatar",
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",
@@ -67,11 +62,6 @@ function ManageUser() {
       title: "Address",
       dataIndex: "address",
       key: "address",
-    },
-    {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
     },
     {
       title: "Enabled",
