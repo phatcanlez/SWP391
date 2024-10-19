@@ -1,11 +1,11 @@
-.profile{
+.profile {
     h6 {
         font-size: 23px;
         color: black;
         text-align: start;
     }
 
-    
+
     p {
         font-size: 20px;
         color: #79747E;
@@ -14,13 +14,18 @@
     .header__btn {
         background-color: #E25822;
         border-radius: 5px;
-        width: 141px  ;
+        width: 141px;
         height: 50px;
         font-size: 15px;
         font-weight: 600;
         text-align: center;
         color: white;
-    
+
+    }
+
+    .header__btn {
+        background-color: black;
+        margin-top: 30px    ;
     }
 }
 
@@ -59,5 +64,17 @@
         justify-content: space-between;
     }
 
-    
+
+}
+
+.user-setting {
+    width: 100%;
+    height: 50px;
+    background-color: transparent;
+    border: none;
+    font-size: 22px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    padding-left: 30px;
 }

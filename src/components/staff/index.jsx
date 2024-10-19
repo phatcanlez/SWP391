@@ -10,7 +10,6 @@ import {
   QuestionCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import Header from "../header";
 import Footer from "../footer";
 function getItem(label, key, icon, children) {
   return {

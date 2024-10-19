@@ -26,6 +26,7 @@ import Feedback from "./pages/admin/feedback";
 import Delivery from "./pages/admin/manage-service/delivery";
 import AllOrder, {
   FailOrder,
+  History,
   ProcessingOrder,
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
@@ -183,6 +184,10 @@ function App() {
         {
           path: "view/:id",
           element: <OrderDetail />,
+        },
+        {
+          path: "history",
+          element: <History />,
         },
         {
           path: "profile",

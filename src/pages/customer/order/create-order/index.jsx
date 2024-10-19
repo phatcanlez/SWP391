@@ -159,5 +159,6 @@ function FormDisabledDemo() {
             </div>
         </Form>
     );
-};
+  };
+}
 export default FormDisabledDemo;
