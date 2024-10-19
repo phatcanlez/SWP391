@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PieChartOutlined } from "@ant-design/icons";
+import { FormOutlined, PieChartOutlined, UnorderedListOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
 import { Link, Outlet } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
@@ -12,7 +12,11 @@ function getItem(label, key, icon, children) {
     };
 }
 const items = [
-    getItem("Create Order", "order", <PieChartOutlined />),
+    getItem("Account", "account", <UserOutlined />),
+    //getItem("View Order", "order", <UnorderedListOutlined />),
+    getItem("Create Order", "order", <FormOutlined />),
+    //getItem("Account", "account", <UserOutlined />),
+    //getItem("Account", "account", <UserOutlined />),
 
 ]
 
@@ -52,7 +56,7 @@ const CustomerService = () => {
                         margin: "0 16px",
                     }}
                 >
-                   <h3>Create Order</h3>
+                   
                     <div
                         style={{
                             padding: 24,
