@@ -1,3 +1,4 @@
+import { Form, Input } from "antd";
 import CRUDTemplate from "../../../components/crud-template";
 
 function PriceListDistance() {
@@ -19,7 +20,29 @@ function PriceListDistance() {
     },
   ];
 
-  const formItems = <></>;
+  const formItems = (
+    <>
+      <Form.Item name="priceListId" hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item name="distance" label="Distance" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="price"
+        label="Price"
+        rules={[
+          {
+            pattern: new RegExp(/^[0-9]+$/),
+            required: true,
+            message: "Wrong number",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+    </>
+  );
 
   return (
     <CRUDTemplate

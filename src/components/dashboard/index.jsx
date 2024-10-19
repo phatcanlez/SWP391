@@ -22,7 +22,7 @@ function getItem(label, key, icon, children) {
   };
 }
 const items = [
-  getItem("Dashboard", "report", <PieChartOutlined />),
+  getItem("Dashboard", "/", <PieChartOutlined />),
   getItem("Manage Order", "sub1", <PieChartOutlined />, [
     getItem("Order", "order"),
     getItem("Order Details", "order-details"),
@@ -39,8 +39,9 @@ const items = [
     getItem("Payment", "payment"),
   ]),
   getItem("Feedback", "feedback", <PieChartOutlined />),
-  getItem("FAQs", "/", <PieChartOutlined />),
-  getItem("Customer Care", "//", <PieChartOutlined />),
+  getItem("Report", "report", <PieChartOutlined />),
+  getItem("FAQs", "//", <PieChartOutlined />),
+  getItem("Customer Care", "///", <PieChartOutlined />),
 ];
 
 function Dashboard() {

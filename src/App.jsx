@@ -11,7 +11,6 @@ import Service from "./pages/service";
 import Tracking from "./pages/tracking";
 import AboutUs from "./pages/about";
 import Dashboard from "./components/dashboard";
-import ManageOrder from "./pages/admin/manage-order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import CustomerService from "./components/customer-service";
