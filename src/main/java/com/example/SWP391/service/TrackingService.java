@@ -1,15 +1,10 @@
 package com.example.SWP391.service;
 
-import com.example.SWP391.entity.BoxPrice;
-import com.example.SWP391.entity.PriceListDistance;
-import com.example.SWP391.entity.ShipMethod;
-import com.example.SWP391.model.DTO.TrackingDTO.BoxAmountDTO;
+import com.example.SWP391.entity.*;
 import com.example.SWP391.model.DTO.TrackingDTO.EstimateTrackingRequestByBox;
-import com.example.SWP391.repository.BoxPriceRepository;
-import com.example.SWP391.repository.PriceListDistanceRepository;
-import com.example.SWP391.repository.PriceListWeightRepository;
-import com.example.SWP391.repository.ShipMethodRepository;
+import com.example.SWP391.repository.*;
 import com.example.SWP391.util.TrackingUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +25,11 @@ public class TrackingService {
     @Autowired
     PriceListDistanceRepository priceListDistanceRepository;
 
+    @Autowired
+    OrderRepository orderRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     public List<PriceListDistance> getTrackingList(long shipMethodID) {
         ShipMethod shipMethod = shipMethodRepository.findShipMethodByShipMethodId(shipMethodID);
@@ -54,5 +54,10 @@ public class TrackingService {
             distancePrice += listPrice.get(i).getDistance() * listPrice.get(i).getPrice();
         }
         return price + distancePrice;
+    }
+
+    public List<Status> getTrackingByOrderID(String orderID) {
+        Orders order = orderRepository.findByorderID(orderID);
+        return order.getStatus();
     }
 }

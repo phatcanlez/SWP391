@@ -172,7 +172,6 @@ public class AuthenticationService implements UserDetailsService {
                 account.setStatus(updatedAccount.isStatus());
                 account.setPhoneNumber(updatedAccount.getPhoneNumber());
                 account.setAddress(updatedAccount.getAddress());
-                account.setPassword(passwordEncoder.encode(updatedAccount.getPassword()));
                 return accountRepository.save(account);
             }).orElseThrow(() -> new RuntimeException("Account not found with id " + id));
         } catch (Exception e) {

@@ -47,6 +47,7 @@ public class OrderService {
         return list.stream().map(order -> {
             OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
             orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
             return orderResponse;
         }).toList();
     }
@@ -72,6 +73,7 @@ public class OrderService {
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
             paymentRepository.save(payment);
+            newOrder.setPayment(payment);
             newOrder = orderRepository.save(newOrder);
             OrderDetailRequest orderDetail = modelMapper.map(order, OrderDetailRequest.class);
             orderDetail.setOrderID(newOrder.getOrderID());
@@ -80,6 +82,7 @@ public class OrderService {
             orderDetailService.createOrderDetail(orderDetail);
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
+            orderResponse.setPayment(newOrder.getPayment().getStatus());
             return orderResponse;
         } catch (NotFoundException e) {
 
@@ -118,20 +121,20 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatus(String status) {
+    public List<OrderResponse> viewOrderByStatus(StatusInfo status) {
         try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == statusInfo) {
+                if (orders.getStatus().getLast().getStatusInfo() == status) {
                     list.add(orders);
                 }
             }
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -154,6 +157,7 @@ public class OrderService {
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -168,6 +172,7 @@ public class OrderService {
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {

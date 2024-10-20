@@ -26,4 +26,9 @@ public class TrackingAPI {
     public ResponseEntity estimateTrackingByBox(@RequestBody EstimateTrackingRequestByBox estimateTrackingRequestByBox) {
         return ResponseEntity.ok(trackingService.estimateTrackingByBox(estimateTrackingRequestByBox));
     }
+
+    @GetMapping("/tracking/history/{orderID}")
+    public ResponseEntity getTrackingByOrderID(@PathVariable String orderID) {
+        return ResponseEntity.ok(trackingService.getTrackingByOrderID(orderID));
+    }
 }

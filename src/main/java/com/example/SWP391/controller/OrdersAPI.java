@@ -51,7 +51,7 @@ public class OrdersAPI {
         }
 
         @GetMapping("/api/orders/status")
-        public ResponseEntity getOrderByStatus(@RequestParam(name = "status")  String status) {
+        public ResponseEntity getOrderByStatus(@RequestParam(name = "status")  StatusInfo status) {
                 return ResponseEntity.ok(orderService.viewOrderByStatus(status));
         }
 

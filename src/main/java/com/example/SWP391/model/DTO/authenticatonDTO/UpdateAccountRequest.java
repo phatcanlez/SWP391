@@ -14,5 +14,4 @@ public class UpdateAccountRequest {
     @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
     String phoneNumber;
     String address;
-    String password;
 }
