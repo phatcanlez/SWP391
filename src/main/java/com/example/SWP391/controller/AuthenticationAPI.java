@@ -48,9 +48,8 @@ public class AuthenticationAPI {
     }
 
     @GetMapping("/api/account")
-    public ResponseEntity getAllAccounts() {
-        List<Account> list = authenticationService.getAllAccounts();
-        return ResponseEntity.ok(list);
+    public ResponseEntity getAllAccounts(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(authenticationService.getAllAccounts(page, size));
     }
 
     @PostMapping("/api/account/create-from-json")

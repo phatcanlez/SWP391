@@ -24,9 +24,11 @@ public class OrdersAPI {
         private OrderService orderService;
 
         @PostMapping("/api/orders")
-        public ResponseEntity createOrder(@Valid @RequestBody OrderRequest orders) {
+        public ResponseEntity createOrder(@Valid @RequestBody OrderRequest orders) throws Exception {
                 return ResponseEntity.ok(orderService.createOrder(orders));
         }
+
+
 
         @PostMapping("/api/orders/create-from-json")
         public ResponseEntity<String> createOrdersFromJson(@RequestBody String jsonArray) {
@@ -40,14 +42,14 @@ public class OrdersAPI {
         }
 
         @GetMapping("/api/orders")
-        public ResponseEntity getAllOrders() {
-                List<OrderResponse> list = orderService.getAllOrders();
-                return ResponseEntity.ok(list);
+        public ResponseEntity getAllOrders(@RequestParam int page, @RequestParam int size) {
+                return ResponseEntity.ok(orderService.getAllOrders(page,size));
         }
 
         @GetMapping("/api/orders/{id}")
         public ResponseEntity getLicenseById(@PathVariable String id) {
             return ResponseEntity.ok(orderService.viewOrderById(id));
+
         }
 
         @GetMapping("/api/orders/status")
