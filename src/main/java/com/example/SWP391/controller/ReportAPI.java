@@ -35,8 +35,8 @@ public class ReportAPI {
     }
 
     @GetMapping("/api/report")
-    public ResponseEntity getAllReport() {
-        return ResponseEntity.ok(reportService.getAllReport());
+    public ResponseEntity getAllReport(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(reportService.getAllReport(page, size));
     }
 
     @GetMapping("/api/report/{id}")

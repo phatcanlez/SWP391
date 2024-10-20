@@ -37,9 +37,21 @@ public class PaymentAPI {
         }
 
 
-        @PutMapping("/api/payment/{id}")
-        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest,@PathVariable long id) {
-            return ResponseEntity.ok(paymentService.updatePayment(paymentRequest, id));
+//        @PutMapping("/api/payment/{id}")
+//        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest) {
+//            return ResponseEntity.ok(paymentService.updatePayment(paymentRequest));
+//        }
+
+        @PutMapping("/api/payment")
+        public ResponseEntity updatePaymentUser(@RequestParam String orderId) {
+            return ResponseEntity.ok(paymentService.updatePayment(orderId));
         }
+
+        @PutMapping("/api/payment-status")
+        public ResponseEntity updatePaymentStatus(@RequestParam String orderId) {
+                return ResponseEntity.ok(paymentService.updatePaymentStatus(orderId));
+        }
+
+
 
 }

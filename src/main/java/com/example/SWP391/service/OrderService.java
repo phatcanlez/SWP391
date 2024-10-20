@@ -5,6 +5,7 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
+import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
 import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
@@ -16,6 +17,8 @@ import com.example.SWP391.util.DateConversionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,13 +45,20 @@ public class OrderService {
     @Autowired
     OrderDetailService orderDetailService;
 
-    public List<OrderResponse> getAllOrders() {
-        List<Orders> list = orderRepository.findAll();
-        return list.stream().map(order -> {
+    public OrdersReponsePage getAllOrders(int page, int size) {
+        Page<Orders> orders = orderRepository.findAll(PageRequest.of(page, size));
+        List<OrderResponse> orderResponses = orders.stream().map(order -> {
             OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
             orderResponse.setStatus(order.getStatus().getLast());
             return orderResponse;
         }).toList();
+        OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
+        ordersReponsePage.setContent(orderResponses);
+        ordersReponsePage.setPageNumbers(orders.getNumber());
+        ordersReponsePage.setTotalElements(orders.getTotalElements());
+        ordersReponsePage.setTotalPages(orders.getTotalPages());
+        ordersReponsePage.setNummberOfElement(orders.getNumberOfElements());
+        return ordersReponsePage;
     }
 
     public OrderResponse createOrder(OrderRequest order) {
