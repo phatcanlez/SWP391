@@ -6,10 +6,8 @@ import com.example.SWP391.entity.Orders;
 import com.example.SWP391.entity.Payment;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
-import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
-import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
+import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.paymentDTO.PaymentRequest;
-import com.example.SWP391.model.DTO.paymentDTO.PaymentStatusRequest;
 import com.example.SWP391.model.Enum.PayType;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
@@ -38,6 +36,12 @@ public class PaymentService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    AuthenticationService authenticationService;
+
+    @Autowired
+    EmailService emailService;
+
     public List<Payment> getAllPayment(){
         List<Payment> list = paymentRepository.findAll();
         return list;
@@ -47,6 +51,7 @@ public class PaymentService {
         try{
             Payment payment = modelMapper.map(paymentRequest, Payment.class);
             payment.setTimeOfPay(new Date(System.currentTimeMillis()));
+            payment.setTypeOfPay(PayType.BANKING.toString());
             return paymentRepository.save(payment);
         }catch (Exception e){
             throw new DuplicateException("This payment is existed!!");
@@ -63,8 +68,8 @@ public class PaymentService {
         }
     }
 
-    public String updatePayment(PaymentRequest paymentRequest){
-        Payment oldPayment = paymentRepository.findPaymentByOrdersOrderID(paymentRequest.getOrderId());
+    public String updatePayment(String orderId){
+        Payment oldPayment = paymentRepository.findPaymentByOrdersOrderID(orderId);
         if(oldPayment == null){
             throw new NotFoundException("Not found!");
         }
@@ -72,35 +77,36 @@ public class PaymentService {
             throw new DuplicateException("This payment is success!");
         }
         try{
-            if(paymentRequest.getTypeOfPay().equals("BANKING")){
-               String url = createURL(paymentRequest.getOrderId());
-               return url;
-            }
             oldPayment.setTimeOfPay(new Date(System.currentTimeMillis()));
-            oldPayment.setTypeOfPay(paymentRequest.getTypeOfPay());
-            oldPayment.setStatus(StatusInfo.SUCCESS.toString());
+            oldPayment.setTypeOfPay(PayType.BANKING.toString());
+            oldPayment.setStatus(Paystatus.UNPAYED.toString());
             paymentRepository.save(oldPayment);
-            return "Update success!";
+            return createURL(orderId);
         }catch (Exception e){
             throw new DuplicateException("Update fail");
         }
     }
 
-    public String updatePaymentStatus(String orderId, PaymentStatusRequest paymentStatusRequest){
+    public Payment updatePaymentStatus(String orderId){
         Payment payment = paymentRepository.findPaymentByOrdersOrderID(orderId);
-
         if(payment == null){
             throw new NotFoundException("Not found!");
         }
+        if(payment.getStatus().equals(StatusInfo.SUCCESS.toString())){
+            throw new DuplicateException("This payment was successful!");
+        }
         try{
-            if(paymentStatusRequest.getResponseCode().equals("00")) {
                 payment.setStatus(StatusInfo.SUCCESS.toString());
                 payment.setTimeOfPay(new Date(System.currentTimeMillis()));
-                payment.setTypeOfPay(PayType.BANKING.toString());
                 paymentRepository.save(payment);
-                return "Update success!";
-            }
-            return "Update fail!";
+                EmailDetail emailDetail = new EmailDetail();
+                emailDetail.setReceiver(authenticationService.getCurrentAccount());
+                emailDetail.setSubject("Payment success");
+                emailDetail.setButton("Go home page");
+                emailDetail.setLink("http://koikichi.io.vn/");
+                emailDetail.setContent("The payment of order: " + orderId +" is successful, thank you for using our service");
+                emailService.sendEmail(emailDetail);
+            return payment;
         }catch (Exception e){
             throw new DuplicateException("Update status fail");
         }

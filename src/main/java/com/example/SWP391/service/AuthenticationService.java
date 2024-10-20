@@ -65,7 +65,7 @@ public class AuthenticationService implements UserDetailsService {
             EmailDetail emailDetail = new EmailDetail();
             emailDetail.setReceiver(newAccount);
             emailDetail.setSubject("Welcome to KOIKICHI");
-            emailDetail.setLink("https://www.google.com.vn/");
+            emailDetail.setLink("http//koikichi.io.vn/");
             emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
             emailService.sendEmail(emailDetail);
             return modelMapper.map(newAccount, AccountResponse.class);
@@ -99,6 +99,7 @@ public class AuthenticationService implements UserDetailsService {
         } catch (Exception e) {
 
             //error => throw new exception
+            e.printStackTrace();
             throw new NotFoundException("Email or Password is invalid!!");
         }
 
@@ -135,7 +136,7 @@ public class AuthenticationService implements UserDetailsService {
                 emailDetail.setReceiver(account);
                 emailDetail.setSubject("Welcome to KOIKICHI");
                 emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
-                emailDetail.setLink("https://www.google.com.vn/");
+                emailDetail.setLink("http//koikichi.io.vn/");
                 emailDetail.setButton("Go to home page");
                 emailService.sendEmail(emailDetail);
             }

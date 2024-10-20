@@ -37,8 +37,8 @@ public class FeedbackAPI {
     }
 
     @GetMapping("/api/feedback")
-    public ResponseEntity getAllFeedbacks() {
-        return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+    public ResponseEntity getAllFeedbacks(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks(page, size));
     }
 
     @GetMapping("/api/feedback/{id}")
