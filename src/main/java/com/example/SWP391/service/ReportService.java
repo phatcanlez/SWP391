@@ -5,6 +5,7 @@ import com.example.SWP391.entity.Report;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.reportDTO.ReportRequest;
+import com.example.SWP391.model.DTO.reportDTO.ReportResponsePage;
 import com.example.SWP391.model.DTO.reportDTO.ReportUpdateRequest;
 import com.example.SWP391.model.Enum.ReportStatus;
 import com.example.SWP391.repository.OrderRepository;
@@ -12,6 +13,8 @@ import com.example.SWP391.repository.ReportRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -31,9 +34,15 @@ public class ReportService {
     @Autowired
     ModelMapper modelMapper;
 
-    public List<Report> getAllReport(){
-        List<Report> list = reportRepository.findAll();
-        return list;
+    public ReportResponsePage getAllReport(int page, int size){
+        Page<Report> reports = reportRepository.findAll(PageRequest.of(page, size));
+        ReportResponsePage reportResponsePage = new ReportResponsePage();
+        reportResponsePage.setContent(reports.getContent());
+        reportResponsePage.setPageNumbers(reports.getNumber());
+        reportResponsePage.setTotalElements(reports.getTotalElements());
+        reportResponsePage.setTotalPages(reports.getTotalPages());
+        reportResponsePage.setNummberOfElement(reports.getNumberOfElements());
+        return reportResponsePage;
     }
 
     public Report createReport(ReportRequest reportRequest){

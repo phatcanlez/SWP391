@@ -9,12 +9,15 @@ import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.feedbackDTO.FeedbackRequest;
 import com.example.SWP391.model.DTO.feedbackDTO.FeedbackResponse;
+import com.example.SWP391.model.DTO.feedbackDTO.FeedbackResponsePage;
 import com.example.SWP391.model.DTO.feedbackDTO.FeedbackUpdateRequest;
 import com.example.SWP391.repository.FeedbackRepository;
 import com.example.SWP391.repository.OrderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -31,13 +34,20 @@ public class FeedbackService {
     @Autowired
     OrderRepository orderRepository;
 
-    public List<FeedbackResponse> getAllFeedbacks() {
-        List<Feedback> list = feedbackRepository.findAll();
-        return list.stream().map(feedback -> {
+    public FeedbackResponsePage getAllFeedbacks(int page, int size) {
+        Page<Feedback> list = feedbackRepository.findAll(PageRequest.of(page, size));
+         list.stream().map(feedback -> {
             FeedbackResponse feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
             feedbackResponse.setOrderID(feedback.getOrders().getOrderID());
             return feedbackResponse;
         }).toList();
+         FeedbackResponsePage feedbackResponsePage = new FeedbackResponsePage();
+         feedbackResponsePage.setContent(list.getContent());
+         feedbackResponsePage.setTotalPages(list.getTotalPages());
+         feedbackResponsePage.setTotalElements(list.getTotalElements());
+         feedbackResponsePage.setPageNumbers(list.getNumber());
+         feedbackResponsePage.setNummberOfElement(list.getNumberOfElements());
+         return feedbackResponsePage;
     }
 
     public FeedbackResponse createFeedback(FeedbackRequest feedback) {

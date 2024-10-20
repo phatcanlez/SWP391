@@ -30,8 +30,6 @@ public class OrderRequest {
 
     String note;
 
-    String image;
-
     @NotBlank(message = "Phone number of receiver is required")
     @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")
     String reciverPhoneNumber;

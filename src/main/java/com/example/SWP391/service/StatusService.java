@@ -42,7 +42,12 @@ public class StatusService {
             if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())){
                 List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
                 if (ordersList.size() > 0){
-                    throw new DuplicateException("You can't approved this order because you already have a pending or approved order!!");
+                    throw new DuplicateException("You can't approved this order because you already have a approved order!!");
+                }
+            } else if (statusRequest.getStatusInfo().equals(StatusInfo.PENDING.toString())){
+                List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
+                if (ordersList.size() > 0){
+                    throw new DuplicateException("You can't pending this order because you already have a pending order!!");
                 }
             }
 

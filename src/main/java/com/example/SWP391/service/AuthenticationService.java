@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,7 +65,7 @@ public class AuthenticationService implements UserDetailsService {
             EmailDetail emailDetail = new EmailDetail();
             emailDetail.setReceiver(newAccount);
             emailDetail.setSubject("Welcome to KOIKICHI");
-            emailDetail.setLink("https://www.google.com.vn/");
+            emailDetail.setLink("http//koikichi.io.vn/");
             emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
             emailService.sendEmail(emailDetail);
             return modelMapper.map(newAccount, AccountResponse.class);
@@ -97,6 +99,7 @@ public class AuthenticationService implements UserDetailsService {
         } catch (Exception e) {
 
             //error => throw new exception
+            e.printStackTrace();
             throw new NotFoundException("Email or Password is invalid!!");
         }
 
@@ -133,7 +136,7 @@ public class AuthenticationService implements UserDetailsService {
                 emailDetail.setReceiver(account);
                 emailDetail.setSubject("Welcome to KOIKICHI");
                 emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
-                emailDetail.setLink("https://www.google.com.vn/");
+                emailDetail.setLink("http//koikichi.io.vn/");
                 emailDetail.setButton("Go to home page");
                 emailService.sendEmail(emailDetail);
             }
@@ -152,9 +155,15 @@ public class AuthenticationService implements UserDetailsService {
         }
     }
 
-    public List<Account> getAllAccounts() {
-        List<Account> list = accountRepository.findAll(); // findAll() lấy tất cả account trong DB
-        return list;
+    public AccountResponsePage getAllAccounts(int page, int size) {
+        Page<Account> accounts = accountRepository.findAll(PageRequest.of(page,size)); // findAll() lấy tất cả account trong DB
+        AccountResponsePage accountResponsePage = new AccountResponsePage();
+        accountResponsePage.setContent(accounts.getContent());
+        accountResponsePage.setPageNumbers(accounts.getNumber());
+        accountResponsePage.setNummberOfElement(accounts.getNumberOfElements());
+        accountResponsePage.setTotalElements(accounts.getTotalElements());
+        accountResponsePage.setTotalPages(accounts.getTotalPages());
+        return accountResponsePage;
     }
 
 
