@@ -1,4 +1,3 @@
-
 import {
     Button,
     Form,
@@ -34,7 +33,11 @@ function FormDisabledDemo() {
             const response = await api.post("orders", values);
             console.log(response)
             toast.success("Successful")
-            navigate("/customer-service/delivery-method")
+            navigate("/customer-service/payment")
+            localStorage.removeItem('fishFormData');
+            localStorage.removeItem('addressFormData');
+            localStorage.removeItem('priceFormData');
+            localStorage.removeItem('paymentFormData');
         } catch (err) {
             toast.error(err.response?.data || "An error occurred")
         }
@@ -57,7 +60,7 @@ function FormDisabledDemo() {
         {
             title: 'Price',
             content: (
-                <Price ref={(el) => (formRefs.current[1] = el)} />
+                <Price ref={(el) => (formRefs.current[2] = el)} />
             ),
         },
         {

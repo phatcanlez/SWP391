@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber } from "antd"
+import { Form, InputNumber } from "antd"
 import FormItem from "antd/es/form/FormItem";
 import { useState, useEffect } from "react"
 import { UploadOutlined } from '@ant-design/icons';
@@ -19,23 +19,42 @@ function Fish() {
     }
 
     useEffect(() => {
+        // Load saved data when component mounts
+        const savedData = localStorage.getItem('fishFormData');
+        if (savedData) {
+            const parsedData = JSON.parse(savedData);
+            form.setFieldsValue(parsedData);
+            setFishCount(parsedData.fishQuantity || 0);
+            calculateTotalWeight(parsedData.fishDetails);
+        }
+    }, [form]);
+
+    useEffect(() => {
+        const savedData = JSON.parse(localStorage.getItem('fishFormData') || '{}');
         form.setFieldsValue({
             fishDetails: Array(fishCount).fill().map((_, index) => ({
                 no: index + 1,
-                weight: null,
-                size: null
+                weight: savedData.fishDetails?.[index]?.weight || null,
+                size: savedData.fishDetails?.[index]?.size || null,
+                note: savedData.fishDetails?.[index]?.note || null
             }))
         });
     }, [fishCount, form]);
 
-    const calculateTotalWeight = () => {
-        const fishDetails = form.getFieldValue('fishDetails') || [];
-        const total = fishDetails.reduce((sum, fish) => sum + (fish.weight || 0), 0);
+    const calculateTotalWeight = (fishDetails) => {
+        const total = (fishDetails || []).reduce((sum, fish) => sum + (fish.weight || 0), 0);
         setTotalWeight(total);
     };
 
+    const handleFormChange = (changedValues, allValues) => {
+        calculateTotalWeight(allValues.fishDetails);
+        // Save form data to localStorage
+        localStorage.setItem('fishFormData', JSON.stringify(allValues));
+    };
+
     return(
-        <Form form={form} onValuesChange={calculateTotalWeight}>
+        <div>
+        <Form form={form} onValuesChange={handleFormChange} initialValues={JSON.parse(localStorage.getItem('fishFormData') || '{}')}>
             <Form.Item name="fishQuantity" label="Fish Quantity" rules={[{ required: true, message: 'Please enter Quantity' }]}>
                 <InputNumber min={1} onChange={(value) => setFishCount(value || 0)} style={{width: '200px'}} />
             </Form.Item>
@@ -113,6 +132,7 @@ function Fish() {
                 />
             </Form.Item>
         </Form>
+    </div>
     )
 }
 

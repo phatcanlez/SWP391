@@ -378,7 +378,7 @@ function EstimatedShippingFee() {
   }
   useEffect(() => {
     if (where !== "") {
-      console.log("Where:", where);
+      console.log("Where:", where); 
     }
   }, [where]);
 
