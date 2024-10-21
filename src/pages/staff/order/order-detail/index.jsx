@@ -8,7 +8,6 @@ import { Button, Form, Input, Modal } from "antd";
 import { useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useParams } from "react-router-dom";
-import InProcess from "../processing/process";
 
 function OrderDetail() {
   const { id } = useParams();
@@ -38,10 +37,9 @@ function OrderDetail() {
 
   useEffect(() => {
     if (id) {
-      fetchOrderDetail(id); // Fetch the order details by ID
+      fetchOrderDetail(id);
     }
   }, []);
-  // Trigger the effect when `id` changes
 
   /////////////////////////////
 
@@ -238,39 +236,26 @@ function OrderDetail() {
         </div>
       </div>
 
-      {status == "WAITING" ? (
-        <div className="btn-wrap">
-          <Button className="btn btn-r" onClick={showModal}>
-            REJECT
-          </Button>
-          <Button
-            className="btn btn-a"
-            onClick={() => {
-              handleAddApprove();
-            }}
-          >
+      <div className="btn-wrap">
+        {status === "WAITING" && (
+          <>
+            <Button className="btn btn-r" onClick={showModal}>
+              REJECT
+            </Button>
+            <Button className="btn btn-a" onClick={handleAddApprove}>
+              APPROVE
+            </Button>
+          </>
+        )}
+
+        {status === "FAIL" && (
+          <Button className="btn btn-a" onClick={handleAddApprove}>
             APPROVE
           </Button>
-        </div>
-      ) : (
-        <div>
-          <InProcess />
-        </div>
-      )}
-      {status == "FAIL" ? (
-        <div className="btn-wrap">
-          <Button
-            className="btn btn-a"
-            onClick={() => {
-              handleAddApprove();
-            }}
-          >
-            APPROVE
-          </Button>
-        </div>
-      ) : (
-        <div></div>
-      )}
+        )}
+
+        {status !== "WAITING" && status !== "FAIL" && <div></div>}
+      </div>
 
       {/* <span>Price: {order.price}</span>            */}
 

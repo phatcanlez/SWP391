@@ -13,7 +13,9 @@ class App extends Component {
 
   componentDidMount() {
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg`; // Load Google Maps API
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${
+      import.meta.env.VITE_GOOGLE_API_KEY
+    }`; // Load Google Maps API
     script.async = true;
     script.defer = true;
     script.onload = () => {
@@ -52,7 +54,9 @@ class App extends Component {
         this.directionsRenderer.setDirections(result);
         const distance = result.routes[0].legs[0].distance.text;
         const duration = result.routes[0].legs[0].duration.text;
-        this.setState({ distance, duration });
+        this.setState({ distance, duration }, () => {
+          this.props.getDistance(distance);
+        });
       } else {
         console.error("Error fetching directions", status);
       }
@@ -86,5 +90,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;
