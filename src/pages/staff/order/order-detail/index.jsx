@@ -8,6 +8,8 @@ import { Button, Form, Input, Modal } from "antd";
 import { useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useParams } from "react-router-dom";
+import { format, parseISO } from "date-fns";
+import InProcess from "../pending/pending";
 
 function OrderDetail() {
   const { id } = useParams();
@@ -74,20 +76,40 @@ function OrderDetail() {
 
   const handleAddApprove = async () => {
     try {
-      console.log(user.id);
-      const emid = user.id;
-      const setvalue = {
-        statusInfo: "APPROVED",
-        empId: emid,
-        order: id,
-        description: "The order is approved",
-      };
-      await api.post("/status", setvalue);
-      toast.success("APPROVED");
+      const response = await api.get(
+        `/orders/status-emp?status=APPROVED&empId=${user.id}`
+      );
+      const processingOrder = await api.get(
+        `/orders/status-emp?status=PENDING&empId=${user.id}`
+      );
+      console.log(response.data);
+      if (response.data.length === 0 && processingOrder.data.length === 0) {
+        console.log(user.id);
+        const emid = user.id;
+        const setvalue = {
+          statusInfo: "APPROVED",
+          empId: emid,
+          order: id,
+          description: "The order is approved",
+        };
+        await api.post("/status", setvalue);
+        toast.success("APPROVED");
+      } else {
+        toast.error("You have an order in processing");
+      }
     } catch (error) {
       toast.error(error.response.data);
     } finally {
       fetchOrderDetail(id);
+    }
+  };
+  const formatDate = (isoString) => {
+    if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
+    try {
+      return format(parseISO(isoString), "dd/MM/yyyy"); // Định dạng ngày hợp lệ
+    } catch (error) {
+      console.error("Định dạng ngày không hợp lệ:", error);
+      return "Ngày không hợp lệ"; // Xử lý lỗi khi parse thất bại
     }
   };
 
@@ -103,18 +125,18 @@ function OrderDetail() {
         <div className="time-section">
           <p>
             Created Delivery Date:
-            <br /> {order?.status?.[0]?.date}
+            <br /> {formatDate(order?.status?.[0]?.date)}
           </p>
           <div className="border"></div>
           <p>
             Exp Delivery Date:
-            <br /> {order.expDeliveryDate}
+            <br /> {formatDate(order?.expDeliveryDate)}
           </p>
-          <div className="border"></div>
+          {/* <div className="border"></div>
           <p>
             Act Delivery Date:
             <br /> {order.actDeliveryDate}
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -141,7 +163,7 @@ function OrderDetail() {
                 <span className="color">{order.reciverName} </span>- (+84)
                 {order.reciverPhoneNumber}
               </p>
-              <p>{order.reciverName}</p>
+              <p>{order.reciverAdress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
@@ -218,20 +240,25 @@ function OrderDetail() {
 
       <h5 className="title">Delivery status</h5>
       <div className="bg-w">
+        {(status === "APPROVED" ||
+          status === "PENDING" ||
+          status === "SUCCESS") && (
+          <>
+            <InProcess />
+          </>
+        )}
+
         <div className="send-section">
           <div className="item">
-            <div>
-              <p>
-                Payment status:{" "}
-                <span
-                  className="color"
-                  style={{ fontWeight: "600", fontSize: "18px" }}
-                >
-                  {" "}
-                  {order?.payment?.status}
-                </span>
-              </p>
-            </div>
+            <p>
+              Payment status:{" "}
+              <span
+                className="color"
+                style={{ fontWeight: "600", fontSize: "18px" }}
+              >
+                {order?.payment?.status}
+              </span>
+            </p>
           </div>
         </div>
       </div>
@@ -253,8 +280,6 @@ function OrderDetail() {
             APPROVE
           </Button>
         )}
-
-        {status !== "WAITING" && status !== "FAIL" && <div></div>}
       </div>
 
       {/* <span>Price: {order.price}</span>            */}

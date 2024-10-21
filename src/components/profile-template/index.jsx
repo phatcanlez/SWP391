@@ -8,15 +8,17 @@ import { logout } from "../../redux/features/userSlice";
 import { toast } from "react-toastify";
 import api from "../../config/axios";
 import { SettingOutlined } from "@ant-design/icons";
+
 function Profile() {
+  
   const [form] = Form.useForm();
   const [checkForm] = Form.useForm();
   const user = useSelector((store) => store);
   console.log(user);
 
   const dispatch = useDispatch();
-  const [showForm1, setShowForm1] = useState("fasle");
-  const [showForm2, setShowForm2] = useState("fasle");
+  const [showForm1, setShowForm1] = useState(false);
+  const [showForm2, setShowForm2] = useState(false);
   const [userValue, setUserValue] = useState([]);
 
   const toggleForm = () => {

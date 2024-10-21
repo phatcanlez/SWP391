@@ -22,7 +22,6 @@ import OrderDetail from "./pages/staff/order/order-detail";
 import AllOrder, {
   FailOrder,
   History,
-  ProcessingOrder,
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
@@ -44,6 +43,13 @@ function App() {
       user &&
       user.user?.role === "STAFF" &&
       location.pathname.startsWith("/staff")
+    ) {
+      return children;
+    }
+    if (
+      user &&
+      user.user?.role === "CUSTOMER" &&
+      location.pathname.startsWith("/customer-service")
     ) {
       return children;
     } else toast.error("You are not allow");
@@ -98,10 +104,6 @@ function App() {
           path: "order",
           element: <CreateOrder />,
         },
-        {
-          path: "delivery-method",
-          element: <DeliveryMethod />,
-        },
       ],
     },
 
@@ -120,10 +122,6 @@ function App() {
         {
           path: "waiting-order",
           element: <WaitingOrder />,
-        },
-        {
-          path: "approved-order",
-          element: <ProcessingOrder />,
         },
         {
           path: "rejected-order",
