@@ -38,8 +38,20 @@ function WaitingOrder() {
   );
 }
 
+function History() {
+  const user = useSelector((store) => store);
+  return (
+    <div>
+      <StaffOrder
+        path={`orders/status-emp?status=SUCCESS&empId=${user.user.id}`}
+      />
+    </div>
+  );
+}
+
 export default AllOrder;
 export { ProcessingOrder };
 export { WaitingOrder };
 export { FailOrder };
+export { History };
 

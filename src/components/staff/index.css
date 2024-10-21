@@ -11,15 +11,16 @@
 
 .ant-menu-item-selected {
     background-color: rgba(44, 44, 44, 1) !important;
-    color: rgba(255, 255, 255, 1) !important;
+    color: white !important;
     border-radius: 0% !important;
+    
 }
-
 .ant-menu-title-content {
     a {
         color: black !important;
     }
 }
+
 .note{
     display: flex;
     gap: 10px;

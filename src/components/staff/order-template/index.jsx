@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { FileSyncOutlined } from "@ant-design/icons";
 
-function StaffOrder({ path }) {
+function  StaffOrder({ path }) {
   const [order, setOrder] = useState([]);
 
   const navigate = useNavigate();
