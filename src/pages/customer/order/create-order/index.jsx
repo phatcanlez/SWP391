@@ -1,20 +1,13 @@
-import {
-    Button,
-    Form,
-    Input,
-    InputNumber,
-} from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import api from '../../../../config/axios';
-import { Steps } from 'antd';
-import { useState, useRef, useEffect } from 'react';
-import Address from './address';
-import Fish from './fish';
-import Price from './price';
-import Payment from './payment';
-
-
+import { Button, Form, Input, InputNumber } from "antd";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import api from "../../../../config/axios";
+import { Steps } from "antd";
+import { useState, useRef, useEffect } from "react";
+import Address from "./address";
+import Fish from "./fish";
+import Price from "./price";
+import Payment from "./payment";
 
 const { TextArea } = Input;
 const { Step } = Steps;
@@ -26,50 +19,40 @@ function FormDisabledDemo() {
   const formRefs = useRef([]);
   const [stepData, setStepData] = useState({});
 
-    const handleSubmit = async (values) => {
-        console.log(values);
-        try {
-            const response = await api.post("orders", values);
-            console.log(response)
-            toast.success("Successful")
-            navigate("/customer-service/payment")
-            localStorage.removeItem('fishFormData');
-            localStorage.removeItem('addressFormData');
-            localStorage.removeItem('priceFormData');
-            localStorage.removeItem('paymentFormData');
-        } catch (err) {
-            toast.error(err.response?.data || "An error occurred")
-        }
-
+  const handleSubmit = async (values) => {
+    console.log(values);
+    try {
+      const response = await api.post("orders", values);
+      console.log(response);
+      toast.success("Successful");
+      navigate("/customer-service/payment");
+      localStorage.removeItem("fishFormData");
+      localStorage.removeItem("addressFormData");
+      localStorage.removeItem("priceFormData");
+      localStorage.removeItem("paymentFormData");
+    } catch (err) {
+      toast.error(err.response?.data || "An error occurred");
     }
   };
 
-    const steps = [
-        {
-            title: 'Information',
-            content: (
-                <Address ref={(el) => (formRefs.current[0] = el)} />
-            ),
-        },
-        {
-            title: 'Fish',
-            content: (
-                <Fish ref={(el) => (formRefs.current[1] = el)} />
-            ),
-        },
-        {
-            title: 'Price',
-            content: (
-                <Price ref={(el) => (formRefs.current[2] = el)} />
-            ),
-        },
-        {
-            title: 'Payment',
-            content: (
-                <Payment ref={(el) => (formRefs.current[3] = el)} />
-            ),
-        },
-    ];
+  const steps = [
+    {
+      title: "Information",
+      content: <Address ref={(el) => (formRefs.current[0] = el)} />,
+    },
+    {
+      title: "Fish",
+      content: <Fish ref={(el) => (formRefs.current[1] = el)} />,
+    },
+    {
+      title: "Price",
+      content: <Price ref={(el) => (formRefs.current[2] = el)} />,
+    },
+    {
+      title: "Payment",
+      content: <Payment ref={(el) => (formRefs.current[3] = el)} />,
+    },
+  ];
 
   useEffect(() => {
     // Load saved data when component mounts
@@ -130,6 +113,30 @@ function FormDisabledDemo() {
     setCurrent(current - 1);
   };
 
+  const clearAll = () => {
+    // Clear all form data
+    formRefs.current.forEach((formRef) => {
+      if (formRef && formRef.resetFields) {
+        formRef.resetFields();
+      }
+    });
+
+    // Clear localStorage
+    localStorage.removeItem("fishFormData");
+    localStorage.removeItem("addressFormData");
+    localStorage.removeItem("priceFormData");
+    localStorage.removeItem("paymentFormData");
+    localStorage.removeItem("orderFormData");
+
+    // Reset step data
+    setStepData({});
+
+    // Reset to first step
+    setCurrent(0);
+
+    toast.success("All form data has been cleared");
+  };
+
   return (
     <Form form={form} onFinish={handleSubmit}>
       <h6>Create Order</h6>
@@ -157,6 +164,9 @@ function FormDisabledDemo() {
                 Previous
               </Button>
             )}
+            <Button type="danger" onClick={clearAll} style={{ marginLeft: 8 }}>
+              Clear All
+            </Button>
           </div>
         </div>
       </div>

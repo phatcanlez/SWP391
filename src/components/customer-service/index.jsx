@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FormOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -14,39 +14,49 @@ function getItem(label, key, icon, children) {
 }
 const items = [
     getItem("Account", "account", <UserOutlined />),
-    //getItem("View Order", "order", <UnorderedListOutlined />),
     getItem("Create Order", "order", <FormOutlined />),
-    //getItem("Account", "account", <UserOutlined />),
-    //getItem("Account", "account", <UserOutlined />),
-
 ]
   
 const CustomerService = () => {
-    const [current, setCurrent] = useState(false);
-    const onClick = (e) => {
-    console.log('click ', e);
-    setCurrent(e.key);
-  };
+    const [current, setCurrent] = useState('');
+    const [orderData, setOrderData] = useState({
+        account: {},
+        fish: {},
+        // Thêm các phần khác của đơn hàng nếu cần
+    });
+    const navigate = useNavigate();
 
-  return (
-    <div>
-        <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
-        <Content
+    const onClick = (e) => {
+        console.log('click ', e);
+        setCurrent(e.key);
+        navigate(`/customer-service/${e.key}`);
+    };
+
+    const updateOrderData = (section, data) => {
+        setOrderData(prevData => ({
+            ...prevData,
+            [section]: data
+        }));
+    };
+
+    return (
+        <div>
+            <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+            <Content
+                style={{
+                    margin: "0 16px",
+                }}
+            >
+                <div
                     style={{
-                        margin: "0 16px",
+                        padding: 24,
+                        minHeight: 360,
                     }}
                 >
-                   
-                    <div
-                        style={{
-                            padding: 24,
-                            minHeight: 360,
-                        }}
-                    >
-                        <Outlet />
-                    </div>
-                </Content>
-    </div>
-  );
+                    <Outlet context={{ orderData, updateOrderData }} />
+                </div>
+            </Content>
+        </div>
+    );
 };
 export default CustomerService;
