@@ -19,7 +19,11 @@ public class StatusAPI {
 
     @PostMapping("/api/status")
     public ResponseEntity createStatus(@RequestBody @Valid StatusRequest statusRequest) {
-        return ResponseEntity.ok(statusService.createStatus(statusRequest));
+        try {
+            return ResponseEntity.ok(statusService.createStatus(statusRequest));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @GetMapping("/api/status")

@@ -22,8 +22,18 @@ public class TrackingAPI {
         return ResponseEntity.ok(trackingService.getTrackingList(shipMethodID));
     }
 
+    @GetMapping("/tracking/weight/{shipMethodID}")
+    public ResponseEntity getTrackingWeightList(@PathVariable long shipMethodID) {
+        return ResponseEntity.ok(trackingService.getPriceWeightListByShipMethod(shipMethodID));
+    }
+
     @PostMapping("/tracking/estimate")
     public ResponseEntity estimateTrackingByBox(@RequestBody EstimateTrackingRequestByBox estimateTrackingRequestByBox) {
         return ResponseEntity.ok(trackingService.estimateTrackingByBox(estimateTrackingRequestByBox));
+    }
+
+    @GetMapping("/tracking/history/{orderID}")
+    public ResponseEntity getTrackingByOrderID(@PathVariable String orderID) {
+        return ResponseEntity.ok(trackingService.getTrackingByOrderID(orderID));
     }
 }

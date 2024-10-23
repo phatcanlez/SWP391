@@ -15,4 +15,5 @@ public class OrderResponse {
     String orderID;
     String name;
     Status status;
+    String payment;
 }

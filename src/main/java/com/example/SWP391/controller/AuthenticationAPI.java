@@ -68,6 +68,11 @@ public class AuthenticationAPI {
         return ResponseEntity.ok(authenticationService.updateAccount(id, updateAccountRequest));
     }
 
+    @PatchMapping("/api/account")
+    public ResponseEntity updateAccountByManager(@RequestBody @Valid UpdateAccountRequestByManager updateAccountRequest) {
+        return ResponseEntity.ok(authenticationService.updateAccountByManage(updateAccountRequest));
+    }
+
     @GetMapping("/api/account/{id}")
     public ResponseEntity getAccountById(@PathVariable String id) {
         return ResponseEntity.ok(authenticationService.getAccountById(id));
