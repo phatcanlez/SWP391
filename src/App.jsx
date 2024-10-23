@@ -37,8 +37,6 @@ import Account from "./pages/customer/account";
 
 import Report from "./pages/admin/manage-report";
 import Order from "./pages/admin/manage-order/order";
-import OrderDetails from "./pages/admin/manage-order/orderDetails";
-import Payment from "./pages/admin/manage-price/payment";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -104,10 +102,6 @@ function App() {
           element: <Order />,
         },
         {
-          path: "order-details",
-          element: <OrderDetails />,
-        },
-        {
           path: "manage-user",
           element: <ManageUser />,
         },
@@ -130,10 +124,6 @@ function App() {
         {
           path: "box",
           element: <Box />,
-        },
-        {
-          path: "payment",
-          element: <Payment />,
         },
         {
           path: "feedback",
