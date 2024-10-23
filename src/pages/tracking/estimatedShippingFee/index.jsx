@@ -4,6 +4,10 @@ import { useForm } from "antd/es/form/Form";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import App from "./google";
+import api from "../../../config/axios";
+import box from "../../../img/box.png";
+import airplane from "../../../img/airplane.png";
+import delivery from "../../../img/delivery.png";
 
 const { Option } = Select;
 
@@ -418,6 +422,13 @@ function EstimatedShippingFee() {
       setTempSelectionsTo(selectedAddress);
     }
 
+    if (
+      (tempSelectionsFrom && selectedAddress) ||
+      (selectedAddress && tempSelectionsTo)
+    ) {
+      appRef.current.setLocations(tempSelectionsFrom, selectedAddress);
+    }
+
     form.resetFields();
     handleHideModal();
   }
@@ -484,10 +495,9 @@ function EstimatedShippingFee() {
             </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
-            <div style={{ textAlign: "left" }}>
-              You can purchase this many more koi, of each size, to fit in the
-              same size box shown above.
+            <img src={delivery} />
+            <div style={{ textAlign: "center", paddingBottom: "20px" }}>
+              Shipping method
             </div>
           </div>
         </div>
