@@ -23,10 +23,7 @@ function getItem(label, key, icon, children) {
 }
 const items = [
   getItem("Dashboard", "/", <PieChartOutlined />),
-  getItem("Manage Order", "sub1", <PieChartOutlined />, [
-    getItem("Order", "order"),
-    getItem("Order Details", "order-details"),
-  ]),
+  getItem("Manage Order", "order", <PieChartOutlined />),
   getItem("Manage User", "manage-user", <PieChartOutlined />),
   getItem("Manage Service", "sub2", <PieChartOutlined />, [
     getItem("Extra service", "extra-service"),
@@ -36,7 +33,6 @@ const items = [
     getItem("Price list weight", "price-list-weight"),
     getItem("Price list distance", "price-list-distance"),
     getItem("Box price", "box"),
-    getItem("Payment", "payment"),
   ]),
   getItem("Feedback", "feedback", <PieChartOutlined />),
   getItem("Report", "report", <PieChartOutlined />),

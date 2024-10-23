@@ -1,4 +1,13 @@
 import "./index.css";
+import diagram from "../../../img/diagram.png";
+import revenue from "../../../img/revenue.png";
+import growthRate from "../../../img/growth-rate.png";
+import world from "../../../img/world.png";
+import noGroup from "../../../img/no-group.png";
+import protectedImg from "../../../img/protected.png";
+import checkout from "../../../img/checkout.png";
+import delivery from "../../../img/delivery.png";
+import customerCare from "../../../img/customer-care.png";
 
 function International() {
   const container1P1 = { fontSize: 45, fontWeight: 700 };
@@ -19,23 +28,14 @@ function International() {
           </p>
         </div>
         <div className="international__container1__diagram">
-          <img
-            src="https://s3-alpha-sig.figma.com/img/3ada/3a94/0043925d01cdb2916aa9e9d639d44488?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=nOWahD5QWemdhEgschcUCBUS5iJI7huzF217mEHUERYBpg54y-nmB6pqbotCbw7Yh3iV38-~zo3CGyUTtK8LLx~lroJ6R3e00TNGxKTD-qGN41uD-3Ihx4aHOlvbU-uAFZEYWtMMSvHXIlnKUOIsXwQtnZqXmg~BBG-OkTBtDEUl7Ny0M~lnl9ge81eGynutQ8uxCSCdwMqYtUJ-USIjH3RNrQpNL3M-WCtNzwCXHvvg8hIHO91kdJ3w5BWYd5IWKUJY9t2bFxw4nFyDdS2R3QBuqJn2x1RjZT2QKvOz9EJ8zU60mRoVrHk3tJdhunmaYLdGTncyvVIda2kY~DavaA__"
-            alt=""
-          />
+          <img src={diagram} />
           <ul>
             <li>
-              <img
-                src="https://s3-alpha-sig.figma.com/img/ae24/e9c2/4326c6bb6cd180178f349e8759e5fb0d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=NrM~0MeSr-KBJ6GBq62940x1~mFjg6vArlZic2i09hXCnAOTA-n9XtqBmshwnXNdunSK7LHwkL8EEbUCOS1tgt18Tqfb4beBdcOvolCQ751Jp0MjtQPsEEDw9A3sb8XKECnXhTAkY-V4pVsckFyYMgmxb5oGZje50leRqT1FTJ9zmpeoeiKGBvIgNf9vyUSFDZoqPtiZ2O0pjsWycS4msVy-FkWy~fZsshyHooykq4K4fcOYDuneveI0j8OCQg6oKsygl-r2oIs73XGInx5TeVBvWqWi1hgH~0mtbXM4Fhm5VL14QYYiEqoYdtprAeOT7nrbkNMWrLp~CMp77Ao4VQ__"
-                alt=""
-              ></img>
+              <img src={revenue}></img>
               <p>B2c Revenue</p>
             </li>
             <li>
-              <img
-                src="https://s3-alpha-sig.figma.com/img/5c3c/2f98/67b6f573ffecaea72c93868494e2ad4d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=hkp0LxZsnnrqW1kY~v5uHlvwp~DsDPQPMs5q99iJphIfPcWh9A8OLcx9Sa7yKrTqP4br4miGL7sC~6PhITLG1x2qptc1angE0WDW6OuG1ofcBVWXrXISK7qi6MX6MVNRL7kIC1-OxlWvnq3Qn0qnpF3cEJhEa28J6UTGK59CiT~4FJOa0nysPwCJRuz6kIUF1I9WITRbVRxMCCKB80g0b--xhJ-t-atN0TFwPm1zjOKcptL~wEGTcCECeXtmeTnO04EeIombVKLLBdzxU48n2GP4nPuiSbSNX6o~LnALrGBWA835oc5Q7caSihjADy24nfIlHWmsgbmkJH2fIBQA0g__"
-                alt=""
-              ></img>
+              <img src={growthRate}></img>
               <p>Growth rate</p>
             </li>
           </ul>
@@ -57,45 +57,27 @@ function International() {
         </div>
         <div className="international__container2__right">
           <p>
-            <img
-              src="https://s3-alpha-sig.figma.com/img/4020/ceef/37dac013b794e671e50240087216e969?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=PpIRxRVp-h~XYF7inxHmB~MVm1X4ClCzOj12eyWZlXsMlAG4NVNdRMG3WkRtHpNTJCKUVOZUyIWbdVJT5IkgiKewxpj9WWXUAppXyI~61~~KxInuUjZucU5nFjissCcR6ec6dr7czSfX0ROhmReeSJbXHYDUrONsz6TSrLa5LXcgylTy8QkrkWXKcYN2qZiaw4zHpl4~8dQVl-war1mI8GnDquOlb2ruDo7sHoNX5aZEhvhuo~U1TnV7g1QNvNP3uXb-VyjH00axIGzgE6X33zuNdeIQ2q-397XPOcd081HWHAIQd~9h0lUcwJIaEO3DJHF3IezbSDMqfNlSLv8a2Q__"
-              alt=""
-            />
+            <img src={world} />
             Language barier
           </p>
           <p>
-            <img
-              src="https://s3-alpha-sig.figma.com/img/a83b/8d1a/33983defd6097c8dd9f0c0fa506405fe?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=HEbcqJPiTSWg8BPdOX8vF3~8itMnfUDXb5J5~flZD2ad1x9wYZMY8FVMZzrWEfkBexmikiq6G5T4kfE9OEPFbvNF7IcCby0kX92OQVXNdFjfovxvmfmZNLwyCillFN64kiT2dOiwTcdq1xn6W34IqI51~RWBLYZFqAMDCKmJV2F9bIxGFk7lVyjMQyPyPUvEVYX8ZZS5GzvcXEKrjlG9xf8kOXNGbLNbCG8mz2TtkTDUj9jGMAd8F4hUMexuq~zcOxjx0yTys05BO2s5jdRlfAJSVYvgCBfDaw2CJS7wl~XJ6mQWydB9eS8QiYEpLwpi6lNLmQGA~bICc9ztFhs3iQ__"
-              alt=""
-            />
+            <img src={noGroup} />
             Cultural differences
           </p>
           <p>
-            <img
-              src="https://s3-alpha-sig.figma.com/img/5408/49f5/3a95f11b337bef76a828df3fa2e4f9f8?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pkodD6XaBfWC0v15QAhVectooOOf21kuN-ZUQ71~oFiV7dXWQVq9Oyq-AXUhWI6QfgYeW1fSH6C34pnVTsmx2-0faE1lb0W4uvZLNpj2VOUBRwlQ6Geb~kKLNDXIczqlJKSWalWUcQeV3Ckvw~aoXr3SCmafYOW-n8fFvGUOkGGQmCpC3KTZC3oqvMDxtMXodYZB2~p2Dx09dsceV19qJI7xctXFRMEOhN0X13YxUdY0cSb7xKhOiYz7qJp0ApT5KpbGlu8k~EKNrZTbsN5sCaTCVMwDTNe47wEoNptu~n9bb6AUkDGkSoPsz-LETgr9If2pp0LLtzAnaxkKEhENTw__"
-              alt=""
-            />
+            <img src={protectedImg} />
             Complex regulations and laws
           </p>
           <p>
-            <img
-              src="https://s3-alpha-sig.figma.com/img/ba16/b949/a628b53ef6d834c7f12291321633279a?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Pgb09SihJGUFvSDvdl-EQxtDMP6rH2LzSsW~EijGLFtPP4Y3OeYS8uvS-WydL-jyerxkjWzJE3Y5OIANahxGRBfelZNzwJgUiBSfwwRk~Pq0lmBLqhe5enWEmJ8uOX9rdLSMfm3HYtfJ5jfuqRcMGpiafuS1Zu2jnCO3euV4oPGQfJSkk2xbaqEyCE5INlh2fv1ETHXmRDYaK918XzlfWB-DW9kCaVyb7Vdr5F1gVHFJpGfUY2ojj~vxLguphqhBiME-g3MiaY87C2zlvjFTiGv3XtZ7mfhkhXt31QJ2rpxX4oDn72BiYhMek5iYR6jx~9BZZzmRU6QouaAk5coccw__"
-              alt=""
-            />
+            <img src={checkout} />
             Order processing and warehousing
           </p>
           <p>
-            <img
-              src="https://s3-alpha-sig.figma.com/img/b57a/6c42/dce771138dd2a91410d319b0c44df4de?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=b3fEhEppFbI9avXtHAddd5vNZPr4vX--s5wCj9352sBSAj8mq1K7BTQIAth1MWEtYZK2qslgwo0Fltl-ZP71oQh9GL008v3kqiYvULZRJpAtsjbwJKRylX-SDCKZ-NTSlnK5IV11LrEpuTN~V4GRtzFDF8irLdKtr9r0tVKayaQ1yQjrfRqbiNGq9xWInQP3GktXGyXQ8v01D5KAEkydK83Phdxl7QAY88YBY7v7Rlgs-wl~s~CELghglWivzXedlXcG~oMWMIRRdU~oBaKYy7mtNrB3fePzCUU~-YL26MDh5ZBAuqBX9TJX7I9ptdBWjdTH11f3JIFUztVFBXdFjw__"
-              alt=""
-            />
+            <img src={delivery} />
             Delivery and return processing
           </p>
           <p>
-            <img
-              src="https://s3-alpha-sig.figma.com/img/b96a/6b59/b9c651f108804535458ad3f41dfffee2?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=B3VL5hGvAoY5au8nc7uTBNuDkck2l5EZNwomfqEccmqNgg1nb4E1FWWqggNJfdPPjJNE-MFs47ILzuAISaJ18RQHxDgTznlqYYQnHTkWACB96ZxIMypOHJfk2ihol6cyPfkKq7JnhWq3N6Y8sWOypAhPv4o-ttjWPwEa4gsHRNFLi0YObtbUbTMEkaDvY3g7mT-5FYWG7uaoZDQA0YbnB8AIxAgYzuscumi4FqRZVsGu-xP3FXpjPSiDTEo0-145mfzsU6DR~EyOkeqmSzhq28OmesnF6jAqM14C8NMNWU-0b-QWudJr7KwSaPJJF9lBM6X2lLzpIEjY9rXZG2NAoQ__"
-              alt=""
-            />
+            <img src={customerCare} />
             Customer care
           </p>
         </div>
