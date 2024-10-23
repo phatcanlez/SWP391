@@ -25,7 +25,11 @@ function FormDisabledDemo() {
       const response = await api.post("orders", values);
       console.log(response);
       toast.success("Successful");
-      navigate("/customer-service/delivery-method");
+      navigate("/customer-service/payment");
+      localStorage.removeItem("fishFormData");
+      localStorage.removeItem("addressFormData");
+      localStorage.removeItem("priceFormData");
+      localStorage.removeItem("paymentFormData");
     } catch (err) {
       toast.error(err.response?.data || "An error occurred");
     }
@@ -42,7 +46,7 @@ function FormDisabledDemo() {
     },
     {
       title: "Price",
-      content: <Price ref={(el) => (formRefs.current[1] = el)} />,
+      content: <Price ref={(el) => (formRefs.current[2] = el)} />,
     },
     {
       title: "Payment",
@@ -109,6 +113,30 @@ function FormDisabledDemo() {
     setCurrent(current - 1);
   };
 
+  const clearAll = () => {
+    // Clear all form data
+    formRefs.current.forEach((formRef) => {
+      if (formRef && formRef.resetFields) {
+        formRef.resetFields();
+      }
+    });
+
+    // Clear localStorage
+    localStorage.removeItem("fishFormData");
+    localStorage.removeItem("addressFormData");
+    localStorage.removeItem("priceFormData");
+    localStorage.removeItem("paymentFormData");
+    localStorage.removeItem("orderFormData");
+
+    // Reset step data
+    setStepData({});
+
+    // Reset to first step
+    setCurrent(0);
+
+    toast.success("All form data has been cleared");
+  };
+
   return (
     <Form form={form} onFinish={handleSubmit}>
       <h6>Create Order</h6>
@@ -136,6 +164,9 @@ function FormDisabledDemo() {
                 Previous
               </Button>
             )}
+            <Button type="danger" onClick={clearAll} style={{ marginLeft: 8 }}>
+              Clear All
+            </Button>
           </div>
         </div>
       </div>
