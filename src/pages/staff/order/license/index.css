@@ -1,7 +1,7 @@
 .licence {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 0.5fr 0.5fr;
+    gap: 60px;
     border: solid #e7e7e7 2px;
     border-radius: 8px;
     padding: 15px 30px;
@@ -20,6 +20,7 @@
         display: flex;
         align-items: center;
         gap: 20px;
+        
     }
     
 

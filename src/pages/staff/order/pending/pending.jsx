@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CheckCircleOutlined,
   DoubleRightOutlined,
   LoadingOutlined,
-  PlusOutlined,
   SmileOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
@@ -11,14 +10,15 @@ import { Steps, Button, Modal, Form, Upload, Image, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import api from "../../../../config/axios";
-import { increase } from "../../../../redux/features/countSlice";
 import { useForm } from "antd/es/form/Form";
 import uploadFile from "../../../../config/file";
+import "./index.css";
+import { done } from "../../../../redux/features/orderSlice";
 
 const InProcess = () => {
-  const approvingorder = useSelector((store) => store.order);
+  const order = useSelector((store) => store.order.data);
+  console.log(order.orderID);
   const user = useSelector((store) => store.user);
-  const currentStep = useSelector((store) => store.count.value);
   const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCancel = () => {
@@ -36,6 +36,25 @@ const InProcess = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState([]);
+  const [statuss, setStatus] = useState([]);
+  const [viewOrder, setViewOrder] = useState([]);
+
+  const fetchOrderDetail = async () => {
+    try {
+      const response = await api.get(`/orders/${order.orderID}`);
+      const value = response.data;
+      console.log(value);
+      setViewOrder(value);
+      const status = value.status[value.status.length - 1]?.statusInfo;
+      setStatus(status);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  console.log(statuss);
+  useEffect(() => {
+    fetchOrderDetail();
+  }, []);
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -47,15 +66,16 @@ const InProcess = () => {
 
   const handlePendingOrder = async () => {
     try {
+      
       const setvalue = {
         statusInfo: "PENDING",
         empId: user.id,
-        order: approvingorder?.[0]?.orderID,
+        order: viewOrder.orderID,
         description: "Your order is currently in transit to you.",
       };
       await api.post("/status", setvalue);
       toast.success("PENDING");
-      handleNextStep();
+      fetchOrderDetail();
     } catch (error) {
       toast.error(error.response.data);
     }
@@ -71,10 +91,10 @@ const InProcess = () => {
         const url = await uploadFile(file.originFileObj);
         console.log(url);
         const value = {
-          orderId: `${approvingorder?.[0]?.orderID}`,
+          orderId: `${viewOrder.orderID}`,
           image: url,
         };
-        const response = await api.put(`orders/image`,value);
+        const response = await api.put(`orders/image`, value);
         console.log(response);
         handleSuccessOrder();
       } catch (error) {
@@ -87,55 +107,50 @@ const InProcess = () => {
       const setvalue = {
         statusInfo: "SUCCESS",
         empId: user.id,
-        order: approvingorder?.[0]?.orderID,
+        order: viewOrder.orderID,
         description: "Order Delivered Successfully",
       };
       await api.post("/status", setvalue);
       toast.success("SUCCESSFULL");
-      handleNextStep();
+      fetchOrderDetail();
     } catch (error) {
       toast.error(error.response.data);
     }
   };
-
-  
-
   const steps = [
     {
       title: "Approved",
-      status: "finish", // Trạng thái 'finish' nếu đã qua bước này
+      status:
+        statuss === "APPROVED" || statuss === "PENDING" || statuss === "SUCCESS"
+          ? "finish"
+          : "wait",
       icon: <CheckCircleOutlined />,
     },
     {
       title: "Preparing",
       status:
-        currentStep > 1 ? "finish" : currentStep === 1 ? "process" : "wait", // 'process' nếu đang ở bước này, 'finish' nếu đã qua
+        statuss === "APPROVED" || statuss === "PENDING" || statuss === "SUCCESS"
+          ? "finish"
+          : "wait",
       icon: <LoadingOutlined />,
     },
     {
       title: "On delivery",
       status:
-        currentStep > 2 ? "finish" : currentStep === 2 ? "process" : "wait", // 'process' nếu đang ở bước này, 'finish' nếu đã qua
+        statuss === "PENDING" || statuss === "SUCCESS" ? "finish" : "wait",
       icon: <DoubleRightOutlined />,
     },
     {
       title: "DONE",
-      status:
-        currentStep > 3 ? "finish" : currentStep === 3 ? "process" : "wait",
+      status: statuss === "SUCCESS" ? "finish" : "wait",
       icon: <SmileOutlined />,
     },
   ];
-
-  const handleNextStep = () => {
-    dispatch(increase());
-  };
-
   return (
     <div>
-      <Steps items={steps} />
-      <span>{currentStep}</span>
+      <Steps className="step" items={steps} />
 
-      {approvingorder?.[0]?.status.statusInfo === "APPROVED" && (
+      {statuss === "APPROVED" && (
         <>
           <Button
             type="primary"
@@ -153,17 +168,17 @@ const InProcess = () => {
       </Button> */}
         </>
       )}
-      {approvingorder?.[0]?.status.statusInfo === "PENDING" && (
+      {statuss === "PENDING" && (
         <>
-          <Button
+          <button
+            className="done-btn"
             type="primary"
             onClick={() => {
               setIsModalOpen(true);
             }}
-            style={{ marginTop: 20 }}
           >
-            DONE
-          </Button>
+            Order Successfully Delivered
+          </button>
           <Modal
             title="Confirmation Of Successful Delivery"
             open={isModalOpen}

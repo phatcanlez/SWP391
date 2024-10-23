@@ -10,7 +10,6 @@ import api from "../../config/axios";
 import { SettingOutlined } from "@ant-design/icons";
 
 function Profile() {
-  
   const [form] = Form.useForm();
   const [checkForm] = Form.useForm();
   const user = useSelector((store) => store);
@@ -37,6 +36,7 @@ function Profile() {
       checkForm.resetFields();
       showModal();
     } catch (error) {
+      console.error(error);
       toast.error("Wrong password");
     }
   };

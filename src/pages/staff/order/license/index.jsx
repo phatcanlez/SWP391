@@ -31,7 +31,7 @@ const ShowLicense = ({ licenses, index }) => {
   return (
     <div>
       <div className="licence">
-        <div className="licence-item">
+        <div className="licence-item" style={{ width: "300px" }}>
           <p className="color">{index + 1}</p>
           <Image
             className="koi-img"
@@ -54,9 +54,11 @@ const ShowLicense = ({ licenses, index }) => {
           </div>
         </div>
 
-        <p>
+       <div className="licence-item">
+       <p>
           Price of Koi: <span className="color"> {licenses?.priceOfKoi}</span>
         </p>
+       </div>
       </div>
     </div>
   );

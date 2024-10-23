@@ -5,44 +5,42 @@ import "./index.css";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
 import License from "../license";
 import { Button, Form, Input, Modal } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
+import { approve, done } from "../../../../redux/features/orderSlice";
 
 function OrderDetail() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchOrderDetail = async (id) => {
+    setLoading(true);
     try {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
-      console.log(response.data);
-      response.data.orderDetail.extraService;
       setService(response.data.orderDetail.extraService);
-      console.log(service);
-
-      const statusArray = response.data.status;
-      console.log(statusArray);
-      if (statusArray.length > 0) {
-        console.log(statusArray[statusArray.length - 1]?.statusInfo);
-        setStatus(statusArray[statusArray.length - 1]?.statusInfo);
+      if (response.data.status.length > 0) {
+        setStatus(
+          response.data.status[response.data.status.length - 1]?.statusInfo
+        );
       }
     } catch (err) {
       toast.error(err.response.data);
+    } finally {
+      setLoading(false);
     }
   };
-
   useEffect(() => {
-    if (id) {
-      fetchOrderDetail(id);
-    }
-  }, []);
-
+    fetchOrderDetail(id);
+  }, [id]);
   /////////////////////////////
 
   const [form] = useForm();
@@ -67,6 +65,7 @@ function OrderDetail() {
       await api.post("/status", values);
       setIsModalOpen(false);
       toast.success("REJECTED");
+      navigate("/staff/rejected-order");
     } catch (error) {
       toast.error(error.response.data);
     } finally {
@@ -82,17 +81,16 @@ function OrderDetail() {
       const processingOrder = await api.get(
         `/orders/status-emp?status=PENDING&empId=${user.id}`
       );
-      console.log(response.data);
       if (response.data.length === 0 && processingOrder.data.length === 0) {
         console.log(user.id);
         const emid = user.id;
-        const setvalue = {
+        const setvalue = await api.post("/status", {
           statusInfo: "APPROVED",
           empId: emid,
           order: id,
           description: "The order is approved",
-        };
-        await api.post("/status", setvalue);
+        });
+        dispatch(approve(setvalue));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");
@@ -245,6 +243,17 @@ function OrderDetail() {
           status === "SUCCESS") && (
           <>
             <InProcess />
+            {(status === "APPROVED" ||
+          status === "PENDING") && (
+          <>
+            <Button className="btn btn-r" onClick={showModal}>
+              REJECT
+            </Button>
+          </>
+        )}
+            <Button className="fb-btn" >
+              View Feedback
+            </Button>
           </>
         )}
 
@@ -262,25 +271,28 @@ function OrderDetail() {
           </div>
         </div>
       </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="btn-wrap">
+          {status === "WAITING" && (
+            <>
+              <Button className="btn btn-r" onClick={showModal}>
+                REJECT
+              </Button>
+              <Button className="btn btn-a" onClick={handleAddApprove}>
+                APPROVE
+              </Button>
+            </>
+          )}
 
-      <div className="btn-wrap">
-        {status === "WAITING" && (
-          <>
-            <Button className="btn btn-r" onClick={showModal}>
-              REJECT
-            </Button>
+          {status === "FAIL" && (
             <Button className="btn btn-a" onClick={handleAddApprove}>
               APPROVE
             </Button>
-          </>
-        )}
-
-        {status === "FAIL" && (
-          <Button className="btn btn-a" onClick={handleAddApprove}>
-            APPROVE
-          </Button>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* <span>Price: {order.price}</span>            */}
 

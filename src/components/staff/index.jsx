@@ -1,5 +1,5 @@
-import { Layout, Menu, theme } from "antd";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Layout, Menu } from "antd";
+import { Link, Outlet } from "react-router-dom";
 const { Content, Sider } = Layout;
 import logo from "../../img/logolayout.png";
 import "../staff/index.css";
@@ -13,8 +13,7 @@ import {
 import Footer from "../footer";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
-import { useDispatch, useSelector } from "react-redux";
-import { approve, done } from "../../redux/features/orderSlice";
+import {  useSelector } from "react-redux";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -25,61 +24,52 @@ function getItem(label, key, icon, children) {
 }
 
 const Staff = () => {
-  const dispatch = useDispatch();
+  
   const user = useSelector((store) => store.user);
   const [approving, setApproving] = useState([]);
   const [loading, setLoading] = useState(true);
- 
+  const orderView = useSelector((store) => store.order);
+  const order = orderView.data
+  console.log(order);
+  
   const fetchApproveOrder = async () => {
     try {
       if (!user?.id) return; // kiểm tra nếu user chưa có
-
-      const approvedResponse = await api.get(
-        `/orders/status-emp?status=APPROVED&empId=${user.id}`
-      );
-
-      if (approvedResponse.data.length > 0) {
-        setApproving(approvedResponse.data);
-        dispatch(approve(approvedResponse.data));
-      } else {
-        dispatch(done()); // không có đơn approved -> fetch đơn pending
-        const pendingResponse = await api.get(
-          `/orders/status-emp?status=PENDING&empId=${user.id}`
-        );
-        setApproving(pendingResponse.data || []);
-        if (pendingResponse.data.length > 0) {
-          dispatch(approve(pendingResponse.data));
-        }
-      }
+      const approvedResponse = await api.get(`/orders/${order.orderID}`);
+      console.log(approvedResponse.data);
+      const response = approvedResponse.data;
+      setApproving(response);
     } catch (err) {
-      console.error("Lỗi khi lấy dữ liệu:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
-
+  console.log(approving);
   useEffect(() => {
     fetchApproveOrder();
   }, []);
-
+ 
   const items = [
-    getItem("All Orders", "order", <MenuOutlined />, [
-      getItem("Waiting", "waiting-order"),
-      approving.length > 0
-        ? getItem("Approved", `view/${approving[0].orderID}`)
-        : null, // chỉ render nếu có dữ liệu
-      getItem("Rejected", "rejected-order"),
-    ].filter(Boolean)), // loại bỏ phần tử null
+    getItem(
+      "All Orders",
+      "order",
+      <MenuOutlined />,
+      [
+        getItem("Waiting", "waiting-order"),
+        order ? getItem("Approved", `view/${order.orderID}`) : null, // chỉ render nếu có dữ liệu
+        getItem("Rejected", "rejected-order"),
+      ].filter(Boolean) // loại bỏ phần tử null
+    ), // loại bỏ phần tử null
     getItem("Order History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
-    getItem("Support", "support", <CommentOutlined />),
+    getItem("Feedback", "view-feedback", <CommentOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
   ];
 
   if (loading) {
     return <div>Loading...</div>; // render loading nếu đang fetch dữ liệu
   }
-
 
   return (
     <div style={{ marginTop: "20px" }}>
@@ -90,9 +80,9 @@ const Staff = () => {
       >
         <Sider className="sider">
           <div className="sider__header">
-            <div>
+            <Link to="/">
               <img src={logo} alt="" />
-            </div>
+            </Link>
             <h4>KOIKICHI</h4>
           </div>
           <Menu mode="inline" items={items} />
