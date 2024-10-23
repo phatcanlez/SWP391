@@ -181,7 +181,6 @@ public class AuthenticationService implements UserDetailsService {
                 account.setStatus(updatedAccount.isStatus());
                 account.setPhoneNumber(updatedAccount.getPhoneNumber());
                 account.setAddress(updatedAccount.getAddress());
-                account.setPassword(passwordEncoder.encode(updatedAccount.getPassword()));
                 return accountRepository.save(account);
             }).orElseThrow(() -> new RuntimeException("Account not found with id " + id));
         } catch (Exception e) {
@@ -189,6 +188,43 @@ public class AuthenticationService implements UserDetailsService {
         }
 
     }
+
+    public Account updateAccountByManage(UpdateAccountRequestByManager updatedAccount) {
+        try {
+            return accountRepository.findById(updatedAccount.getId()).map(account -> {
+                if (updatedAccount.getRole() != null) {
+                    account.setRole(updatedAccount.getRole());
+                }
+                if (updatedAccount.getRole() != null) {
+                    account.setRole(updatedAccount.getRole());
+                }
+                if (updatedAccount.getName() != null) {
+                    account.setName(updatedAccount.getName());
+                }
+                if (updatedAccount.getEmail() != null) {
+                    account.setEmail(updatedAccount.getEmail());
+                }
+                if (updatedAccount.getAvatar() != null) {
+                    account.setAvatar(updatedAccount.getAvatar());
+                }
+                if (updatedAccount.getStatus() != null) {
+                    account.setStatus(Boolean.parseBoolean(updatedAccount.getStatus()));
+                }
+                if (updatedAccount.getPhoneNumber() != null) {
+                    account.setPhoneNumber(updatedAccount.getPhoneNumber());
+                }
+                if (updatedAccount.getAddress() != null) {
+                    account.setAddress(updatedAccount.getAddress());
+                }
+
+                return accountRepository.save(account);
+            }).orElseThrow(() -> new RuntimeException("Account not found with id " + updatedAccount.getId()));
+        } catch (Exception e) {
+            throw new DuplicateException(e.getMessage());
+        }
+
+    }
+
 
     public Account getAccountById(String id) {
         return accountRepository.findAccountById(id);

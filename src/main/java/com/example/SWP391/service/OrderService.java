@@ -3,6 +3,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.*;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.OrderDTO.OrderImageRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
@@ -50,6 +51,7 @@ public class OrderService {
         List<OrderResponse> orderResponses = orders.stream().map(order -> {
             OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
             orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
             return orderResponse;
         }).toList();
         OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
@@ -82,6 +84,7 @@ public class OrderService {
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
             paymentRepository.save(payment);
+            newOrder.setPayment(payment);
             newOrder = orderRepository.save(newOrder);
             OrderDetailRequest orderDetail = modelMapper.map(order, OrderDetailRequest.class);
             orderDetail.setOrderID(newOrder.getOrderID());
@@ -90,6 +93,7 @@ public class OrderService {
             orderDetailService.createOrderDetail(orderDetail);
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
+            orderResponse.setPayment(newOrder.getPayment().getStatus());
             return orderResponse;
         } catch (NotFoundException e) {
 
@@ -128,20 +132,20 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatus(String status) {
+    public List<OrderResponse> viewOrderByStatus(StatusInfo status) {
         try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == statusInfo) {
+                if (orders.getStatus().getLast().getStatusInfo() == status) {
                     list.add(orders);
                 }
             }
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -164,6 +168,7 @@ public class OrderService {
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -178,6 +183,7 @@ public class OrderService {
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -195,6 +201,20 @@ public class OrderService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to create orders from JSON array", e);
+        }
+    }
+
+    public String updateImage(OrderImageRequest orderImageRequest) {
+        Orders existingOrder = orderRepository.findByorderID(orderImageRequest.getOrderId());
+        if (existingOrder == null) {
+            throw new NotFoundException("Not found!");
+        }
+        try {
+            existingOrder.setImage(orderImageRequest.getImage());
+            orderRepository.save(existingOrder);
+            return "Image updated successfully";
+        } catch (Exception e) {
+            throw new DuplicateException("Update fail");
         }
     }
 }
