@@ -3,6 +3,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.*;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.OrderDTO.OrderImageRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
@@ -203,13 +204,13 @@ public class OrderService {
         }
     }
 
-    public String updateImage(String image, String id) {
-        Orders existingOrder = orderRepository.findByorderID(id);
+    public String updateImage(OrderImageRequest orderImageRequest) {
+        Orders existingOrder = orderRepository.findByorderID(orderImageRequest.getOrderId());
         if (existingOrder == null) {
             throw new NotFoundException("Not found!");
         }
         try {
-            existingOrder.setImage(image);
+            existingOrder.setImage(orderImageRequest.getImage());
             orderRepository.save(existingOrder);
             return "Image updated successfully";
         } catch (Exception e) {

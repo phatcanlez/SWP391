@@ -13,10 +13,20 @@ import java.util.List;
 public class TrackingUtil {
 
     public static double getPriceByBoxAmount(BoxAmountDTO boxAmount, List<BoxPrice> listBoxPrice) {
-        float smallBoxPrice = listBoxPrice.get(0).getPrice() + boxAmount.getSmallBox() * listBoxPrice.get(0).getSurcharge();
-        float mediumBoxPrice = listBoxPrice.get(1).getPrice() + boxAmount.getMediumBox() * listBoxPrice.get(1).getSurcharge();
-        float largeBoxPrice = listBoxPrice.get(2).getPrice() + boxAmount.getLargeBox() * listBoxPrice.get(2).getSurcharge();
-        float extraLargeBoxPrice = listBoxPrice.get(3).getPrice() + boxAmount.getExtraLargeBox() * listBoxPrice.get(3).getSurcharge();
+        float smallBoxPrice = 0, mediumBoxPrice = 0, largeBoxPrice = 0, extraLargeBoxPrice = 0;
+
+            if (boxAmount.getSmallBox() > 0) {
+                smallBoxPrice += (listBoxPrice.get(0).getPrice() + listBoxPrice.get(0).getSurcharge()) * boxAmount.getSmallBox();
+            }
+            if (boxAmount.getMediumBox() > 0) {
+                mediumBoxPrice += (listBoxPrice.get(1).getPrice() + listBoxPrice.get(1).getSurcharge()) * boxAmount.getMediumBox();
+            }
+            if (boxAmount.getLargeBox() > 0) {
+                largeBoxPrice += (listBoxPrice.get(2).getPrice() + listBoxPrice.get(2).getSurcharge()) * boxAmount.getLargeBox();
+            }
+            if (boxAmount.getExtraLargeBox() > 0) {
+                extraLargeBoxPrice += (listBoxPrice.get(3).getPrice() + listBoxPrice.get(3).getSurcharge()) * boxAmount.getExtraLargeBox();
+            }
 
         return smallBoxPrice + mediumBoxPrice + largeBoxPrice + extraLargeBoxPrice;
     }

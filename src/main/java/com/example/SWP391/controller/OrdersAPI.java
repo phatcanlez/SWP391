@@ -2,6 +2,7 @@ package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.Orders;
 import com.example.SWP391.entity.Status;
+import com.example.SWP391.model.DTO.OrderDTO.OrderImageRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.model.Enum.StatusInfo;
@@ -74,9 +75,9 @@ public class OrdersAPI {
                 return ResponseEntity.ok(orderService.updateOrder(order, id));
         }
 
-        @PutMapping("/api/orders/image/{id}")
-        public ResponseEntity updateImage(@RequestBody String image, @PathVariable String id) {
-                return ResponseEntity.ok(orderService.updateImage(image, id));
+        @PutMapping("/api/orders/image")
+        public ResponseEntity updateImage(@RequestBody OrderImageRequest orderImageRequest) {
+                return ResponseEntity.ok(orderService.updateImage(orderImageRequest));
         }
 
 }

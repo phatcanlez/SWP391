@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -36,24 +37,49 @@ public class TrackingService {
         return priceListDistanceRepository.findPriceListDistanceByShipMethod(shipMethod);
     }
 
+    public List<PriceListWeight> getPriceWeightListByShipMethod(long shipMethodID) {
+        ShipMethod shipMethod = shipMethodRepository.findShipMethodByShipMethodId(shipMethodID);
+        return priceListWeightRepository.findPriceListWeightByShipMethod(shipMethod);
+    }
+
     public double estimateTrackingByBox(EstimateTrackingRequestByBox estimateTrackingRequestByBox) {
 
-        List<PriceListDistance> listPrice = getTrackingList(estimateTrackingRequestByBox.getShipMethodID());
+        List<PriceListDistance> listPrice = getTrackingList(estimateTrackingRequestByBox.getShipMethodID()).
+                stream().sorted(Comparator.comparingInt(PriceListDistance::getDistance)).toList();
+        List<PriceListWeight> listPriceWeight = getPriceWeightListByShipMethod(estimateTrackingRequestByBox.getShipMethodID()).
+                stream().sorted((o1, o2) -> (int) (o1.getWeight() - o2.getWeight())).toList();
         List<BoxPrice> listBoxPrice = boxPriceRepository.findAll();
 
         double price = TrackingUtil.getPriceByBoxAmount(estimateTrackingRequestByBox.getBoxAmountDTO(), listBoxPrice);
 
-        double tmpDistance = estimateTrackingRequestByBox.getKilometers();
+        double kilometer = estimateTrackingRequestByBox.getKilometers();
         double distancePrice = 0;
-        for (var i = 0; i < listPrice.size() - 1; i++) {
-            if (tmpDistance <= listPrice.get(i).getDistance()) {
-                distancePrice += tmpDistance * listPrice.get(i).getPrice();
-                break;
+        double weight = estimateTrackingRequestByBox.getWeight();
+        double weightPrice = 0;
+
+        if (weight < listPriceWeight.getLast().getWeight()) {
+            for (var i = listPriceWeight.size() - 1; i >= 1; i--) {
+                if (weight < listPriceWeight.get(i).getWeight() && weight >= listPriceWeight.get(i - 1).getWeight()) {
+                    weightPrice = listPriceWeight.get(i - 1).getPrice();
+                    break;
+                }
             }
-            tmpDistance -= listPrice.get(i).getDistance();
-            distancePrice += listPrice.get(i).getDistance() * listPrice.get(i).getPrice();
+        }else {
+            weightPrice = listPriceWeight.getLast().getPrice();
         }
-        return price + distancePrice;
+
+        if (kilometer < listPrice.getLast().getDistance()) {
+            for (var i = listPrice.size() - 1; i >= 1; i--) {
+                if (kilometer < listPrice.get(i).getDistance() && kilometer >= listPrice.get(i - 1).getDistance()) {
+                    distancePrice = listPrice.get(i - 1).getPrice();
+                    break;
+                }
+            }
+        }else {
+            distancePrice = listPrice.getLast().getPrice();
+        }
+
+        return price + distancePrice + weightPrice;
     }
 
     public List<Status> getTrackingByOrderID(String orderID) {
