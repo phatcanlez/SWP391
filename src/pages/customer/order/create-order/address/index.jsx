@@ -89,20 +89,20 @@ const Address = forwardRef((props, ref) => {
     setTempSelections((prev) => ({ ...prev, wardName: option.children }));
   };
 
-  // const handleConfirm = () => {
-  //   // Here you can perform any action with the confirmed selections
-  //   console.log("Confirmed selections:", tempSelections);
-  // };
+  const handleConfirm = () => {
+    // Here you can perform any action with the confirmed selections
+    console.log("Confirmed selections:", tempSelections);
+  };
 
-  // const handleCancel = () => {
-  //   // Reset to the initial state
-  //   setSelectedCity(undefined);
-  //   setSelectedDistrict(undefined);
-  //   setSelectedWard(undefined);
-  //   setDistricts([]);
-  //   setWards([]);
-  //   setTempSelections({ cityName: "", districtName: "", wardName: "" });
-  // };
+  const handleCancel = () => {
+    // Reset to the initial state
+    setSelectedCity(undefined);
+    setSelectedDistrict(undefined);
+    setSelectedWard(undefined);
+    setDistricts([]);
+    setWards([]);
+    setTempSelections({ cityName: "", districtName: "", wardName: "" });
+  };
 
   useImperativeHandle(ref, () => ({
     validateFields: () => form.validateFields(),
@@ -110,28 +110,26 @@ const Address = forwardRef((props, ref) => {
     setFieldsValue: (values) => form.setFieldsValue(values),
   }));
 
-  // const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
-  // const handleMapClick = (event) => {
-  //     const lat = event.latLng.lat();
-  //     const lng = event.latLng.lng();
-  //     setSelectedLocation({ lat, lng });
-  //     form.setFieldsValue({
-  //         senderAddress: `Lat: ${lat}, Lng: ${lng}`,
-  //     });
-  // };
+  const handleMapClick = (event) => {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      setSelectedLocation({ lat, lng });
+      form.setFieldsValue({
+          senderAddress: `Lat: ${lat}, Lng: ${lng}`,
+      });
+  };
+
+  const [modalForm] = Form.useForm();
 
   function handleShowModal(values) {
     setWhere(values.currentTarget.getAttribute("value"));
     setIsOpen(true);
   }
-  useEffect(() => {
-    if (where !== "") {
-      console.log("Where:", where);
-    }
-  }, [where]);
 
   function handleHideModal() {
+    modalForm.resetFields();
     setSelectedCity(undefined);
     setSelectedDistrict(undefined);
     setSelectedWard(undefined);
@@ -143,7 +141,7 @@ const Address = forwardRef((props, ref) => {
 
   function handleSubmit(values) {
     let selectedAddress = "";
-    if (values.address !== undefined) {
+    if (values.address) {
       selectedAddress =
         values.address +
         ", " +
@@ -161,34 +159,36 @@ const Address = forwardRef((props, ref) => {
         tempSelections.cityName;
     }
     if (where === "From") {
-      setTempSelectionsFrom(selectedAddress);
       form.setFieldsValue({ senderAddress: selectedAddress });
     }
     if (where === "To") {
-      setTempSelectionsTo(selectedAddress);
       form.setFieldsValue({ receiverAddress: selectedAddress });
     }
 
     handleHideModal();
   }
 
+  function handleOK() {
+    modalForm.validateFields().then((values) => {
+      handleSubmit(values);
+    }).catch((info) => {
+      console.log('Validate Failed:', info);
+    });
+  }
+
   useEffect(() => {
     if (tempSelectionsFrom) {
-      //console.log("All locations selected:", tempSelectionsLocation);
+      console.log("All locations selected:", tempSelectionsLocation);
     }
     console.log(tempSelectionsFrom);
   }, [tempSelectionsFrom]);
 
   useEffect(() => {
     if (tempSelectionsTo) {
-      //console.log("All locations selected:", tempSelectionsTo);
+      console.log("All locations selected:", tempSelectionsTo);
     }
     console.log(tempSelectionsTo);
   }, [tempSelectionsTo]);
-
-  function handleOK() {
-    form.submit();
-  }
 
   return (
     <Form
@@ -267,77 +267,70 @@ const Address = forwardRef((props, ref) => {
         onOk={handleOK}
       >
         <Form
+          form={modalForm}
           labelCol={{
             span: 6,
           }}
-          form={form}
-          onFinish={handleSubmit}
         >
           <Form.Item
             label="Province / City"
-            name={"province_city"}
-            rules={[{ require: true }]}
+            name="province_city"
+            rules={[{ required: true, message: "Please select a province/city" }]}
           >
-            <Space>
-              <Select
-                showSearch
-                style={{ width: 200 }}
-                value={selectedCity}
-                onChange={handleCityChange}
-                placeholder="Select City"
-              >
-                {data.map((city) => (
-                  <Option key={city.Id} value={city.Id}>
-                    {city.Name}
-                  </Option>
-                ))}
-              </Select>
-            </Space>
+            <Select
+              showSearch
+              style={{ width: 200 }}
+              onChange={handleCityChange}
+              placeholder="Select City"
+            >
+              {data.map((city) => (
+                <Option key={city.Id} value={city.Id}>
+                  {city.Name}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             label="District"
-            name={"district"}
-            rules={[{ require: true }]}
+            name="district"
+            rules={[{ required: true, message: "Please select a district" }]}
           >
-            <Space>
-              <Select
-                showSearch
-                style={{ width: 200 }}
-                value={selectedDistrict}
-                onChange={handleDistrictChange}
-                placeholder="Select District"
-                disabled={!selectedCity}
-              >
-                {districts.map((district) => (
-                  <Option key={district.Id} value={district.Id}>
-                    {district.Name}
-                  </Option>
-                ))}
-              </Select>
-            </Space>
+            <Select
+              showSearch
+              style={{ width: 200 }}
+              onChange={handleDistrictChange}
+              placeholder="Select District"
+              disabled={!selectedCity}
+            >
+              {districts.map((district) => (
+                <Option key={district.Id} value={district.Id}>
+                  {district.Name}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
-          <Form.Item label="Ward" name={"ward"} rules={[{ require: true }]}>
-            <Space>
-              <Select
-                showSearch
-                style={{ width: 200 }}
-                value={selectedWard}
-                onChange={handleWardChange}
-                placeholder="Select Ward"
-                disabled={!selectedDistrict}
-              >
-                {wards.map((ward) => (
-                  <Option key={ward.Id} value={ward.Id}>
-                    {ward.Name}
-                  </Option>
-                ))}
-              </Select>
-            </Space>
+          <Form.Item
+            label="Ward"
+            name="ward"
+            rules={[{ required: true, message: "Please select a ward" }]}
+          >
+            <Select
+              showSearch
+              style={{ width: 200 }}
+              onChange={handleWardChange}
+              placeholder="Select Ward"
+              disabled={!selectedDistrict}
+            >
+              {wards.map((ward) => (
+                <Option key={ward.Id} value={ward.Id}>
+                  {ward.Name}
+                </Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             label="Address"
-            name={"address"}
-            rules={[{ require: true }]}
+            name="address"
           >
             <Input />
           </Form.Item>
