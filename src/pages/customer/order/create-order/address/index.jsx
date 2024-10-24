@@ -1,10 +1,6 @@
-
-import  { forwardRef, useImperativeHandle } from 'react';
-import { Form, Input } from "antd"
-import TextArea from "antd/es/input/TextArea"
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
-
-import React, { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
+import TextArea from "antd/es/input/TextArea";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { Button, Form, Input, Modal, Select, Space } from "antd";
 //import "./index.css";
 import { useEffect, useState } from "react";
@@ -118,12 +114,12 @@ const Address = forwardRef((props, ref) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   const handleMapClick = (event) => {
-      const lat = event.latLng.lat();
-      const lng = event.latLng.lng();
-      setSelectedLocation({ lat, lng });
-      form.setFieldsValue({
-          senderAddress: `Lat: ${lat}, Lng: ${lng}`,
-      });
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+    setSelectedLocation({ lat, lng });
+    form.setFieldsValue({
+      senderAddress: `Lat: ${lat}, Lng: ${lng}`,
+    });
   };
 
   const [modalForm] = Form.useForm();
@@ -174,17 +170,20 @@ const Address = forwardRef((props, ref) => {
   }
 
   function handleOK() {
-    modalForm.validateFields().then((values) => {
-      handleSubmit(values);
-    }).catch((info) => {
-      console.log('Validate Failed:', info);
-    });
+    modalForm
+      .validateFields()
+      .then((values) => {
+        handleSubmit(values);
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
   }
 
   useEffect(() => {
-    if (tempSelectionsFrom) {
-      console.log("All locations selected:", tempSelectionsLocation);
-    }
+    // if (tempSelectionsFrom) {
+    //   console.log("All locations selected:", tempSelectionsLocation);
+    // }
     console.log(tempSelectionsFrom);
   }, [tempSelectionsFrom]);
 
@@ -280,7 +279,9 @@ const Address = forwardRef((props, ref) => {
           <Form.Item
             label="Province / City"
             name="province_city"
-            rules={[{ required: true, message: "Please select a province/city" }]}
+            rules={[
+              { required: true, message: "Please select a province/city" },
+            ]}
           >
             <Select
               showSearch
@@ -333,10 +334,7 @@ const Address = forwardRef((props, ref) => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item
-            label="Address"
-            name="address"
-          >
+          <Form.Item label="Address" name="address">
             <Input />
           </Form.Item>
         </Form>
