@@ -36,9 +36,6 @@ import Account from "./pages/customer/account";
 
 import Report from "./pages/admin/manage-report";
 import Order from "./pages/admin/manage-order/order";
-
-import OrderDetails from "./pages/admin/manage-order/orderDetails";
-import Payment from "./pages/admin/manage-price/payment";
 import FAQHome from "./pages/FAQ";
 
 
