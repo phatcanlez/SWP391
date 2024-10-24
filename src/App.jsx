@@ -11,13 +11,19 @@ import Service from "./pages/service";
 import Tracking from "./pages/tracking";
 import AboutUs from "./pages/about";
 import Dashboard from "./components/dashboard";
-import ManageOrder from "./pages/admin/manage-order";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import CustomerService from "./components/customer-service";
 import CreateOrder from "./pages/customer/order/create-order";
 import Staff from "./components/staff";
 import OrderDetail from "./pages/staff/order/order-detail";
+import ManageUser from "./pages/admin/manage-user";
+import Box from "./pages/admin/manage-price/box";
+import ExtraService from "./pages/admin/manage-service/extraService";
+import PriceListWeight from "./pages/admin/manage-price/priceListWeight";
+import PriceListDistance from "./pages/admin/manage-price/priceListDistance";
+import Feedback from "./pages/admin/feedback";
+import Delivery from "./pages/admin/manage-service/delivery";
 import AllOrder, {
   FailOrder,
   History,
@@ -25,6 +31,13 @@ import AllOrder, {
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
 import FAQ from "./components/faq";
+
+import Account from "./pages/customer/account";
+
+import Report from "./pages/admin/manage-report";
+import Order from "./pages/admin/manage-order/order";
+import OrderDetails from "./pages/admin/manage-order/orderDetails";
+import Payment from "./pages/admin/manage-price/payment";
 import FAQHome from "./pages/FAQ";
 import Feedback from "./pages/staff/feedback";
 
@@ -95,8 +108,48 @@ function App() {
       ),
       children: [
         {
+          path: "report",
+          element: <Report />,
+        },
+        {
           path: "order",
-          element: <ManageOrder />,
+          element: <Order />,
+        },
+        {
+          path: "order-details",
+          element: <OrderDetails />,
+        },
+        {
+          path: "manage-user",
+          element: <ManageUser />,
+        },
+        {
+          path: "extra-service",
+          element: <ExtraService />,
+        },
+        {
+          path: "delivery",
+          element: <Delivery />,
+        },
+        {
+          path: "price-list-weight",
+          element: <PriceListWeight />,
+        },
+        {
+          path: "price-list-distance",
+          element: <PriceListDistance />,
+        },
+        {
+          path: "box",
+          element: <Box />,
+        },
+        {
+          path: "payment",
+          element: <Payment />,
+        },
+        {
+          path: "feedback",
+          element: <Feedback />,
         },
       ],
     },
@@ -105,6 +158,10 @@ function App() {
       path: "customer-service",
       element: <CustomerService />,
       children: [
+        {
+          path: "account",
+          element: <Account />,
+        },
         {
           path: "order",
           element: <CreateOrder />,
