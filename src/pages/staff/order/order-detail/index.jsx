@@ -10,7 +10,7 @@ import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
-import { approve, done } from "../../../../redux/features/orderSlice";
+import { approve } from "../../../../redux/features/orderSlice";
 
 function OrderDetail() {
   const { id } = useParams();

@@ -4,7 +4,7 @@ import StaffOrder from "../../../../components/staff/order-template";
 function AllOrder() {
   return (
     <div>
-      <StaffOrder path={"/orders"} />
+      <StaffOrder path={"/orders"} isPaging />
     </div>
   );
 }
@@ -38,7 +38,6 @@ function History() {
     </div>
   );
 }
-
 
 export default AllOrder;
 export { WaitingOrder };

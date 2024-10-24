@@ -7,19 +7,17 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { Steps, Button, Modal, Form, Upload, Image, message } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import api from "../../../../config/axios";
 import { useForm } from "antd/es/form/Form";
 import uploadFile from "../../../../config/file";
 import "./index.css";
-import { done } from "../../../../redux/features/orderSlice";
 
 const InProcess = () => {
   const order = useSelector((store) => store.order.data);
   console.log(order.orderID);
   const user = useSelector((store) => store.user);
-  const dispatch = useDispatch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCancel = () => {
     setIsModalOpen(false);

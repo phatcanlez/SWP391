@@ -4,29 +4,48 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { FileSyncOutlined } from "@ant-design/icons";
 
-function  StaffOrder({ path }) {
+function StaffOrder({ path, isPaging = false }) {
   const [order, setOrder] = useState([]);
+  const [loading, setLoading] = useState(false); // State to handle loading status
+  const [totalOrders, setTotalOrders] = useState(0); // Total number of orders
+  const [pagination, setPagination] = useState({
+    current: 1, // Current page
+    pageSize: 10, // Number of items per page
+  });
 
   const navigate = useNavigate();
-  const [count, setCount] = useState(0)
 
-  const fetchOrder = async () => {
+  const fetchOrder = async (page = 1, pageSize = 10) => {
+    setLoading(true);
     try {
-      const response = await api.get(`${path}`);
-      
-      setOrder(response.data);
-      console.log(response.data);
-      setCount(response.data.length)
-      
+      const finalPath = isPaging
+        ? `${path}?page=${page - 1}&size=${pageSize}`
+        : path;
+      const response = await api.get(finalPath);
+      console.log(response);
+      let finalData = null;
+      if (isPaging) {
+        finalData = response.data.content;
+        setTotalOrders(response.data.totalElements); // Assuming API provides total elements
+      } else {
+        finalData = response.data;
+      }
+      setOrder(finalData); // Assuming your API returns orders in 'content'
+      setLoading(false);
     } catch (e) {
       console.log("Error", e);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    
-    fetchOrder();
-  }, []);
+    fetchOrder(pagination.current, pagination.pageSize);
+  }, [pagination]);
+
+  const handleTableChange = (pagination) => {
+    console.log(pagination);
+    setPagination(pagination);
+  };
 
   const columns = [
     {
@@ -65,9 +84,23 @@ function  StaffOrder({ path }) {
     <div>
       <div className="note">
         <FileSyncOutlined size={100} style={{ fontSize: 23, color: "#000" }} />
-        <p>Have <span className="color">{count} orders</span> in this list</p>
+        <p>
+          Have <span className="color">{totalOrders} orders</span> in this list
+        </p>
       </div>
-      <Table dataSource={order} columns={columns} />
+      <Table
+        dataSource={order}
+        columns={columns}
+        rowKey="orderID"
+        loading={loading}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: totalOrders,
+          showSizeChanger: true,
+        }}
+        onChange={handleTableChange}
+      />
     </div>
   );
 }
