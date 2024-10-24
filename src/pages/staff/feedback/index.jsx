@@ -2,7 +2,7 @@ import { Table } from "antd";
 import { useState } from "react";
 import api from "../../../config/axios";
 
-function Feedback() {
+function StaffFeedback() {
   const [feedback, setFeedback] = useState([]);
   const fetchFeedback = async () => {
     try {
@@ -36,4 +36,4 @@ function Feedback() {
   );
 }
 
-export default Feedback;
+export default StaffFeedback;

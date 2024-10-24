@@ -13,7 +13,7 @@ import {
 import Footer from "../footer";
 import { useEffect, useState } from "react";
 import api from "../../config/axios";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -24,21 +24,19 @@ function getItem(label, key, icon, children) {
 }
 
 const Staff = () => {
-  
   const user = useSelector((store) => store.user);
   const [approving, setApproving] = useState([]);
   const [loading, setLoading] = useState(true);
   const orderView = useSelector((store) => store.order);
-  const order = orderView.data
-  console.log(order);
-  
+
   const fetchApproveOrder = async () => {
     try {
-      if (!user?.id) return; // kiểm tra nếu user chưa có
-      const approvedResponse = await api.get(`/orders/${order.orderID}`);
-      console.log(approvedResponse.data);
-      const response = approvedResponse.data;
-      setApproving(response);
+      if (orderView != null && orderView.data != null) {
+        const order = orderView.data;
+        if (!user?.id) return; // kiểm tra nếu user chưa có
+        const approvedResponse = await api.get(`/orders/${order.orderID}`);
+        setApproving(approvedResponse.data);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -47,29 +45,29 @@ const Staff = () => {
   };
   console.log(approving);
   useEffect(() => {
-    fetchApproveOrder();
-  }, []);
- 
+    if (user?.id && orderView?.data) {
+      fetchApproveOrder();
+    }
+  }, [user, orderView]);
   const items = [
-    getItem(
-      "All Orders",
-      "order",
-      <MenuOutlined />,
-      [
-        getItem("Waiting", "waiting-order"),
-        order ? getItem("Approved", `view/${order.orderID}`) : null, // chỉ render nếu có dữ liệu
-        getItem("Rejected", "rejected-order"),
-      ].filter(Boolean) // loại bỏ phần tử null
-    ), // loại bỏ phần tử null
+    getItem("All Orders", "order", <MenuOutlined />, [
+      getItem("Waiting", "waiting-order"),
+      getItem("Rejected", "rejected-order"),
+    ]),
+    orderView?.data
+      ? getItem(
+          "Approved",
+          `view/${orderView.data.orderID}`,
+          <ClockCircleOutlined />
+        )
+      : null,
     getItem("Order History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
     getItem("Feedback", "view-feedback", <CommentOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
-  ];
+  ].filter(Boolean); // filter out null items
 
-  if (loading) {
-    return <div>Loading...</div>; // render loading nếu đang fetch dữ liệu
-  }
+ 
 
   return (
     <div style={{ marginTop: "20px" }}>

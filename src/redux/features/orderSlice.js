@@ -8,9 +8,6 @@ const orderSlice = createSlice({
             state = actions.payload;
             return state;
         },
-        done: () => {
-            return null;
-        },
     }
 });
 
