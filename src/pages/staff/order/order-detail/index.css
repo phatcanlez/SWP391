@@ -47,8 +47,16 @@
     }
 
     .send-section {
-        display: flex;
-        justify-content: space-around;
+
+        display: grid;
+        grid-template-columns: 1fr 0.5fr 1fr;;
+        /* 3 cột có kích thước bằng nhau */
+        /* Khoảng cách giữa các ô */
+        justify-items: center;
+
+        padding-bottom: 15px;
+
+
 
         .item {
             display: flex;
@@ -100,6 +108,8 @@
             justify-items: center;
             gap: 60px;
             padding-bottom: 15px;
+
+
         }
 
         .item-cnt {

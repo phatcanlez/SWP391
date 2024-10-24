@@ -3,12 +3,7 @@ import "./index.css";
 
 function FAQ() {
   const items = [
-    {
-      key: "1",
-      question: "How are koi fish packaged and shipped to ensure safety?",
-      answer:
-        "Koi fish are placed in plastic bags filled with water and oxygen, then packed in insulated foam or plastic boxes to prevent temperature fluctuations and reduce stress during transit.",
-    },
+   
     {
       key: "2",
       question: "How long does it take to ship koi fish?",
