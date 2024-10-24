@@ -5,6 +5,7 @@ import International from "./international";
 //import "./index.scss";
 import { useState } from "react";
 import "../service/index.css";
+import serviceImg from "../../img/feeding-fish.png";
 
 function Service() {
   const [service, setService] = useState(1);
@@ -30,11 +31,7 @@ function Service() {
     <div>
       <Header />
       <div className="service">
-        <img
-          className="service__img"
-          src="https://s3-alpha-sig.figma.com/img/bd82/1b57/961186e550c34dc0b857595264455f05?Expires=1728259200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=fx5AIhGKOlq4tY62VdtbAdzqrMlkv9dXmgCOjOo0Dmfz8KBu4wgBh5ORjxxhUsA9w31xugOLBh-utjTYSro7ZB0z-pwRwgY3NmZtNPIC5-TSKewVjGdJKpLjAZgzWw-WLA2PruEJDOBgFVmur1SZH8Irxv6BMQfROzCD34-cCS5hqnfbktxJpx6-N4-WrqB96LiqiPTTEzAUkrpz~XNVz5JXblPz9cxvZCH6xR3lWeXS3DuWAOcHJWydCi1oNpTyeq6xvluxQr5d7Bav~VP8~QCnl5~juNtC7JRMf788l7F-QhGDN66mB30tB-k1OcDN7TvNRn5LGufCi7HWAIXIDQ__"
-          alt=""
-        />
+        <img className="service__img" src={serviceImg} />
         <div className="service__text1">SERVICE</div>
         <div className="service__text2">KOIKICHI LOGISTIC</div>
         <div className="service__button">

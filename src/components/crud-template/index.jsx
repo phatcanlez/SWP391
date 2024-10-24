@@ -27,7 +27,7 @@ function CRUDTemplate({ columns, formItems, path, field }) {
             Edit
           </Button>
 
-          <Popconfirm
+          {/* <Popconfirm
             title="Delete"
             description="Do you want to delete"
             onConfirm={() => {
@@ -37,7 +37,7 @@ function CRUDTemplate({ columns, formItems, path, field }) {
             <Button type="primary" danger>
               Delete
             </Button>
-          </Popconfirm>
+          </Popconfirm> */}
         </>
       ),
     },
