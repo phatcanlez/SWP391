@@ -36,8 +36,8 @@ public class ShipMethodAPI {
         }
 
 
-        @PutMapping("/api/shipmethod")
-        public ResponseEntity updateLicense(@RequestBody @Valid ShipMethod shipMethod, long id) {
+        @PutMapping("/api/shipmethod/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid ShipMethod shipMethod,@PathVariable long id) {
             return ResponseEntity.ok(shipMethodService.updateShipMethod(shipMethod, id));
         }
 

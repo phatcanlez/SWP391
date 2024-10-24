@@ -48,9 +48,8 @@ public class AuthenticationAPI {
     }
 
     @GetMapping("/api/account")
-    public ResponseEntity getAllAccounts() {
-        List<Account> list = authenticationService.getAllAccounts();
-        return ResponseEntity.ok(list);
+    public ResponseEntity getAllAccounts(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(authenticationService.getAllAccounts(page, size));
     }
 
     @PostMapping("/api/account/create-from-json")
@@ -67,6 +66,11 @@ public class AuthenticationAPI {
     @PutMapping("/api/account/{id}")
     public ResponseEntity updateAccount(@RequestBody @Valid UpdateAccountRequest updateAccountRequest, @PathVariable String id) {
         return ResponseEntity.ok(authenticationService.updateAccount(id, updateAccountRequest));
+    }
+
+    @PatchMapping("/api/account")
+    public ResponseEntity updateAccountByManager(@RequestBody @Valid UpdateAccountRequestByManager updateAccountRequest) {
+        return ResponseEntity.ok(authenticationService.updateAccountByManage(updateAccountRequest));
     }
 
     @GetMapping("/api/account/{id}")

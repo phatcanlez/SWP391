@@ -53,8 +53,8 @@ public class LicenseAPI {
         return ResponseEntity.ok(licenseService.viewLicenseByOrderId(id));
     }
 
-    @PutMapping("/api/licence")
-    public ResponseEntity updateLicense(@RequestBody @Valid LicenseRequest license, long id) {
+    @PutMapping("/api/licence/{id}")
+    public ResponseEntity updateLicense(@RequestBody @Valid LicenseRequest license,@PathVariable long id) {
         return ResponseEntity.ok(licenseService.updateLicense(license, id));
     }
 

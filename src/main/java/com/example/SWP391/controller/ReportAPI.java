@@ -35,8 +35,8 @@ public class ReportAPI {
     }
 
     @GetMapping("/api/report")
-    public ResponseEntity getAllReport() {
-        return ResponseEntity.ok(reportService.getAllReport());
+    public ResponseEntity getAllReport(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(reportService.getAllReport(page, size));
     }
 
     @GetMapping("/api/report/{id}")
@@ -44,8 +44,8 @@ public class ReportAPI {
         return ResponseEntity.ok(reportService.viewReportById(id));
     }
 
-    @PutMapping("/api/report")
-    public ResponseEntity updateReport(ReportUpdateRequest reportRequest, long Id) {
+    @PutMapping("/api/report/{id}")
+    public ResponseEntity updateReport(ReportUpdateRequest reportRequest,@PathVariable long Id) {
         return ResponseEntity.ok(reportService.updateReport(reportRequest, Id));
     }
 }
