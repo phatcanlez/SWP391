@@ -1,4 +1,4 @@
-import React from "react";
+
 import Header from "../../components/header";
 import FAQ from "../../components/faq";
 import Footer from "../../components/footer";

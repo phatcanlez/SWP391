@@ -7,7 +7,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { Steps, Button, Modal, Form, Upload, Image, message } from "antd";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import api from "../../../../config/axios";
 import { useForm } from "antd/es/form/Form";
@@ -64,7 +64,6 @@ const InProcess = () => {
 
   const handlePendingOrder = async () => {
     try {
-      
       const setvalue = {
         statusInfo: "PENDING",
         empId: user.id,
@@ -150,13 +149,13 @@ const InProcess = () => {
 
       {statuss === "APPROVED" && (
         <>
-          <Button
-            type="primary"
+          <button
+            className="nextStep-btn btn-item"
             onClick={handlePendingOrder}
             style={{ marginTop: 20 }}
           >
             Next Step
-          </Button>
+          </button>
           {/* <Button
         type="primary"
         onClick={()=>{dispatch(reset())}}
@@ -166,17 +165,20 @@ const InProcess = () => {
       </Button> */}
         </>
       )}
+
       {statuss === "PENDING" && (
         <>
-          <button
-            className="done-btn"
-            type="primary"
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-          >
-            Order Successfully Delivered
-          </button>
+          <div className="done">
+            <button
+              className="done-btn btn-item"
+              type="primary"
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              Order Successfully Delivered
+            </button>
+          </div>
           <Modal
             title="Confirmation Of Successful Delivery"
             open={isModalOpen}

@@ -7,6 +7,7 @@ import {
   ClockCircleOutlined,
   CommentOutlined,
   MenuOutlined,
+  PushpinOutlined,
   QuestionCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -49,6 +50,7 @@ const Staff = () => {
       fetchApproveOrder();
     }
   }, [user, orderView]);
+
   const items = [
     getItem("All Orders", "order", <MenuOutlined />, [
       getItem("Waiting", "waiting-order"),
@@ -58,10 +60,10 @@ const Staff = () => {
       ? getItem(
           "Approved",
           `view/${orderView.data.orderID}`,
-          <ClockCircleOutlined />
+          <PushpinOutlined />
         )
       : null,
-    getItem("Order History", "history", <ClockCircleOutlined />),
+    getItem("History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
     getItem("Feedback", "view-feedback", <CommentOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),

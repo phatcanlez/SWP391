@@ -49,7 +49,8 @@
     .send-section {
 
         display: grid;
-        grid-template-columns: 1fr 0.5fr 1fr;;
+        grid-template-columns: 1fr 0.5fr 1fr;
+        ;
         /* 3 cột có kích thước bằng nhau */
         /* Khoảng cách giữa các ô */
         justify-items: center;
@@ -148,4 +149,16 @@
     }
 
 
+}
+
+.fb-btn {
+    background-color: #e25822;
+}
+
+.fail-btn {
+    background-color: #000000;
+}
+
+.ant-modal .ant-modal-title {
+    color: #e25822;
 }

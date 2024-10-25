@@ -37,7 +37,7 @@ import Account from "./pages/customer/account";
 import Report from "./pages/admin/manage-report";
 import Order from "./pages/admin/manage-order/order";
 import FAQHome from "./pages/FAQ";
-
+import StaffFeedback from "./pages/staff/feedback";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -195,7 +195,10 @@ function App() {
           path: "FAQ",
           element: <FAQ />,
         },
-       
+        {
+          path: "view-feedback",
+          element: <StaffFeedback />,
+        },
       ],
     },
   ]);
