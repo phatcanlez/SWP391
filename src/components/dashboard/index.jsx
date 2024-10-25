@@ -3,6 +3,7 @@ import { Breadcrumb, Layout, Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import logo from "../../img/logolayout.png";
 import { Link, Outlet } from "react-router-dom";
+import "../staff/index.css";
 const { Header, Content, Footer } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -42,42 +43,41 @@ const items = [
 
 function Dashboard() {
   return (
-    <Layout>
-      <Sider style={{ background: "#f5f5f5" }}>
-        <div>
-          <img src={logo} alt="" />
-        </div>
-        <h4>KOIKICHI</h4>
-        <Menu mode="inline" items={items} />
-      </Sider>
-      <Layout>
-        <Content
-          style={{
-            paddingTop: "10%",
-            margin: "0 16px",
-          }}
-        >
-          <Breadcrumb
+    <div style={{ marginTop: "20px" }}>
+      <Layout
+        style={{
+          minHeight: "100vh",
+        }}
+      >
+        <Sider className="sider">
+          <div className="sider__header">
+            <Link to="/">
+              <img src={logo} alt="" />
+            </Link>
+            <h4>KOIKICHI</h4>
+          </div>
+          <Menu mode="inline" items={items} />
+        </Sider>
+        <Layout>
+          <Content
+            className="ctn"
             style={{
-              margin: "16px 0",
+              margin: "0 16px",
             }}
           >
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
-          <div>
-            <Outlet />
-          </div>
-        </Content>
-        <Footer
-          style={{
-            textAlign: "center",
-          }}
-        >
-          Ant Design ©{new Date().getFullYear()} Created by Ant UED
-        </Footer>
+            <div
+              style={{
+                padding: 24,
+                minHeight: 360,
+              }}
+            >
+              <Outlet />
+            </div>
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+      <Footer />
+    </div>
   );
 }
 export default Dashboard;

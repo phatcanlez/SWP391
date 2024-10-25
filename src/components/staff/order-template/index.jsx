@@ -60,8 +60,12 @@ function StaffOrder({ path, isPaging = false }) {
     },
     {
       title: "Created Date",
+      dataIndex: "status", 
       key: "status.date",
-      render: (record) => record.status?.date,
+      render: (status) => {
+        if (!status?.date) return '-';
+        return status.date.split('T')[0]; // Cắt chuỗi tại ký tự T
+      }
     },
     {
       title: "Status",

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import "./index.css";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
 import License from "../license";
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, Rate } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,6 +32,7 @@ function OrderDetail() {
           response.data.status[response.data.status.length - 1]?.statusInfo
         );
       }
+      handleViewFeedBack();
     } catch (err) {
       toast.error(err.response.data);
     } finally {
@@ -40,16 +41,21 @@ function OrderDetail() {
   };
   useEffect(() => {
     fetchOrderDetail(id);
-  }, [id]);
+  }, [id, status]);
   /////////////////////////////
 
   const [form] = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fbModalOpen, setFBModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setFBModalOpen(false);
+  };
+  const showFBModal = () => {
+    setFBModalOpen(true);
   };
 
   const user = useSelector((store) => store.user);
@@ -108,6 +114,18 @@ function OrderDetail() {
     } catch (error) {
       console.error("Định dạng ngày không hợp lệ:", error);
       return "Ngày không hợp lệ"; // Xử lý lỗi khi parse thất bại
+    }
+  };
+
+  const [feedback, setFeedback] = useState([]);
+  const handleViewFeedBack = async () => {
+    try {
+      const response = await api.get(`feedback/{orderId}?orderId=${id}`);
+      console.log(response.data);
+      setFeedback(response.data);
+      console.log(feedback);
+    } catch (error) {
+      toast.error(error.response.data);
     }
   };
 
@@ -243,33 +261,23 @@ function OrderDetail() {
           status === "SUCCESS") && (
           <>
             <InProcess />
-            {(status === "APPROVED" ||
-          status === "PENDING") && (
-          <>
-            <Button className="btn btn-r" onClick={showModal}>
-              REJECT
-            </Button>
+            {(status === "APPROVED" || status === "PENDING") && (
+              <>
+                <button className="btn-item fail-btn" onClick={showModal}>
+                  Delivery Failure
+                </button>
+              </>
+            )}
+            {(status === "SUCCESS" ) && (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button className="fb-btn btn-item" onClick={showFBModal}>
+                  {" "}
+                  View Feedback
+                </button>
+              </div>
+            )}
           </>
         )}
-            <Button className="fb-btn" >
-              View Feedback
-            </Button>
-          </>
-        )}
-
-        <div className="send-section">
-          <div className="item">
-            <p>
-              Payment status:{" "}
-              <span
-                className="color"
-                style={{ fontWeight: "600", fontSize: "18px" }}
-              >
-                {order?.payment?.status}
-              </span>
-            </p>
-          </div>
-        </div>
       </div>
       {loading ? (
         <p>Loading...</p>
@@ -297,7 +305,7 @@ function OrderDetail() {
       {/* <span>Price: {order.price}</span>            */}
 
       <Modal
-        title="Are you really want to reject this order?"
+        title="Failed Report "
         open={isModalOpen}
         onOk={() => form.submit()}
         onCancel={handleCancel}
@@ -311,6 +319,25 @@ function OrderDetail() {
           </Form.Item>
           {/* Hiển thị description */}
         </Form>
+      </Modal>
+
+      <Modal
+        title="FeedBack "
+        open={fbModalOpen}
+        onCancel={handleCancel}
+        footer={<Button onClick={handleCancel}>Cancel</Button>}
+      >
+        {feedback === null ? (
+          <p>Customer has not feedback any thing</p>
+        ) : (
+          <>
+            <p>Time:</p> {feedback?.time}
+            <p>Rating: </p>
+            <Rate disabled value={feedback?.rating} />
+            <p>Comment: </p>
+            {feedback?.comment}
+          </>
+        )}
       </Modal>
     </div>
   );

@@ -12,6 +12,7 @@
 .ant-menu-item-selected {
     background-color: rgba(44, 44, 44, 1) !important;
     border-radius: 0% !important;
+    color: white !important;
 
     .ant-menu-title-content {
         a {

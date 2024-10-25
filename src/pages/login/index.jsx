@@ -131,12 +131,12 @@ function LoginPage() {
               </span>
             </Button>
 
-            <Button className="btn">
+            {/* <Button className="btn">
               <span className="login__btn">
                 <img src={fb} alt="" />
                 Login with Facebook
               </span>
-            </Button>
+            </Button> */}
           </div>
         </Form>
       </AuthenTemplate>
