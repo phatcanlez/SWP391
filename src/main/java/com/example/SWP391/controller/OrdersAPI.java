@@ -9,6 +9,7 @@ import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.service.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +25,13 @@ public class OrdersAPI {
         @Autowired
         private OrderService orderService;
 
+        @Autowired
+        ModelMapper modelMapper;
+
         @PostMapping("/api/orders")
         public ResponseEntity createOrder(@Valid @RequestBody OrderRequest orders) throws Exception {
                 return ResponseEntity.ok(orderService.createOrder(orders));
         }
-
-
 
         @PostMapping("/api/orders/create-from-json")
         public ResponseEntity<String> createOrdersFromJson(@RequestBody String jsonArray) {
@@ -55,7 +57,15 @@ public class OrdersAPI {
 
         @GetMapping("/api/orders/status")
         public ResponseEntity getOrderByStatus(@RequestParam(name = "status")  StatusInfo status) {
-                return ResponseEntity.ok(orderService.viewOrderByStatus(status));
+
+                List<Orders> orders = orderService.viewOrderByStatus(status);
+                List<OrderResponse> orderResponses = orders.stream().map(order -> {
+                        OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                        orderResponse.setStatus(order.getStatus().getLast());
+                        orderResponse.setPayment(order.getPayment().getStatus());
+                        return orderResponse;
+                }).toList();
+                return ResponseEntity.ok(orderResponses);
         }
 
         @GetMapping("/api/orders/status-emp")
@@ -71,7 +81,7 @@ public class OrdersAPI {
         }
 
         @PutMapping("/api/orders/{id}")
-        public ResponseEntity updateLicense(@RequestBody @Valid OrderRequest order,@PathVariable String id) {
+        public ResponseEntity updateOrder(@RequestBody @Valid OrderRequest order,@PathVariable String id) {
                 return ResponseEntity.ok(orderService.updateOrder(order, id));
         }
 
@@ -80,4 +90,8 @@ public class OrdersAPI {
                 return ResponseEntity.ok(orderService.updateImage(orderImageRequest));
         }
 
+//        @PutMapping("/api/orders/all")
+//        public ResponseEntity updateAllOrder() {
+//                return ResponseEntity.ok(orderService.updateAllOrder());
+//        }
 }

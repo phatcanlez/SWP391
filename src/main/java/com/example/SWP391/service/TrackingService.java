@@ -4,6 +4,7 @@ import com.example.SWP391.entity.*;
 import com.example.SWP391.model.DTO.TrackingDTO.EstimateTrackingRequestByBox;
 import com.example.SWP391.repository.*;
 import com.example.SWP391.util.TrackingUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class TrackingService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    APIService apiService;
 
     public List<PriceListDistance> getTrackingList(long shipMethodID) {
         ShipMethod shipMethod = shipMethodRepository.findShipMethodByShipMethodId(shipMethodID);
@@ -64,7 +68,7 @@ public class TrackingService {
                     break;
                 }
             }
-        }else {
+        } else {
             weightPrice = listPriceWeight.getLast().getPrice();
         }
 
@@ -75,7 +79,7 @@ public class TrackingService {
                     break;
                 }
             }
-        }else {
+        } else {
             distancePrice = listPrice.getLast().getPrice();
         }
 
@@ -85,5 +89,9 @@ public class TrackingService {
     public List<Status> getTrackingByOrderID(String orderID) {
         Orders order = orderRepository.findByorderID(orderID);
         return order.getStatus();
+    }
+
+    public JsonNode getRouteMatrix(List<String> locations) {
+        return apiService.getRouteMatrix(locations);
     }
 }
