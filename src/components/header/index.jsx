@@ -1,29 +1,26 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
-import {  Button } from "antd";
-import { CaretDownOutlined } from "@ant-design/icons";
-import { Dropdown, Space } from "antd";
+import { Button } from "antd";
 import logo from "../../img/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 function Header() {
-  const items = [
-    {
-      label: <a href="https://www.antgroup.com">Vietnamese</a>,
-      key: "0",
-    },
-    {
-      label: <a href="https://www.aliyun.com">Japanese</a>,
-      key: "1",
-    },
-  ];
-
   const user = useSelector((store) => store.user);
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    if(user!=null){
+      if(user.role === "STAFF")
+        navigate("/staff/order")
+      if(user.role === "ADMIN")
+        navigate("/dashboard")
+    }
+  };
   return (
     <header className="header">
       <div className="header__logo">
-        <img src={logo} alt="Logo" width={80} />
+        <div onClick={handleNavigate}><img src={logo} alt="Logo" width={80} style={{ cursor: "pointer" }}/></div>
       </div>
       <nav className="header__nav">
         <ul>
@@ -40,24 +37,11 @@ function Header() {
             <Link to="/tracking">TRACKING</Link>
           </li>
           <li>
-            <Link to="/">FAQ</Link>
+            <Link to="/FAQ">FAQ</Link>
           </li>
           <li>
-            <Link to="/">SUPPORT</Link>
+            <Link to="/">FEEDBACK</Link>
           </li>
-          <Dropdown
-            menu={{
-              items,
-            }}
-            trigger={["click"]}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>
-                LANGUAGE
-                <CaretDownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
         </ul>
       </nav>
       <div>
@@ -71,6 +55,7 @@ function Header() {
               LOGOUT
             </Button>
           </Link>
+
           // <Link>
           //   <Avatar size={50} icon={<UserOutlined />} />
           // </Link>

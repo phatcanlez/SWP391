@@ -1,24 +1,14 @@
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import StaffOrder from "../../../../components/staff/order-template";
 
 function AllOrder() {
   return (
     <div>
-      <StaffOrder path={"/orders"} />
+      <StaffOrder path={"/orders"} isPaging />
     </div>
   );
 }
 
-function ProcessingOrder() {
-  const user = useSelector((store) => store);
-  return (
-    <div>
-      <StaffOrder
-        path={`/orders/status-emp?status=APPROVED&empId=${user.user.id}`}
-      />
-    </div>
-  );
-}
 function FailOrder() {
   const user = useSelector((store) => store);
   return (
@@ -50,8 +40,6 @@ function History() {
 }
 
 export default AllOrder;
-export { ProcessingOrder };
 export { WaitingOrder };
 export { FailOrder };
 export { History };
-

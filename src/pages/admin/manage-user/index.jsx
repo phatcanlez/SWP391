@@ -1,4 +1,4 @@
-import CRUDTemplate from "../../../components/crud-template";
+
 import {
   Button,
   Form,

@@ -1,10 +1,10 @@
 import { Button, Table } from "antd";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { FileSyncOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
-function StaffOrder({ path, isPaging = false }) {
+function StaffFeedback() {
   const [order, setOrder] = useState([]);
   const [loading, setLoading] = useState(false); // State to handle loading status
   const [totalOrders, setTotalOrders] = useState(0); // Total number of orders
@@ -18,19 +18,14 @@ function StaffOrder({ path, isPaging = false }) {
   const fetchOrder = async (page = 1, pageSize = 10) => {
     setLoading(true);
     try {
-      const finalPath = isPaging
-        ? `${path}?page=${page - 1}&size=${pageSize}`
-        : path;
-      const response = await api.get(finalPath);
+      const response = await api.get(
+        `/feedback?page=${page - 1}&size=${pageSize}`
+      );
       console.log(response);
       let finalData = null;
-      if (isPaging) {
-        finalData = response.data.content;
-        setTotalOrders(response.data.totalElements); // Assuming API provides total elements
-      } else {
-        finalData = response.data;
-      }
-      setOrder(finalData); // Assuming your API returns orders in 'content'
+      finalData = response.data.content;
+      setTotalOrders(response.data.totalElements);
+      setOrder(finalData);
       setLoading(false);
     } catch (e) {
       console.log("Error", e);
@@ -49,28 +44,28 @@ function StaffOrder({ path, isPaging = false }) {
 
   const columns = [
     {
-      title: "ID",
+      title: "Order ID",
       dataIndex: "orderID",
       key: "orderID",
     },
     {
-      title: "Customer",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Created Date",
-      dataIndex: "status", 
-      key: "status.date",
-      render: (status) => {
-        if (!status?.date) return '-';
-        return status.date.split('T')[0]; // Cắt chuỗi tại ký tự T
+      title: "Time",
+      dataIndex: "time",
+      key: "time",
+      render: (time) => {
+        return time.split(' ')[0]; // Cách đơn giản nhất, cắt chuỗi
       }
     },
     {
-      title: "Status",
-      key: "status.statusInfo",
-      render: (record) => record.status?.statusInfo,
+      title: "Rating",
+      dataIndex: "rating",
+      key: "rating",
+     
+    },
+    {
+      title: "Comment",
+      dataIndex: "comment",
+      key: "comment",
     },
     {
       title: "",
@@ -109,4 +104,4 @@ function StaffOrder({ path, isPaging = false }) {
   );
 }
 
-export default StaffOrder;
+export default StaffFeedback;

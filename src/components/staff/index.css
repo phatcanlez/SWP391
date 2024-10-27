@@ -11,26 +11,45 @@
 
 .ant-menu-item-selected {
     background-color: rgba(44, 44, 44, 1) !important;
-    color: white !important;
     border-radius: 0% !important;
-    
+    color: white !important;
+
+    .ant-menu-title-content {
+        a {
+            color: white !important;
+        }
+    }
+
+
 }
+
 .ant-menu-title-content {
     a {
         color: black !important;
     }
 }
 
-.note{
+.ant-menu-item .ant-menu-item-active {
+
+    .ant-menu-title-content {
+        a {
+            color: white !important;
+        }
+    }
+}
+
+.note {
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
 }
-.ctn{
+
+.ctn {
     width: 95%;
     padding-left: 80px;
 }
-.sider__header{
+
+.sider__header {
     display: flex;
     flex-direction: column;
     align-items: center;

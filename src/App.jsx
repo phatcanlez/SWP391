@@ -27,7 +27,6 @@ import Delivery from "./pages/admin/manage-service/delivery";
 import AllOrder, {
   FailOrder,
   History,
-  ProcessingOrder,
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
@@ -37,6 +36,8 @@ import Account from "./pages/customer/account";
 
 import Report from "./pages/admin/manage-report";
 import Order from "./pages/admin/manage-order/order";
+import FAQHome from "./pages/FAQ";
+import StaffFeedback from "./pages/staff/feedback";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -54,6 +55,13 @@ function App() {
       user &&
       user.user?.role === "STAFF" &&
       location.pathname.startsWith("/staff")
+    ) {
+      return children;
+    }
+    if (
+      user &&
+      user.user?.role === "CUSTOMER" &&
+      location.pathname.startsWith("/customer-service")
     ) {
       return children;
     } else toast.error("You are not allow");
@@ -84,6 +92,10 @@ function App() {
     {
       path: "tracking",
       element: <Tracking />,
+    },
+    {
+      path: "FAQ",
+      element: <FAQHome />,
     },
     {
       path: "dashboard",
@@ -164,10 +176,6 @@ function App() {
           element: <WaitingOrder />,
         },
         {
-          path: "approved-order",
-          element: <ProcessingOrder />,
-        },
-        {
           path: "rejected-order",
           element: <FailOrder />,
         },
@@ -186,6 +194,10 @@ function App() {
         {
           path: "FAQ",
           element: <FAQ />,
+        },
+        {
+          path: "view-feedback",
+          element: <StaffFeedback />,
         },
       ],
     },
