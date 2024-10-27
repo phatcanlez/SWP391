@@ -15,4 +15,12 @@ public interface OrderRepository extends JpaRepository<Orders, String> {
     Page<Orders> findAll(Pageable pageable);;
     List<Orders> findByAccount(Account account);
 
+    @Query("SELECT COUNT(o), MONTH(s.date) as month FROM Orders o JOIN o.status s WHERE s.statusInfo = 'SUCCESS' GROUP BY MONTH(s.date) ORDER BY MONTH(s.date)")
+    List<Object[]> getTotalsOrderSuccessByMonth();
+
+    @Query("SELECT COUNT(o), MONTH(s.date) as month FROM Orders o JOIN o.status s GROUP BY MONTH(s.date) ORDER BY MONTH(s.date)")
+    List<Object[]> getTotalsOrderByMonth();
+
+    @Query("SELECT COUNT(o), MONTH(s.date) as month FROM Orders o JOIN o.status s WHERE s.statusInfo = 'FAIL' GROUP BY MONTH(s.date) ORDER BY MONTH(s.date)")
+    List<Object[]> getTotalsOrderFailByMonth();
 }
