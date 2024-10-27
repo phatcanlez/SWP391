@@ -49,17 +49,17 @@ function EstimatedShippingFee() {
 
   const [shipMethods, setShipMethods] = useState([]);
   const [selectedMethod, setSelectedMethod] = useState(undefined);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("shipmethod");
-        setShipMethods(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await api.get("shipmethod");
+  //       setShipMethods(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +68,13 @@ function EstimatedShippingFee() {
           "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
         );
         setData(response.data);
+        setShipMethods([
+          { shipMethodId: 1, description: "Economy shipping" },
+
+          { shipMethodId: 2, description: "Fast shipping" },
+
+          { shipMethodId: 3, description: "Express shipping" },
+        ]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -121,49 +128,6 @@ function EstimatedShippingFee() {
     setTempSelections((prev) => ({ ...prev, wardName: option.children }));
   };
 
-  const handleConfirm = () => {
-    // Here you can perform any action with the confirmed selections
-    console.log("Confirmed selections:", tempSelections);
-  };
-
-  const handleCancel = () => {
-    // Reset to the initial state
-    setSelectedCity(undefined);
-    setSelectedDistrict(undefined);
-    setSelectedWard(undefined);
-    setDistricts([]);
-    setWards([]);
-    setTempSelections({ cityName: "", districtName: "", wardName: "" });
-  };
-
-  let sizeInCM = [
-    "-19.9",
-    "20-25",
-    "25.1 - 30",
-    "30.1 - 40",
-    "40.1 - 44",
-    "44.1 - 50",
-    "50.1 - 55",
-    "55.1 - 65",
-    "50 - 60 Hirenaga (Butterfly)",
-    "60.1 - 65 Hirenaga (Butterfly)",
-    "65.1 - 73",
-    "73.1 - 83",
-  ];
-  let sizeInInch = [
-    "7.86",
-    "7.87 - 9.84",
-    "9.85 - 11.81",
-    "11.82 - 15.75",
-    "15.76 - 17.32",
-    "17.33 - 19.6",
-    "19.7 - 21.6",
-    "21.7 - 25.5",
-    "19.7 - 23.4",
-    "23.5 - 25.5",
-    "25.6 - 28.7",
-    "28.8 - 32.6",
-  ];
   let pointsArray = [
     "1.25",
     "2",
@@ -179,22 +143,10 @@ function EstimatedShippingFee() {
     "18",
   ];
   let mediumBoxPoints = 9;
-  let UPSChargesMedium = 190; //140;
-  let surchargePerBoxMedium = 25; //20;
 
   let largeBoxPoints = 15;
-  let UPSChargesLarge = 210; //179;
-  let surchargePerBoxLarge = 25;
 
-  let extraLargeBoxPoints = 16;
-  let UPSChargesExtraLarge = 260; //259;
-  let surchargePerBoxExtraLarge = 50;
-
-  let specialLargeBoxPoints = 18;
-  let UPSChargesSpecialLarge = 339;
-  let surchargePerBoxSpecialLarge = 70;
-
-  async function calculatePoints() {
+  const calculatePoints = async () => {
     let totalPoints = 0;
     let mediumBoxNeeded = 0,
       noOfBoxesLarge = 0,
@@ -253,29 +205,14 @@ function EstimatedShippingFee() {
       }
     }
 
-    let shippingCostLargeBox =
-      Math.floor(noOfBoxesLarge) * (UPSChargesLarge + surchargePerBoxLarge);
-    let shippingCostMediumBox =
-      mediumBoxNeeded * (UPSChargesMedium + surchargePerBoxMedium);
-    let shippingCostExtraLargeBox =
-      extraLargeBoxesQuantity *
-      (UPSChargesExtraLarge + surchargePerBoxExtraLarge);
-    let shippingCostSpecialLargeBox =
-      specialLargeBoxesQuantity *
-      (UPSChargesSpecialLarge + surchargePerBoxSpecialLarge);
-    let shippingCost =
-      shippingCostLargeBox +
-      shippingCostMediumBox +
-      shippingCostExtraLargeBox +
-      shippingCostSpecialLargeBox;
     setMediumBoxNeeded(mediumBoxNeeded);
     setNoOfBoxesLarge(noOfBoxesLarge);
     setExtraLargeBoxesQuantity(extraLargeBoxesQuantity);
     setSpecialLargeBoxesQuantity(specialLargeBoxesQuantity);
-    setShippingCost(shippingCost);
     let values = {
       kilometers: parseFloat(distance),
       shipMethodID: selectedMethod,
+      weight: weight,
       boxAmountDTO: {
         smallBox: mediumBoxNeeded,
         mediumBox: Math.floor(noOfBoxesLarge),
@@ -291,11 +228,15 @@ function EstimatedShippingFee() {
         "http://103.90.227.65:8080/tracking/estimate",
         values
       );
-      console.log(response.data);
+      setShippingCost(response.data);
     } catch (err) {
       console.error("Fetching error: ", err);
     }
-  }
+  };
+
+  useEffect(() => {
+    calculatePoints();
+  }, []);
 
   const [form] = useForm();
   const [isOpen, setIsOpen] = useState(false);
@@ -463,6 +404,7 @@ function EstimatedShippingFee() {
     }
   }, [selectedMethod]);
 
+  const [weight, setWeight] = useState(0);
   return (
     <div className="estimatedshippingfee">
       <div className="estimatedshippingfee__title">ESTIMATED SHIPPING FEE</div>
@@ -499,7 +441,10 @@ function EstimatedShippingFee() {
                   " extra large boxes"}
             </div>
           </div>
-          <div className="estimatedshippingfee__products__right__rectangle">
+          <div
+            className="estimatedshippingfee__products__right__rectangle"
+            id="estimate"
+          >
             <img src={airplane} />
             <div>Total shipping cost</div>
             <div style={{ color: "red", paddingTop: 50 }}>
@@ -643,7 +588,21 @@ function EstimatedShippingFee() {
         <App ref={appRef} getDistance={handleGetDistance} />
       </div>
       <div className="estimatedshippingfee__calculating">
-        <button onClick={calculatePoints}>Tracking</button>
+        Weight :{" "}
+        <Input
+          name="weight"
+          style={{ width: 200 }}
+          type="number"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+        />
+        <br />
+        <br />
+        <button onClick={calculatePoints}>
+          <a href="#estimate" style={{ textDecoration: "none", color: "#fff" }}>
+            Tracking
+          </a>
+        </button>
       </div>
     </div>
   );

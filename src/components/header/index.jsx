@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "./index.css";
-import {  Button } from "antd";
+import { Button } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import logo from "../../img/logo.png";
@@ -23,7 +23,9 @@ function Header() {
   return (
     <header className="header">
       <div className="header__logo">
-        <img src={logo} alt="Logo" width={80} />
+        <Link to="/">
+          <img src={logo} alt="Logo" width={80} />
+        </Link>
       </div>
       <nav className="header__nav">
         <ul>

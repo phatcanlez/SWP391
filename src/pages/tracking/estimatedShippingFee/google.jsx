@@ -36,10 +36,6 @@ class App extends Component {
     this.directionsRenderer.setMap(map); // Set the map for the directions renderer
 
     // Example addresses
-    const origin =
-      "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000, Vietnam";
-    const destination = "Xã Má Lé, Huyện Đồng Văn, Tỉnh Hà Giang";
-    this.calculateDistance(origin, destination);
   }
 
   calculateDistance(origin, destination) {
