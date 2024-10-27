@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class FeedbackResponsePage {
-    List<Feedback> content;
+    List<FeedbackResponse> content;
     int pageNumbers;
     long totalElements;
     int totalPages;

@@ -6,6 +6,7 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
+import com.example.SWP391.model.DTO.statusDTO.StatusResponse;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.StatusRepository;
@@ -32,7 +33,7 @@ public class StatusService {
     @Autowired
     OrderService orderService;
 
-    public Status createStatus(StatusRequest statusRequest){
+    public StatusResponse createStatus(StatusRequest statusRequest){
         try{
             Orders orders = orderRepository.findByorderID(statusRequest.getOrder());
             if (orders == null){
@@ -62,8 +63,11 @@ public class StatusService {
             status.setDescription(statusRequest.getDescription());
             status.setDate(DateConversionUtil.convertToDate(LocalDateTime.now()));
             status.setOrders(orders);
+            statusRepository.save(status);
 
-            return statusRepository.save(status);
+            StatusResponse statusResponse = modelMapper.map(status, StatusResponse.class);
+            statusResponse.setOrderID(orders.getOrderID());
+            return statusResponse;
         }catch (NotFoundException e){
             e.printStackTrace();
             throw new DuplicateException(e.getMessage());
@@ -76,29 +80,36 @@ public class StatusService {
         }
     }
 
-    public List<Status> getAllStatus(){
+    public List<StatusResponse> getAllStatus(){
         List<Status> list = statusRepository.findAll();
-        return list;
+        return list.stream().map(status -> {
+            StatusResponse statusResponse = modelMapper.map(status, StatusResponse.class);
+            statusResponse.setOrderID(status.getOrders().getOrderID());
+            return statusResponse;
+        }).toList();
     }
 
-    public Status viewStatusById(long id){
+    public StatusResponse viewStatusById(long id){
         Status status = statusRepository.findById(id);
         if(status == null){
             throw new DuplicateException("Not found this status");
         }
         else{
-            return status;
+            return modelMapper.map(status, StatusResponse.class);
         }
     }
 
-    public Status updateStatus(StatusRequest statusRequest, long Id){
+    public StatusResponse updateStatus(StatusRequest statusRequest, long Id){
         Status oldStatus = statusRepository.findById(Id);
         if(oldStatus == null){
             throw new NotFoundException("Not found!");
         }
         try{
             oldStatus.setStatusInfo(StatusInfo.valueOf(statusRequest.getStatusInfo()));
-            return statusRepository.save(oldStatus);
+            statusRepository.save(oldStatus);
+            StatusResponse statusResponse = modelMapper.map(oldStatus, StatusResponse.class);
+            statusResponse.setOrderID(oldStatus.getOrders().getOrderID());
+            return statusResponse;
         }catch (Exception e){
             throw new DuplicateException("Update fail");
         }

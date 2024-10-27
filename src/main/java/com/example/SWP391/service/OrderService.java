@@ -16,6 +16,7 @@ import com.example.SWP391.repository.PaymentRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -45,6 +47,12 @@ public class OrderService {
 
     @Autowired
     OrderDetailService orderDetailService;
+
+    @Autowired
+    DistanceService distanceService;
+
+    @Autowired
+    AuthenticationService authenticationService;
 
     public OrdersReponsePage getAllOrders(int page, int size) {
         Page<Orders> orders = orderRepository.findAll(PageRequest.of(page, size));
@@ -132,7 +140,8 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatus(StatusInfo status) {
+    @Transactional
+    public List<Orders> viewOrderByStatus(StatusInfo status) {
         try {
             List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
@@ -142,17 +151,14 @@ public class OrderService {
                     list.add(orders);
                 }
             }
-            return list.stream().map(order -> {
-                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
-                orderResponse.setStatus(order.getStatus().getLast());
-                orderResponse.setPayment(order.getPayment().getStatus());
-                return orderResponse;
-            }).toList();
+
+            return list;
         } catch (Exception e) {
             throw new NotFoundException("Error");
         }
     }
 
+    @Transactional
     public List<OrderResponse> viewOrderByStatusAndEmpId(StatusInfo status, String empId) {
         try {
 
@@ -165,6 +171,7 @@ public class OrderService {
                     list.add(orders);
                 }
             }
+
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
@@ -180,6 +187,7 @@ public class OrderService {
         try {
             Account account = accountRepository.findByUsername(username);
             List<Orders> list = orderRepository.findByAccount(account);
+            list.sort((o1, o2) -> o2.getStatus().getFirst().getDate().compareTo(o1.getStatus().getFirst().getDate()));
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
@@ -216,6 +224,34 @@ public class OrderService {
         } catch (Exception e) {
             throw new DuplicateException("Update fail");
         }
+    }
+
+    @Transactional
+    public List<Orders> getOrderWaitingToLong() {
+        List<Orders> orders = viewOrderByStatus(StatusInfo.WAITING);
+        List<Orders> list = new ArrayList<>();
+        Date currentDate = new Date();
+        for (Orders order : orders) {
+            int waitDate = DateConversionUtil.calculateTimeDifference(currentDate, order.getStatus().getFirst().getDate());
+            if (waitDate > 2) {
+                list.add(order);
+            }
+        }
+        return list;
+    }
+
+    public String updateAllOrder() {
+        orderRepository.findAll().forEach(order -> {
+            String address = order.getSenderAddress();
+            String[] list =address.trim().split(",");
+            if (list[list.length - 1].matches("Thành phố Hồ Chí Minh") || list[list.length - 1].matches(" Hồ Chí Minh") || list[list.length - 1].matches(" TP.HCM")) {
+                list[list.length - 1] = " Thành phố Hồ Chí Minh";
+            }
+            address = String.join(",", list);
+            order.setSenderAddress(address);
+            orderRepository.save(order);
+        });
+        return "Update all orders successfully";
     }
 }
 
