@@ -20,7 +20,7 @@ const Address = forwardRef((props, ref) => {
   const [wards, setWards] = useState([]);
   const [tempSelectionsFrom, setTempSelectionsFrom] = useState("");
   const [tempSelectionsTo, setTempSelectionsTo] = useState("");
-  
+  const [orderAddress, setOrderAddress] = useState([]);
 
   //const [form] = useForm();
   const [isOpen, setIsOpen] = useState(false);
@@ -195,6 +195,16 @@ const Address = forwardRef((props, ref) => {
     console.log(tempSelectionsTo);
   }, [tempSelectionsTo]);
 
+
+  const handleAddress = () =>{
+    try {
+      const setvalue = {
+        reciverAdress: d
+      };
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <Form
       form={form}
