@@ -25,4 +25,19 @@ public class DashboardAPI {
     public ResponseEntity getPaymentRevenue(){
         return ResponseEntity.ok(dashboardService.caculateMonthlyRevenue());
     }
+
+    @GetMapping("/api/dashboard-total-order")
+    public ResponseEntity getTotalOrder(){
+        return ResponseEntity.ok(dashboardService.getOrderByMonth());
+    }
+
+    @GetMapping("/api/dashboard-order-success")
+    public ResponseEntity getTotalOrderSuccess(){
+        return ResponseEntity.ok(dashboardService.orderSuccessByMonth());
+    }
+
+    @GetMapping("/api/dashboard-order-fail")
+    public ResponseEntity getTotalOrderFail(){
+        return ResponseEntity.ok(dashboardService.getOrderFailByMonth());
+    }
 }
