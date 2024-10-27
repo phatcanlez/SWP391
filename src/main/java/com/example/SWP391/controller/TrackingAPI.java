@@ -36,4 +36,9 @@ public class TrackingAPI {
     public ResponseEntity getTrackingByOrderID(@PathVariable String orderID) {
         return ResponseEntity.ok(trackingService.getTrackingByOrderID(orderID));
     }
+
+    @PostMapping("/tracking/RouteMatrix")
+    public ResponseEntity getRouteMatrix(@RequestBody List<String> addresses) {
+        return ResponseEntity.ok(trackingService.getRouteMatrix(addresses));
+    }
 }
