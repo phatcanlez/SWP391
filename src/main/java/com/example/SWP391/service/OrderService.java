@@ -3,10 +3,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.*;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
-import com.example.SWP391.model.DTO.OrderDTO.OrderImageRequest;
-import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
-import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
-import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
+import com.example.SWP391.model.DTO.OrderDTO.*;
 import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
@@ -183,15 +180,18 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByAccount(String username) {
+    public List<OrderHistoryResponse> viewOrderByAccount(String username) {
         try {
             Account account = accountRepository.findByUsername(username);
             List<Orders> list = orderRepository.findByAccount(account);
             list.sort((o1, o2) -> o2.getStatus().getFirst().getDate().compareTo(o1.getStatus().getFirst().getDate()));
             return list.stream().map(order -> {
-                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
-                orderResponse.setStatus(order.getStatus().getLast());
-                orderResponse.setPayment(order.getPayment().getStatus());
+                OrderHistoryResponse orderResponse = modelMapper.map(order, OrderHistoryResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast().getStatusInfo().toString());
+                orderResponse.setOrderCreateDate(order.getStatus().getFirst().getDate());
+                if (order.getStatus().getLast().getStatusInfo() == StatusInfo.SUCCESS) {
+                    orderResponse.setActDeliveryDate(order.getActDeliveryDate());
+                }
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
