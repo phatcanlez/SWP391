@@ -1,4 +1,4 @@
-import { Button, Table } from "antd";
+import { Button, Rate, Table } from "antd";
 import { useEffect, useState } from "react";
 import api from "../../../config/axios";
 import { FileSyncOutlined } from "@ant-design/icons";
@@ -53,14 +53,14 @@ function StaffFeedback() {
       dataIndex: "time",
       key: "time",
       render: (time) => {
-        return time.split(' ')[0]; // Cách đơn giản nhất, cắt chuỗi
-      }
+        return time.split(" ")[0]; // Cách đơn giản nhất, cắt chuỗi
+      },
     },
     {
       title: "Rating",
       dataIndex: "rating",
       key: "rating",
-     
+      render: (fb, order) => <Rate disabled value={order?.rating} />,
     },
     {
       title: "Comment",

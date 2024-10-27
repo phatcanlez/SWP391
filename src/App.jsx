@@ -38,6 +38,7 @@ import Report from "./pages/admin/manage-report";
 import Order from "./pages/admin/manage-order/order";
 import FAQHome from "./pages/FAQ";
 import StaffFeedback from "./pages/staff/feedback";
+import ViewHistory from "./pages/customer/history";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -93,6 +94,7 @@ function App() {
       path: "tracking",
       element: <Tracking />,
     },
+
     {
       path: "FAQ",
       element: <FAQHome />,
@@ -109,6 +111,10 @@ function App() {
           path: "report",
           element: <Report />,
         },
+        // {
+        //   path: "",
+        //   element: <DashboardItem />,
+        // },
         {
           path: "order",
           element: <Order />,
@@ -155,6 +161,10 @@ function App() {
         {
           path: "order",
           element: <CreateOrder />,
+        },
+        {
+          path: "history",
+          element: <ViewHistory />,
         },
       ],
     },

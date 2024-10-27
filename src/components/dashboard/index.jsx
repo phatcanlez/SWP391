@@ -23,7 +23,7 @@ function getItem(label, key, icon, children) {
   };
 }
 const items = [
-  getItem("Dashboard", "/", <PieChartOutlined />),
+  getItem("Dashboard", "", <PieChartOutlined />),
   getItem("Manage Order", "order", <PieChartOutlined />),
   getItem("Manage User", "manage-user", <PieChartOutlined />),
   getItem("Manage Service", "sub2", <PieChartOutlined />, [
