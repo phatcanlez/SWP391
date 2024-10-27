@@ -22,6 +22,9 @@ public class DistanceService {
     @Autowired
     StatusService statusService;
 
+    @Autowired
+    EmailService emailService;
+
     private static final int BATCH_SIZE = 9; // MapQuest cho phép tối đa 25 locations trong 1 lần gọi
 
     public void processOrder(List<Account> accounts, Orders order) {
@@ -39,6 +42,7 @@ public class DistanceService {
         // xử lí mảng danh sách những staff gần nhất với đơn hàng mà có thể giao vì chưa nhận đơn nào
         if (distanceAndEmps.isEmpty()) {
             //gửi mail báo đợi nhân viên
+            emailService.sendEmailOrderIsWaitingTooLong(order);
             System.out.println("Không có nhân viên nào có thể giao đơn hàng này");
 
         }else {
