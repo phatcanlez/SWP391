@@ -268,10 +268,9 @@ function OrderDetail() {
                 </button>
               </>
             )}
-            {(status === "SUCCESS" ) && (
+            {status === "SUCCESS" && (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button className="fb-btn btn-item" onClick={showFBModal}>
-                  {" "}
                   View Feedback
                 </button>
               </div>
