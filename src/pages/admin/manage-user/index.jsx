@@ -1,4 +1,4 @@
-
+import CRUDTemplate from "../../../components/crud-template";
 import {
   Button,
   Form,
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 const { Option } = Select;
 
 function ManageUser() {
+  const [searchValue, setSearchValue] = useState("");
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
   const [showModal, setShowModal] = useState(false);
@@ -22,6 +23,29 @@ function ManageUser() {
   const [formItems, setFormItems] = useState("");
   const [totalAccount, setTotalAccount] = useState();
   const [page, setPage] = useState(0);
+  const [displayPages, setDisplayPages] = useState("");
+
+  const handleSearchValueChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    // Perform action with inputValue
+    console.log(searchValue);
+    try {
+      const response = await api.get(`account/${searchValue}`);
+      if (response.data !== "") {
+        setData([response.data]);
+        setDisplayPages("none");
+        console.log(response);
+        toast.success("Successfull");
+      } else {
+        toast.error("Not Found");
+      }
+    } catch (err) {
+      toast.error(err.response.data);
+    }
+  };
 
   let stt = 1;
   const columns = [
@@ -111,6 +135,7 @@ function ManageUser() {
 
   useEffect(() => {
     fetchData();
+    handleSearch();
     if (page) {
       //s
     }
@@ -121,7 +146,8 @@ function ManageUser() {
     try {
       setLoading(true);
       if (values.id) {
-        const response = await api.put(`account/${values.id}`, values);
+        const response = await api.patch(`account`, values);
+        console.log(response);
       } else {
         const response = await api.post(`register`, values);
       }
@@ -273,6 +299,17 @@ function ManageUser() {
       <Form.Item label="Address" name="address" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
+      <Form.Item
+        label="Role"
+        name="role"
+        rules={[{ required: true, message: "Please Select Role" }]}
+      >
+        <Select showSearch style={{ width: 200 }} placeholder="Select Role">
+          <Option value="CUSTOMER">CUSTOMER</Option>
+          <Option value="STAFF">STAFF</Option>
+          <Option value="MANAGER">MANAGER</Option>
+        </Select>
+      </Form.Item>
     </>
   );
 
@@ -281,14 +318,35 @@ function ManageUser() {
   };
 
   return (
-    <div>
-      <Button
-        onClick={() => {
-          setFormItems("Add"), setShowModal(true);
-        }}
-      >
-        Add
-      </Button>
+    <div style={{ gap: "30px" }}>
+      <div style={{ display: "flex" }}>
+        <div>
+          <Button
+            onClick={() => {
+              setFormItems("Add"), setShowModal(true);
+            }}
+          >
+            Register new account
+          </Button>
+        </div>
+        <div style={{ display: "flex", gap: "20px", paddingLeft: "20px" }}>
+          <Input
+            style={{ width: "200px" }}
+            placeholder="Input id"
+            value={searchValue}
+            onChange={handleSearchValueChange}
+          />
+          <Button onClick={handleSearch}>Search</Button>
+          <Button
+            onClick={() => {
+              fetchData(), setDisplayPages(""), setSearchValue("");
+            }}
+          >
+            ReFresh
+          </Button>
+        </div>
+      </div>
+
       <Table
         dataSource={data}
         columns={columns}
@@ -302,9 +360,9 @@ function ManageUser() {
         align="end"
         total={totalAccount}
         onChange={handlePageChange}
-        showSizeChanger
         showQuickJumper
         showTotal={(total) => `Total ${total} accounts`}
+        style={{ display: `${displayPages}` }}
       />
 
       <Modal
@@ -312,7 +370,7 @@ function ManageUser() {
         onCancel={() => {
           setShowModal(false), form.resetFields();
         }}
-        title="Register new account"
+        title={formItems}
         onOk={() => form.submit()}
         confirmLoading={loading}
       >
