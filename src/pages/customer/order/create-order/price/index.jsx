@@ -23,23 +23,23 @@ function Price({ fishData, addressData }) {
     }
   }, []);
 
-  const fetchShippingMethods = async () => {
-    try {
-      setLoading(true);
-      const methodIds = [1, 2, 3];
-      const methodPromises = methodIds.map(id => 
-        api.get(`/shipmethod/${id}`)
-      );
+  // const fetchShippingMethods = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const methodIds = [1, 2, 3];
+  //     const methodPromises = methodIds.map(id => 
+  //       api.get(`/shipmethod/${id}`)
+  //     );
       
-      const responses = await Promise.all(methodPromises);
-      const methodsData = responses.map(response => response.data);
-      setShippingMethods(methodsData);
-    } catch (error) {
-      console.error("Error fetching shipping methods:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const responses = await Promise.all(methodPromises);
+  //     const methodsData = responses.map(response => response.data);
+  //     setShippingMethods(methodsData);
+  //   } catch (error) {
+  //     console.error("Error fetching shipping methods:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Save data whenever it changes
   useEffect(() => {
@@ -53,12 +53,6 @@ function Price({ fishData, addressData }) {
     // Also save totalPrice separately for easy access in Payment step
     localStorage.setItem("orderTotalPrice", totalPrice.toString());
   }, [selectedServices, selectedShippingMethod, totalPrice, extraServices]);
-
-  const shippingMethods = {
-    option1: { name: "Economical Delivery", price: 50, rate: 1 },
-    option2: { name: "Standard Delivery", price: 75, rate: 1.5 },
-    option3: { name: "Express Delivery", price: 100, rate: 2 },
-  };
 
   // Box prices
   const boxPrices = {
