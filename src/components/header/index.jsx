@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 import { Button } from "antd";
+import { CaretDownOutlined } from "@ant-design/icons";
+import { Dropdown, Space } from "antd";
 import logo from "../../img/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
@@ -20,7 +22,9 @@ function Header() {
   return (
     <header className="header">
       <div className="header__logo">
-        <div onClick={handleNavigate}><img src={logo} alt="Logo" width={80} style={{ cursor: "pointer" }}/></div>
+        <Link to="/">
+          <img src={logo} alt="Logo" width={80} />
+        </Link>
       </div>
       <nav className="header__nav">
         <ul>

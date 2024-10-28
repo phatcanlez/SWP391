@@ -40,6 +40,7 @@ import FAQHome from "./pages/FAQ";
 import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
+import Overview from "./pages/admin/overview";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -109,6 +110,10 @@ function App() {
       ),
       children: [
         {
+          path: "overview",
+          element: <Overview />,
+        },
+        {
           path: "report",
           element: <Report />,
         },
@@ -147,6 +152,10 @@ function App() {
         {
           path: "feedback",
           element: <Feedback />,
+        },
+        {
+          path: "FAQ",
+          element: <FAQ />,
         },
       ],
     },
