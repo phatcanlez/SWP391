@@ -1,13 +1,10 @@
 import { MenuOutlined, PieChartOutlined } from "@ant-design/icons";
-import { MenuOutlined, PieChartOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import logo from "../../img/logolayout.png";
 import { Link, Outlet } from "react-router-dom";
 import Footer from "../../components/footer";
-const { Header, Content } = Layout;
-import Footer from "../../components/footer";
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 function getItem(label, key, icon, children) {
   return {
@@ -33,11 +30,9 @@ const items = [
   ]),
   getItem("Manage User", "manage-user", <PieChartOutlined />),
   getItem("Manage Service", "sub2", <MenuOutlined />, [
-  getItem("Manage Service", "sub2", <MenuOutlined />, [
     getItem("Extra service", "extra-service"),
     getItem("Delivery", "delivery"),
   ]),
-  getItem("Manage Price", "sub3", <MenuOutlined />, [
   getItem("Manage Price", "sub3", <MenuOutlined />, [
     getItem("Price list weight", "price-list-weight"),
     getItem("Price list distance", "price-list-distance"),
@@ -57,13 +52,6 @@ function Dashboard() {
             <img src={logo} alt="" />
           </Link>
           <h4>KOIKICHI</h4>
-    <div>
-      <Layout>
-        <Sider style={{ background: "#f5f5f5" }}>
-          <Link to="/">
-            <img src={logo} alt="" />
-          </Link>
-          <h4>KOIKICHI</h4>
           <Menu mode="inline" items={items} />
         </Sider>
         <Layout>
@@ -73,19 +61,14 @@ function Dashboard() {
             }}
           >
             <Breadcrumb
-            <Breadcrumb
               style={{
-                margin: "16px 0",
                 margin: "16px 0",
               }}
             >
               <Breadcrumb.Item></Breadcrumb.Item>
               <Breadcrumb.Item></Breadcrumb.Item>
             </Breadcrumb>
-            <div>
-              <Breadcrumb.Item></Breadcrumb.Item>
-              <Breadcrumb.Item></Breadcrumb.Item>
-            </Breadcrumb>
+
             <div>
               <Outlet />
             </div>

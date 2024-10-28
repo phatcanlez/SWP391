@@ -75,13 +75,6 @@ function EstimatedShippingFee() {
 
           { shipMethodId: 3, description: "Express shipping" },
         ]);
-        setShipMethods([
-          { shipMethodId: 1, description: "Economy shipping" },
-
-          { shipMethodId: 2, description: "Fast shipping" },
-
-          { shipMethodId: 3, description: "Express shipping" },
-        ]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -216,34 +209,6 @@ function EstimatedShippingFee() {
     setNoOfBoxesLarge(noOfBoxesLarge);
     setExtraLargeBoxesQuantity(extraLargeBoxesQuantity);
     setSpecialLargeBoxesQuantity(specialLargeBoxesQuantity);
-    let values = {
-      kilometers: parseFloat(distance),
-      shipMethodID: selectedMethod,
-      weight: weight,
-      boxAmountDTO: {
-        smallBox: mediumBoxNeeded,
-        mediumBox: Math.floor(noOfBoxesLarge),
-        largeBox: extraLargeBoxesQuantity,
-        extraLargeBox: specialLargeBoxesQuantity,
-      },
-    };
-
-    console.log(values);
-
-    try {
-      const response = await axios.post(
-        "http://103.90.227.65:8080/tracking/estimate",
-        values
-      );
-      setShippingCost(response.data);
-    } catch (err) {
-      console.error("Fetching error: ", err);
-    }
-  };
-
-  useEffect(() => {
-    calculatePoints();
-  }, []);
     let values = {
       kilometers: parseFloat(distance),
       shipMethodID: selectedMethod,
@@ -418,28 +383,6 @@ function EstimatedShippingFee() {
     form.submit();
   }
 
-  const handleShippingMethodChange = (value) => {
-    setSelectedMethod(value);
-    console.log(selectedMethod);
-  };
-  const [distance, setDistance] = useState();
-  const handleGetDistance = (newDistance) => {
-    setDistance(newDistance);
-  };
-
-  useEffect(() => {
-    if (distance) {
-      console.log(distance);
-    }
-  }, [distance]);
-
-  useEffect(() => {
-    if (selectedMethod) {
-      console.log(selectedMethod);
-    }
-  }, [selectedMethod]);
-
-  const [weight, setWeight] = useState(0);
   const handleShippingMethodChange = (value) => {
     setSelectedMethod(value);
     console.log(selectedMethod);
@@ -645,21 +588,6 @@ function EstimatedShippingFee() {
         <App ref={appRef} getDistance={handleGetDistance} />
       </div>
       <div className="estimatedshippingfee__calculating">
-        Weight :{" "}
-        <Input
-          name="weight"
-          style={{ width: 200 }}
-          type="number"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
-        />
-        <br />
-        <br />
-        <button onClick={calculatePoints}>
-          <a href="#estimate" style={{ textDecoration: "none", color: "#fff" }}>
-            Tracking
-          </a>
-        </button>
         Weight :{" "}
         <Input
           name="weight"

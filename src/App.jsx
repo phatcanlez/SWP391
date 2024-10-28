@@ -41,7 +41,6 @@ import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
 import Overview from "./pages/admin/overview";
-import Overview from "./pages/admin/overview";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
