@@ -51,7 +51,7 @@ public class EmailService {
         EmailDetail emailDetail = new EmailDetail();
         emailDetail.setReceiver(orders.getAccount());
         emailDetail.setSubject("Your order is waiting too long");
-        emailDetail.setContent("Your order is waiting too long, we don't have any employee to deliver your order. Please wait for a while");
+        emailDetail.setContent("Your order is waiting too long, we don't have any employee to deliver your order. Please wait for about 7 days, we will approve your order as soon as possible");
         emailDetail.setLink("");
         emailDetail.setButton("Apologize");
         sendEmail(emailDetail);

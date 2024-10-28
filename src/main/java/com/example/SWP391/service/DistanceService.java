@@ -42,7 +42,7 @@ public class DistanceService {
         // xử lí mảng danh sách những staff gần nhất với đơn hàng mà có thể giao vì chưa nhận đơn nào
         if (distanceAndEmps.isEmpty()) {
             //gửi mail báo đợi nhân viên
-            emailService.sendEmailOrderIsWaitingTooLong(order);
+            emailService.sendEmailNoEmp(order);
             System.out.println("Không có nhân viên nào có thể giao đơn hàng này");
 
         }else {
