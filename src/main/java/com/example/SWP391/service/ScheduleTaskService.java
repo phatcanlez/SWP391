@@ -26,6 +26,9 @@ public class ScheduleTaskService {
     @Autowired
     OrderService orderService;
 
+    @Autowired
+    EmailService emailService;
+
 //    @Scheduled(fixedRate = 600 * 1000)
     public void performTask() {
         //lấy ds đơn hàng chờ quá lâu
@@ -34,15 +37,16 @@ public class ScheduleTaskService {
             return;
         }
 
-        //lấy danh sách nhân viên đang rảnh
-
-
         //sắp xếp đơn theo độ ưu tiên của gói vận chuyển
         TrackingUtil.sortOrderByShipMethod(listOrders);
 
         for (Orders orders : listOrders) {
+            //lấy danh sách nhân viên đang rảnh
             List<Account> listRestEmp = accountService.getAllRestEmployees();
             if (listRestEmp.isEmpty()) {
+                for (Orders order : listOrders) {
+                    emailService.sendEmailOrderIsWaitingTooLong(order);
+                }
                 System.out.println("Không có nhân viên nào rảnh và gửi mail thông báo");
                 return;
             }else {
