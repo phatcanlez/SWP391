@@ -1,11 +1,56 @@
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Steps } from "antd";
 import "./index.css";
 import ReCAPTCHA from "react-google-recaptcha";
+import { toast } from "react-toastify";
+import { useEffect, useRef, useState } from "react";
+import api from "../../../config/axios";
 
 function BillOfLading() {
+  const [display, setDisplay] = useState("none");
+  const resultRef = useRef(null);
+  const [data, setData] = useState([]);
+  const [orderId, setOrderId] = useState("");
+  const [current, setCurrent] = useState(-1);
   const handleTracking = async (values) => {
     console.log(values);
+    try {
+      const response = await api.get(`orders/${values.orderId}`);
+      setOrderId(values.orderId);
+      setData(response.data.status);
+      const lastStatus = response.data.status[response.data.status.length - 1];
+      if (lastStatus) {
+        setCurrent(getCurrentStatus(lastStatus.statusInfo));
+      }
+      setDisplay("");
+      toast.success("Successfull");
+
+      setTimeout(() => {
+        if (resultRef.current) {
+          resultRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } catch (err) {
+      toast.error(err.response.data.Error);
+    }
   };
+
+  const getCurrentStatus = (statusInfo) => {
+    switch (statusInfo) {
+      case "WAITING":
+        return 0;
+      case "APPROVED":
+        return 1;
+      case "PENDING":
+        return 2;
+      case "SUCCESS":
+        return 3;
+      default:
+        return -1; // No valid status
+    }
+  };
+
+  useEffect(() => handleTracking, []);
+
   return (
     <div className="billoflading">
       <div className="billoflading__tracking">
@@ -16,12 +61,13 @@ function BillOfLading() {
         >
           <Form.Item
             name="orderId"
-            rules={[{ require: true, message: "Please input " }]}
+            rules={[{ required: true, message: "Please input " }]}
           >
-            <Input placeholder="EX: 0123456789" />
+            <Input placeholder="Input your OrderId" />
           </Form.Item>
           <Form.Item
-            rules={[{ require: true, message: "captcha not complete " }]}
+            name="captcha"
+            rules={[{ required: true, message: "Captcha not complete" }]}
           >
             <ReCAPTCHA sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_KEY} />
           </Form.Item>
@@ -30,97 +76,44 @@ function BillOfLading() {
           </Button>
         </Form>
       </div>
-      <div className="billoflading__result">
+      <div
+        className="billoflading__result"
+        id="result"
+        style={{ display: `${display}` }}
+        ref={resultRef}
+      >
         <p className="billoflading__result__title">Result</p>
-        <ul>
-          <li>
-            <p className="billoflading__result__name">
-              Order created successfully
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              Order created successfully
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              Order has been approved
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              Order has been approved
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              The shipping unit has successfully picked up the goods
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              The shipping unit has successfully picked up the goods
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              The order has arrived at the post office 1
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              The order has arrived at the post office 1
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              The order has left at the post office 1
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              The order has left at the post office 1
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              The order has arrived at the post office 2
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              The order has arrived at the post office 2
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              The order has left at the post office 2
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              The order has left at the post office 2
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              Order is being delivered
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              Orders are being delivered, please pay attention to your phone
-            </p>
-          </li>
-          <li>
-            <p className="billoflading__result__name">
-              The order has been delivered successfully
-            </p>
-            <p className="billoflading__result__time">September 2, 2024</p>
-            <p className="billoflading__result__description">
-              The order has been delivered successfully
-            </p>
-          </li>
-        </ul>
+        <span style={{ paddingLeft: "15%", fontSize: "20px" }}>
+          OrderID : {orderId}
+        </span>
+        <Steps
+          className="billoflading__result__step"
+          progressDot
+          current={current}
+          direction="vertical"
+          items={data.map((statusItem) => ({
+            title: (
+              <div className="billoflading__result__step__title">
+                {statusItem.statusInfo}
+              </div>
+            ),
+            description: (
+              <div>
+                <div className="billoflading__result__step__time">
+                  {new Date(statusItem.date).toLocaleString()}
+                </div>
+                <div className="billoflading__result__step__description">
+                  {statusItem.description}
+                </div>
+              </div>
+            ),
+          }))}
+        />
       </div>
     </div>
   );
 }
 
 export default BillOfLading;
-//<ReCAPTCHA sitekey = {process.env.REACT_APP_SITE_KEY}/>
-//REACT_APP_SITE_KEY = "6LduEFcqAAAAALROUg7Occw7kEn0vLV_CR59nZjX"
-//REACT_APP_SECRET_KEY = "6LduEFcqAAAAAErK_kQv5VGSIgAedz6l_2g1Q5QO"
+
+// StatusInfo: WAITTING, APPROVED, PENDING, SUCCESS, FAIL

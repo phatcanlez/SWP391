@@ -1,11 +1,17 @@
 import { useSelector } from "react-redux";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
-import { ArrowDownOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import {
+  ArrowDownOutlined,
+  EnvironmentOutlined,
+  FileSearchOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import { Alert, Form, Input, Modal, Rate } from "antd";
 import "./index.css";
 import { useForm } from "antd/es/form/Form";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 function ViewHistory() {
   const user = useSelector((store) => store.user);
   console.log(user);
@@ -51,6 +57,7 @@ function ViewHistory() {
 
   const handleOpen = (orderId) => {
     setSelectedOrderId(orderId);
+    console.log(selectedOrderId);
     setOpenModal(true);
   };
 
@@ -58,15 +65,20 @@ function ViewHistory() {
     <div>
       <div className="history-bg">
         <div className="order-list">
-          {orderHistory.map((order) => (
-            <History
-              key={order.orderID}
-              order={order}
-              onFeedbackClick={() => {
-                handleOpen(order.orderID);
-              }}
-            />
-          ))}
+          {orderHistory && orderHistory.length > 0 ? (
+            orderHistory.map((order) => (
+              <History
+                key={order.orderID}
+                order={order}
+                onFeedbackClick={() => handleOpen(order.orderID)}
+              />
+            ))
+          ) : (
+            <div className="order-list__item">
+              <FrownOutlined style={{ color: "#00000030", fontSize: "70px" }} />
+              <h2>You have not created any order</h2>
+            </div>
+          )}
         </div>
       </div>
 
@@ -92,6 +104,7 @@ function ViewHistory() {
 }
 
 const History = ({ order, onFeedbackClick }) => {
+  const navigate = useNavigate();
   const getAlertType = (status) => {
     switch (status) {
       case "WAITING":
@@ -122,7 +135,7 @@ const History = ({ order, onFeedbackClick }) => {
 
         <div className="order__item">
           <ArrowDownOutlined style={{ color: "#E25822", fontSize: "20px" }} />
-          <p>Form: </p>
+          <p>From: </p>
           <p>{order?.senderAddress}</p>
         </div>
 
@@ -138,7 +151,13 @@ const History = ({ order, onFeedbackClick }) => {
         </div>
       </div>
       <div className="btn-wrapper">
-        <button className=" btn-his" style={{ backgroundColor: "#c0aca4" }}>
+        <button
+          onClick={() => {
+            navigate(`/customer-service/view-order/${order.orderID}`);
+          }}
+          className=" btn-his"
+          style={{ backgroundColor: "#c0aca4" }}
+        >
           View Detail
         </button>
         <button

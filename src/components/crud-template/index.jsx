@@ -74,7 +74,7 @@ function CRUDTemplate({ columns, formItems, path, field }) {
     try {
       setLoading(true);
       if (values.id) {
-        const response = await api.put(`${path}?id=${values.id}`, values);
+        const response = await api.put(`${path}/${values.id}`, values);
       } else {
         const response = await api.post(path, values);
       }

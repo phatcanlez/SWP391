@@ -8,6 +8,12 @@ import protectedImg from "../../../img/protected.png";
 import checkout from "../../../img/checkout.png";
 import delivery from "../../../img/delivery.png";
 import customerCare from "../../../img/customer-care.png";
+import resume from "../../../img/resume.png";
+import device from "../../../img/device.png";
+import storage from "../../../img/storage.png";
+import marketing from "../../../img/marketing.png";
+import support24hours from "../../../img/24-hours-support.png";
+import salary from "../../../img/salary.png";
 
 function International() {
   const container1P1 = { fontSize: 45, fontWeight: 700 };
@@ -98,8 +104,7 @@ function International() {
               in major cities such as Hanoi, Da Nang and Ho Chi Minh City.
             </p>
             <img
-              src="https://s3-alpha-sig.figma.com/img/c7af/6a0a/5500e104f5c724c263645a0d2bdf237b?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=I8mMbrWx7e-HBcL9v0kxYQQxlmXwluyrtakEUczXndaNGSAIYZmB01b0wr3lDZCB~pcGqOsMlIvzpxnuDWJSWSe3qNNf1LEgW3chst4pdPqqIVCkP91DmGcx9xMP2-6zAHBo3SL9SGSVky0kyRwtuX~zYPknZZZZIySjOeVF-66DgUebIYf8CoDeYc2~Gmjf64u2mUQrFB94SR5qPg6c8eUj0VwtOsEjbuEYoK9jg6~wXuA-izk-gJnSEX3CkrjLtPIcw9HNfRVLoQ01mqqa5RxTIsrbpxB0VEq1fPAu4fD4PCWoO9~SOTl-wBuWhRgJbPpG6I9CltA0iPbv7hnLxw__"
-              alt=""
+              src={resume}
               className="international__container3__rectangle__image"
             />
           </div>
@@ -114,8 +119,7 @@ function International() {
               increase brand coverage in the Vietnamese market.
             </p>
             <img
-              src="https://s3-alpha-sig.figma.com/img/ff29/3b42/c17ff59eef38b0f422a41d95c9cbd97c?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ea3FeyibuHPpBGaMGFazDrkvxs2jq8ae3tCESpolTTQOnr56JUwGRb70t6Xd2QA9~37CUajD7ysf37GDLh14-mWUer8IokaBA~PV6s-ZiHw1ucUwpKqoDRlXJJbcAJu3EaNQLhwLD9tB69rdYEw2Bb-y-KpsLgi1rb5eJ7R9-tH6XntXBw1cCssn46gKWjoNpcBiNxrVSuYieQU38r0FwCLZJ7tJ1DGNZWdoggHCV9J~cKecrZk5llAbtE5zYWnHBSbhdPdeGEBVruljBWWdL6XkdQqdQ2M1IOPQ2pgZPwjp81hVZ2d27Qkq8GiMPB~ioPDST0FUGCqjYGYsSVmfsw__"
-              alt=""
+              src={device}
               className="international__container3__rectangle__image"
             />
           </div>
@@ -129,8 +133,7 @@ function International() {
               sellers manage inventory and handle import/export of goods.
             </p>
             <img
-              src="https://s3-alpha-sig.figma.com/img/06e0/cee2/cf35d4ef2435eb5754aab0504939fc8c?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Ehec58RxTSeFHHSFg6gnnJD6QHzft5LI-f2G7jZ09vEfjoH-mExdk9ZIkVRm1KYEyppS~KRlpvQgPTfmuGHOu2VJO5C4sJQjOLXCldCdRGKMdZbzqjJcHNA0XszZfZeFXvP5X0zi~OOQV4yHUBdlhOJcPfs-At36K6Vlufr~3lN1twosiF96sIuxT-jjyt8iInIeAjM4lMZPENOlgXMlOpg0qdsSV20QbBREhQgfH5DmM0AcKden0Yozn3-0r0-wnLCoMe2i4UeRjF3eYmSIeqWhCgtBJSKE1yvUZMnbq4~fUWN-cFJ6mQoaHnBEo9Uc0Vv0l8eQhmICY2hzxavebA__"
-              alt=""
+              src={storage}
               className="international__container3__rectangle__image"
             />
           </div>
@@ -147,8 +150,7 @@ function International() {
               and increase sales. .
             </p>
             <img
-              src="https://s3-alpha-sig.figma.com/img/b754/c3fd/3db5320d71276a17f10e802a167deaa8?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=iU76QPhkTZ1Oa8D5eWoNXQ9Mcz8Pevz1FYJ-cp69b4i2S1lairlR6JTL8sdzF~CIslEcZSqZS38C6TgO6pFQccQqZuHOFrKCok2DtnrxN-a0NRz8v-Chl915DYCr7QVBlK3xTfVm4aBdiZnCVHVHWCjYOtdBTfhVLmJgGFhMqvce7JaAyQXoddgECK-F8I5-xKMETuONsnbTJK8H0wt-NAavstV5D~Zu1aw5X18kT2hpyLQcqCTZocoHRg0bloqKRGFkUMyYGza9X~eZsHZSbsUJx1KWl-B2gyBqmLQdxfyzc3QLDVF00ZJCQqO7cwD4s1ds~zXROMYLbNkkaakiiQ__"
-              alt=""
+              src={marketing}
               className="international__container3__rectangle__image"
             />
           </div>
@@ -162,8 +164,7 @@ function International() {
               behalf.
             </p>
             <img
-              src="https://s3-alpha-sig.figma.com/img/952b/82ad/5db9f7c6fbab8520072019b71dfc9b39?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=PRdvRK~HOELYAK9qaNWQbsJs~5y7ZricrVINXS0Kbc5pR2p4pvLCgJu9woXCy0bFJBfC~0Vtzgh82z7-aSsy9KIFJF4oGDb6IfxAaaZl7Puwgjj2FSE6dFjUkJxeYM7KyHwapUAKwhPae2M5V-KpwXPBAt8zaaHtzI4WrfKlW9EqXHPsk0bV86UcVwDzBh5Bx2Ox197cllVx9-GUlkTuteD0tg62vBfIOzIEn0VyZzH~qd~w9WQhm9JRugvTZ0UGfdfaAUdvHX9mXCMxUwasQrR5p-RemNHN2qh71XNWfgNS6hezC-O3Urk0EUlwRdMvk7rbmUjjmWHplzHf0hPGsw__"
-              alt=""
+              src={support24hours}
               className="international__container3__rectangle__image"
             />
           </div>
@@ -177,8 +178,7 @@ function International() {
               transactions more transparent and easier.
             </p>
             <img
-              src="https://s3-alpha-sig.figma.com/img/b4ca/2f17/e5b2a60a9f4876566f73835f2bd2ed01?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=lKMVm6dCx4he12kg0vnPIOA9DkMEQoEf5LmG0plg7Y2moS38nSYQRQYPmhWw9rglKe4ex4BMNHg1cknfdRVEd6yt-Q5wsvuxbweP1ZMj1s8gW3c~gskLBKeruLYmqxMOvPmNggdAc3E7EAZ5Dw1MhCZzqyOYDT3kddnpoZcxdoaHPj59-LdSu~6Mmf4bfW8LVCS9ybE8zk80AiFBRi68Ew7nanhQqbMbhXm3m24REi6i70tstgTzrDdj4kCyf0UOqPW-J3A~s2LbUwn6uaZJPxoLYM-qzzCZ1PNlhNE~xTPdR7I5oerU9MTOKAEHzZPtx62ENgxTHFjFyj3tCynumA__"
-              alt=""
+              src={salary}
               className="international__container3__rectangle__image"
             />
           </div>
