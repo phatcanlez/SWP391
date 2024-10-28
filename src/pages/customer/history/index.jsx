@@ -1,7 +1,12 @@
 import { useSelector } from "react-redux";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
-import { ArrowDownOutlined, EnvironmentOutlined } from "@ant-design/icons";
+import {
+  ArrowDownOutlined,
+  EnvironmentOutlined,
+  FileSearchOutlined,
+  FrownOutlined,
+} from "@ant-design/icons";
 import { Alert, Form, Input, Modal, Rate } from "antd";
 import "./index.css";
 import { useForm } from "antd/es/form/Form";
@@ -60,15 +65,20 @@ function ViewHistory() {
     <div>
       <div className="history-bg">
         <div className="order-list">
-          {orderHistory.map((order) => (
-            <History
-              key={order.orderID}
-              order={order}
-              onFeedbackClick={() => {
-                handleOpen(order.orderID);
-              }}
-            />
-          ))}
+          {orderHistory && orderHistory.length > 0 ? (
+            orderHistory.map((order) => (
+              <History
+                key={order.orderID}
+                order={order}
+                onFeedbackClick={() => handleOpen(order.orderID)}
+              />
+            ))
+          ) : (
+            <div className="order-list__item">
+              <FrownOutlined style={{ color: "#00000030", fontSize: "70px" }} />
+              <h2>You have not created any order</h2>
+            </div>
+          )}
         </div>
       </div>
 
