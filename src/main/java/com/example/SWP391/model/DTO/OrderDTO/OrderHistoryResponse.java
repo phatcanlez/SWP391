@@ -18,4 +18,5 @@ public class OrderHistoryResponse {
     String reciverAdress;
     double totalPrice;
     String status;
+
 }

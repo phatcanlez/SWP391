@@ -6,7 +6,6 @@ import lombok.Getter;
 @Data
 @Getter
 public class OAuth {
-
     String name;
     String avatar;
     String email;

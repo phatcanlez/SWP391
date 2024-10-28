@@ -34,13 +34,11 @@ public class ScheduleTaskService {
             return;
         }
 
-        //lấy danh sách nhân viên đang rảnh
-
-
         //sắp xếp đơn theo độ ưu tiên của gói vận chuyển
         TrackingUtil.sortOrderByShipMethod(listOrders);
 
         for (Orders orders : listOrders) {
+            //lấy danh sách nhân viên đang rảnh
             List<Account> listRestEmp = accountService.getAllRestEmployees();
             if (listRestEmp.isEmpty()) {
                 System.out.println("Không có nhân viên nào rảnh và gửi mail thông báo");
