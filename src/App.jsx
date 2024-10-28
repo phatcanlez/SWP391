@@ -39,6 +39,7 @@ import Order from "./pages/admin/manage-order/order";
 import FAQHome from "./pages/FAQ";
 import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
+import ViewOrderDetail from "./pages/customer/view-order";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -165,6 +166,10 @@ function App() {
         {
           path: "history",
           element: <ViewHistory />,
+        },
+        {
+          path: "view-order/:id",
+          element: <ViewOrderDetail />,
         },
       ],
     },

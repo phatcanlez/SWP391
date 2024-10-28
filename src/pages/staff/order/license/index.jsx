@@ -33,32 +33,24 @@ const ShowLicense = ({ licenses, index }) => {
       <div className="licence">
         <div className="licence-item" style={{ width: "300px" }}>
           <p className="color">{index + 1}</p>
-          <Image
-            className="koi-img"
-            src="https://4.bp.blogspot.com/-r30hIrcWmbw/T0Kt9CqP51I/AAAAAAAAAEs/Y2pZvL1bjNQ/s1600/09-28-2011+155.JPG"
-            alt=""
-          />
+          <Image className="koi-img" src={licenses?.imgKoi} alt="" />
 
           {/* <Image className="koi-img" src={licenses?.imgKoi} alt="" /> */}
           <p>{licenses?.name}</p>
         </div>
         <div className="licence-item">
-          <Image
-            className="koi-img"
-            src="https://4.bp.blogspot.com/-r30hIrcWmbw/T0Kt9CqP51I/AAAAAAAAAEs/Y2pZvL1bjNQ/s1600/09-28-2011+155.JPG"
-            alt=""
-          />
+          <Image className="koi-img" src={licenses?.imgLicense} alt="" />
           <div className="item">
             <p>Size: {licenses?.size}</p>
             <p>Weight: {licenses?.weight}</p>
           </div>
         </div>
 
-       <div className="licence-item">
-       <p>
-          Price of Koi: <span className="color"> {licenses?.priceOfKoi}</span>
-        </p>
-       </div>
+        <div className="licence-item">
+          <p>
+            Price of Koi: <span className="color"> {licenses?.priceOfKoi}</span>
+          </p>
+        </div>
       </div>
     </div>
   );
