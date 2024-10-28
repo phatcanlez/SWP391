@@ -7,7 +7,6 @@ import { useState, useRef, useEffect } from "react";
 import Address from "./address";
 import Fish from "./fish";
 import Price from "./price";
-import Payment from "./payment";
 
 const { TextArea } = Input;
 const { Step } = Steps;
@@ -25,11 +24,10 @@ function FormDisabledDemo() {
       const response = await api.post("orders", values);
       console.log(response);
       toast.success("Successful");
-      navigate("/customer-service/payment");
       localStorage.removeItem("fishFormData");
       localStorage.removeItem("addressFormData");
       localStorage.removeItem("priceFormData");
-      localStorage.removeItem("paymentFormData");
+    
     } catch (err) {
       toast.error(err.response?.data || "An error occurred");
     }
@@ -47,10 +45,6 @@ function FormDisabledDemo() {
     {
       title: "Price",
       content: <Price ref={(el) => (formRefs.current[2] = el)} />,
-    },
-    {
-      title: "Payment",
-      content: <Payment ref={(el) => (formRefs.current[3] = el)} />,
     },
   ];
 
@@ -125,7 +119,6 @@ function FormDisabledDemo() {
     localStorage.removeItem("fishFormData");
     localStorage.removeItem("addressFormData");
     localStorage.removeItem("priceFormData");
-    localStorage.removeItem("paymentFormData");
     localStorage.removeItem("orderFormData");
 
     // Reset step data

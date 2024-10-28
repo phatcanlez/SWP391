@@ -1,11 +1,10 @@
 import { forwardRef, useImperativeHandle } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { Button, Form, Input, Modal, Select, Space } from "antd";
+import { Button, Form, Input, Modal, Select, Space, Spin } from "antd";
 //import "./index.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Option } from "antd/es/mentions";
 import api from "../../../../../config/axios";
 
 // eslint-disable-next-line react/display-name
@@ -31,15 +30,22 @@ const Address = forwardRef((props, ref) => {
     wardName: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
         );
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError("Failed to load location data");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -53,7 +59,7 @@ const Address = forwardRef((props, ref) => {
   }, [selectedCity, data]);
 
   useEffect(() => {
-    if (selectedDistrict) {
+    if (selectedDistrict && selectedCity && data) {
       const cityData = data.find((city) => city.Id === selectedCity);
       const districtData = cityData?.Districts.find(
         (district) => district.Id === selectedDistrict
@@ -296,14 +302,15 @@ const Address = forwardRef((props, ref) => {
           >
             <Select
               showSearch
-              style={{ width: 200 }}
+              style={{ width: "100%" }}
               onChange={handleCityChange}
               placeholder="Select City"
+              optionFilterProp="children"
             >
               {data.map((city) => (
-                <Option key={city.Id} value={city.Id}>
+                <Select.Option key={city.Id} value={city.Id}>
                   {city.Name}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
