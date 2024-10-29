@@ -15,11 +15,11 @@ import { toast } from "react-toastify";
 const { Option } = Select;
 
 function ManageUser() {
+  const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [formItems, setFormItems] = useState("");
   const [totalAccount, setTotalAccount] = useState();
   const [page, setPage] = useState(0);
@@ -123,13 +123,16 @@ function ManageUser() {
   ];
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await api.get(`account?page=${page}&size=10`);
       console.log(response.data);
       setData(response.data.content);
       setTotalAccount(response.data.totalElements);
+      setLoading(false);
     } catch (err) {
       toast.error(err.response.data);
+      setLoading(false);
     }
   };
 
@@ -354,6 +357,7 @@ function ManageUser() {
         scroll={{
           x: "max-content",
         }}
+        loading={loading}
       />
 
       <Pagination

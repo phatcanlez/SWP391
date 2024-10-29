@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import api from "../../../config/axios";
 
 function Report() {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [totalReport, setTotalReport] = useState();
   const [page, setPage] = useState(0);
@@ -48,12 +49,15 @@ function Report() {
   ];
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await api.get(`report?page=${page}&size=10`);
       console.log(response.data);
       setData(response.data.content);
       setTotalReport(response.data.totalElements);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       toast.error(err.response.data);
     }
   };
@@ -78,6 +82,7 @@ function Report() {
         scroll={{
           x: "max-content",
         }}
+        loading={loading}
       />
 
       <Pagination

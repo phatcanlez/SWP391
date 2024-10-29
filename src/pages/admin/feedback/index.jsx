@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Pagination, Table } from "antd";
 
 function Feedback() {
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [totalFeedback, setTotalFeedback] = useState();
   const [page, setPage] = useState(0);
@@ -38,13 +39,16 @@ function Feedback() {
   ];
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await api.get(`feedback?page=${page}&size=10`);
       console.log(response.data);
       setData(response.data.content);
       setTotalFeedback(response.data.totalElements);
+      setLoading(false);
     } catch (err) {
       toast.error(err.response.data);
+      setLoading(false);
     }
   };
 
@@ -68,6 +72,7 @@ function Feedback() {
         scroll={{
           x: "max-content",
         }}
+        loading={loading}
       />
 
       <Pagination

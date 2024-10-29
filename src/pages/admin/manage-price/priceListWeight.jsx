@@ -12,6 +12,7 @@ function PriceListWeight() {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response1 = await axios.get(
         "http://103.90.227.65:8080/tracking/weight/1"
@@ -49,8 +50,10 @@ function PriceListWeight() {
           priceListId: item.priceListId,
         })),
       ]);
+      setLoading(false);
     } catch (err) {
       toast.error(err.response.data);
+      setLoading(false);
     }
   };
 
@@ -135,6 +138,7 @@ function PriceListWeight() {
         scroll={{
           x: "max-content",
         }}
+        loading={loading}
       />
 
       <Modal
