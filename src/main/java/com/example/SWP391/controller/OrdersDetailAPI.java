@@ -20,10 +20,10 @@ public class OrdersDetailAPI {
         @Autowired
         private OrderDetailService orderDetailService;
 
-        @PostMapping("/api/orders-detail")
-        public ResponseEntity createOrderDetail(@Valid @RequestBody OrderDetailRequest orderDetail) {
-            return ResponseEntity.ok(orderDetailService.createOrderDetail(orderDetail));
-        }
+//        @PostMapping("/api/orders-detail")
+//        public ResponseEntity createOrderDetail(@Valid @RequestBody OrderDetailRequest orderDetail) {
+//            return ResponseEntity.ok(orderDetailService.createOrderDetail(orderDetail));
+//        }
 
         @GetMapping("/api/orders-detail")
         public ResponseEntity getAllOrdersDetail() {

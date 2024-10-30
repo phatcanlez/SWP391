@@ -168,6 +168,9 @@ public class OrderService {
                     list.add(orders);
                 }
             }
+            if (list.isEmpty()) {
+                return new ArrayList<>();
+            }
 
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
@@ -176,6 +179,7 @@ public class OrderService {
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new NotFoundException("Error");
         }
     }
@@ -192,6 +196,8 @@ public class OrderService {
                 if (order.getStatus().getLast().getStatusInfo() == StatusInfo.SUCCESS) {
                     orderResponse.setActDeliveryDate(order.getActDeliveryDate());
                 }
+                orderResponse.setFeedback(order.getFeedbacks() != null);
+                orderResponse.setPaid(order.getPayment().getStatus().equals(Paystatus.PAYED.toString()));
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -228,16 +234,20 @@ public class OrderService {
 
     @Transactional
     public List<Orders> getOrderWaitingToLong() {
-        List<Orders> orders = viewOrderByStatus(StatusInfo.WAITING);
-        List<Orders> list = new ArrayList<>();
-        Date currentDate = new Date();
-        for (Orders order : orders) {
-            int waitDate = DateConversionUtil.calculateTimeDifference(currentDate, order.getStatus().getFirst().getDate());
-            if (waitDate > 2) {
-                list.add(order);
+        try {
+            List<Orders> orders = viewOrderByStatus(StatusInfo.WAITING);
+            List<Orders> list = new ArrayList<>();
+            Date currentDate = new Date();
+            for (Orders order : orders) {
+                int waitDate = DateConversionUtil.calculateTimeDifference(currentDate, order.getStatus().getFirst().getDate());
+                if (waitDate > 2) {
+                    list.add(order);
+                }
             }
+            return list;
+        } catch (Exception e) {
+            throw new NotFoundException("Can't get order waiting too long because of error");
         }
-        return list;
     }
 
     public String updateAllOrder() {
