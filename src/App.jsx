@@ -35,7 +35,7 @@ import FAQ from "./components/faq";
 import Account from "./pages/customer/account";
 
 import Report from "./pages/admin/manage-report";
-import Order from "./pages/admin/manage-order/order";
+
 import FAQHome from "./pages/FAQ";
 import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
@@ -128,10 +128,6 @@ function App() {
         {
           path: "report",
           element: <Report />,
-        },
-        {
-          path: "order",
-          element: <Order />,
         },
         {
           path: "manage-user",

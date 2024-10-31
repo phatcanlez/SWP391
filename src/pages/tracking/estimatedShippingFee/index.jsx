@@ -224,10 +224,7 @@ function EstimatedShippingFee() {
     console.log(values);
 
     try {
-      const response = await axios.post(
-        "http://103.90.227.65:8080/tracking/estimate",
-        values
-      );
+      const response = await api.post("tracking/estimate", values);
       setShippingCost(response.data);
     } catch (err) {
       console.error("Fetching error: ", err);
