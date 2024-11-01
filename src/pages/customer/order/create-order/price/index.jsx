@@ -15,6 +15,7 @@ function Price({ fishData, addressData }) {
   const [weightPrice, setWeightPrice] = useState(0);
   //const [distancePrice, setDistancePrice] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
+  const [estimatePrice, setEstimatePrice] = useState(0);
 
   // Load saved data when component mounts
   useEffect(() => {
@@ -188,17 +189,18 @@ function Price({ fishData, addressData }) {
       console.log("Estimate request body:", requestBody);
 
       const response = await api.post("tracking/estimate", requestBody);
-      console.log("Estimate response:", response.data);
-      
+      console.log("Estimate API response:", response.data);
 
+      // Lưu estimate price vào state
+      setEstimatePrice(response.data || 0);
       return response.data;
     } catch (error) {
       console.error("Error fetching estimate:", error);
+      setEstimatePrice(0);
       return null;
     }
   };
 
-  // Sửa lại calculateTotalPrice
   const calculateTotalPrice = async () => {
     try {
       setLoading(true);
@@ -210,15 +212,12 @@ function Price({ fishData, addressData }) {
 
       // Lấy giá từ API estimate
       const estimateData = await fetchEstimatePrice();
+      console.log("Estimate data received:", estimateData);
 
       if (!estimateData) {
         console.warn("No estimate data received");
         return;
       }
-
-      // Set shipping fee từ estimate response
-      setWeightPrice(estimateData.price || 0);
-      console.log("Shipping fee from estimate:", estimateData.price);
 
       // Tính tổng extra services
       const extraServicesTotal = extraServices
@@ -226,10 +225,10 @@ function Price({ fishData, addressData }) {
         .reduce((sum, service) => sum + service.price, 0);
       console.log("Extra services total:", extraServicesTotal);
 
-      // Tính tổng cuối cùng = shipping fee + extra services
-      const total = (estimateData.price || 0) + extraServicesTotal;
+      // Tính tổng cuối cùng = estimate price + extra services
+      const total = estimateData + extraServicesTotal;
       console.log("Final total calculation:", {
-        shippingFee: estimateData.price,
+        estimateData,
         extraServicesTotal,
         total,
       });
@@ -364,18 +363,19 @@ function Price({ fishData, addressData }) {
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
-              <Text strong>${weightPrice.toFixed(2)}</Text>
+              <Text strong>${(estimatePrice || 0).toFixed(2)}</Text>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
                 $
-                {extraServices
-                  .filter((service) =>
-                    selectedServices.includes(service.extraServiceId)
-                  )
-                  .reduce((sum, service) => sum + service.price, 0)
-                  .toFixed(2)}
+                {(
+                  extraServices
+                    .filter((service) =>
+                      selectedServices.includes(service.extraServiceId)
+                    )
+                    .reduce((sum, service) => sum + service.price, 0) || 0
+                ).toFixed(2)}
               </Text>
             </div>
             <div
@@ -389,7 +389,7 @@ function Price({ fishData, addressData }) {
             >
               <Title level={4}>Total:</Title>
               <Title level={4} type="danger">
-                ${totalPrice.toFixed(2)}
+                ${(totalPrice || 0).toFixed(2)}
               </Title>
             </div>
           </Space>
