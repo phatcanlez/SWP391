@@ -47,7 +47,6 @@ function EstimatedShippingFee() {
     wardName: "",
   });
 
-
   const [shipMethods, setShipMethods] = useState([]);
   const [selectedMethod, setSelectedMethod] = useState(undefined);
   // useEffect(() => {
@@ -61,6 +60,7 @@ function EstimatedShippingFee() {
   //   };
   //   fetchData();
   // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -145,23 +145,13 @@ function EstimatedShippingFee() {
   let mediumBoxPoints = 9;
 
   let largeBoxPoints = 15;
+
   const calculatePoints = async () => {
     let totalPoints = 0;
     let mediumBoxNeeded = 0,
       noOfBoxesLarge = 0,
       extraLargeBoxesQuantity = 0,
       specialLargeBoxesQuantity = 0;
-
-    let extraKOI = 0,
-      extraKOI2 = 0,
-      extraKOI3 = 0,
-      extraKOI4 = 0,
-      extraKOI5 = 0;
-    let extraKOISize = 0,
-      extraKOISize2 = 0,
-      extraKOISize3 = 0,
-      extraKOISize4 = 0,
-      extraKOISize5 = 0;
 
     for (let i = 0; i < pointsArray.length - 2; i++) {
       let points =
@@ -214,6 +204,7 @@ function EstimatedShippingFee() {
         }
       }
     }
+
     setMediumBoxNeeded(mediumBoxNeeded);
     setNoOfBoxesLarge(noOfBoxesLarge);
     setExtraLargeBoxesQuantity(extraLargeBoxesQuantity);
@@ -233,10 +224,7 @@ function EstimatedShippingFee() {
     console.log(values);
 
     try {
-      const response = await axios.post(
-        "http://103.90.227.65:8080/tracking/estimate",
-        values
-      );
+      const response = await api.post("tracking/estimate", values);
       setShippingCost(response.data);
     } catch (err) {
       console.error("Fetching error: ", err);
@@ -323,7 +311,7 @@ function EstimatedShippingFee() {
   }
   useEffect(() => {
     if (where !== "") {
-      console.log("Where:", where); 
+      console.log("Where:", where);
     }
   }, [where]);
 
@@ -430,7 +418,7 @@ function EstimatedShippingFee() {
         </div>
         <div className="estimatedshippingfee__products__right">
           <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
+            <img src={box} />
             <div>Number of box you need</div>
             <div id="boxesNeeded"></div>
             <div style={{ color: "red", paddingTop: 50 }}>
@@ -440,9 +428,9 @@ function EstimatedShippingFee() {
                 specialLargeBoxesQuantity ===
               0
                 ? "_ boxes"
-                : Math.floor(noOfBoxesLarge) +
+                : mediumBoxNeeded +
                   " small boxes , " +
-                  mediumBoxNeeded +
+                  Math.floor(noOfBoxesLarge) +
                   " medium boxes, " +
                   extraLargeBoxesQuantity +
                   " large boxes and " +
@@ -450,7 +438,6 @@ function EstimatedShippingFee() {
                   " extra large boxes"}
             </div>
           </div>
-
           <div
             className="estimatedshippingfee__products__right__rectangle"
             id="estimate"
@@ -466,6 +453,18 @@ function EstimatedShippingFee() {
             <div style={{ textAlign: "center", paddingBottom: "20px" }}>
               Shipping method
             </div>
+            <Select
+              style={{ width: 200 }}
+              value={selectedMethod}
+              onChange={handleShippingMethodChange}
+              placeholder="Select"
+            >
+              {shipMethods.map((method) => (
+                <Option key={method.shipMethodId} value={method.shipMethodId}>
+                  {method.description}
+                </Option>
+              ))}
+            </Select>
           </div>
         </div>
       </div>
@@ -583,7 +582,7 @@ function EstimatedShippingFee() {
         </Modal>
       </div>
       <div className="estimatedshippingfee__map">
-        <App ref={appRef} />
+        <App ref={appRef} getDistance={handleGetDistance} />
       </div>
       <div className="estimatedshippingfee__calculating">
         Weight :{" "}
@@ -602,13 +601,6 @@ function EstimatedShippingFee() {
           </a>
         </button>
       </div>
-      <Button
-        onClick={() =>
-          appRef.current.setLocations(tempSelectionsFrom, tempSelectionsTo)
-        }
-      >
-        Calculate Distance
-      </Button>
     </div>
   );
 }

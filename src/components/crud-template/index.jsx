@@ -44,11 +44,14 @@ function CRUDTemplate({ columns, formItems, path, field }) {
   ];
   //get
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await api.get(path);
       setData(response.data);
+      setLoading(false);
     } catch (err) {
       toast.error(err.response.data);
+      setLoading(false);
     }
   };
 
@@ -118,6 +121,7 @@ function CRUDTemplate({ columns, formItems, path, field }) {
         scroll={{
           x: "max-content",
         }}
+        loading={loading}
       />
 
       <Modal

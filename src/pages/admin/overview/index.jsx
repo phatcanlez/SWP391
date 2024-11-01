@@ -17,11 +17,13 @@ import {
 } from "recharts";
 
 function Overview() {
+  const [loading, setLoading] = useState(false);
   const [data1, setData1] = useState();
   const [data2, setData2] = useState();
   const [data3, setData3] = useState();
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const response = await api.get("dashboard");
       const responseOrder1 = await api.get("dashboard-total-order");
@@ -45,8 +47,10 @@ function Overview() {
         })),
       ]);
       setData3(responseRevenue.data.monthlyRevenue);
+      setLoading(false);
     } catch (err) {
       toast.error(err.response);
+      setLoading(false);
     }
   };
 
@@ -58,7 +62,7 @@ function Overview() {
     <div>
       <Row gutter={16}>
         <Col span={7}>
-          <Card bordered={false} className="custom-card">
+          <Card bordered={false} className="custom-card" loading={loading}>
             <Statistic
               title="Total Account"
               value={data1?.totalAccount}
@@ -74,6 +78,7 @@ function Overview() {
             bordered={false}
             className="custom-card"
             style={{ alignContent: "center" }}
+            loading={loading}
           >
             <p>Customer : {data1?.totalCustomer}</p>
             <p>Staff : {data1?.totalStaff}</p>
@@ -81,7 +86,7 @@ function Overview() {
           </Card>
         </Col>
         <Col span={7}>
-          <Card bordered={false} className="custom-card">
+          <Card bordered={false} className="custom-card" loading={loading}>
             <Statistic
               title="Total Feedback"
               value={data1?.totalFeedback}
@@ -97,6 +102,7 @@ function Overview() {
             bordered={false}
             className="custom-card"
             style={{ alignContent: "center" }}
+            loading={loading}
           >
             <p>Avarage Rating : {data1?.feedbackAvarageRating}</p>
             <p>Less Than 4 : {data1?.totalFeedbackLessThan4}</p>

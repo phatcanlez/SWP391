@@ -2,7 +2,6 @@ import { Button, Form, Input, Modal, Table } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-import axios from "axios";
 import api from "../../../config/axios";
 
 function PriceListWeight() {
@@ -12,16 +11,11 @@ function PriceListWeight() {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      const response1 = await axios.get(
-        "http://103.90.227.65:8080/tracking/weight/1"
-      );
-      const response2 = await axios.get(
-        "http://103.90.227.65:8080/tracking/weight/2"
-      );
-      const response3 = await axios.get(
-        "http://103.90.227.65:8080/tracking/weight/3"
-      );
+      const response1 = await api.get("tracking/weight/1");
+      const response2 = await api.get("tracking/weight/2");
+      const response3 = await api.get("tracking/weight/3");
       const response4 = await api.get("shipmethod");
       setData([
         ...response1.data.map((item) => ({
@@ -49,8 +43,10 @@ function PriceListWeight() {
           priceListId: item.priceListId,
         })),
       ]);
+      setLoading(false);
     } catch (err) {
       toast.error(err.response.data);
+      setLoading(false);
     }
   };
 
@@ -135,6 +131,7 @@ function PriceListWeight() {
         scroll={{
           x: "max-content",
         }}
+        loading={loading}
       />
 
       <Modal

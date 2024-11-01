@@ -4,7 +4,7 @@ import Sider from "antd/es/layout/Sider";
 import logo from "../../img/logolayout.png";
 import { Link, Outlet } from "react-router-dom";
 import Footer from "../../components/footer";
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 function getItem(label, key, icon, children) {
   return {
@@ -24,7 +24,10 @@ function getItem(label, key, icon, children) {
 }
 const items = [
   getItem("Dashboard", "overview", <PieChartOutlined />),
-  getItem("Manage Order", "order", <PieChartOutlined />),
+  getItem("All Orders", "order", <MenuOutlined />, [
+    getItem("Waiting", "waiting-order"),
+    getItem("Rejected", "rejected-order"),
+  ]),
   getItem("Manage User", "manage-user", <PieChartOutlined />),
   getItem("Manage Service", "sub2", <MenuOutlined />, [
     getItem("Extra service", "extra-service"),
@@ -38,7 +41,6 @@ const items = [
   getItem("Feedback", "feedback", <PieChartOutlined />),
   getItem("Report", "report", <PieChartOutlined />),
   getItem("FAQs", "FAQ", <PieChartOutlined />),
-  getItem("Customer Care", "", <PieChartOutlined />),
 ];
 
 function Dashboard() {
@@ -66,6 +68,7 @@ function Dashboard() {
               <Breadcrumb.Item></Breadcrumb.Item>
               <Breadcrumb.Item></Breadcrumb.Item>
             </Breadcrumb>
+
             <div>
               <Outlet />
             </div>
