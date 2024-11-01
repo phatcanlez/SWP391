@@ -42,6 +42,7 @@ import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
 import Overview from "./pages/admin/overview";
 
+
 function App() {
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
@@ -188,8 +189,17 @@ function App() {
           path: "view-order/:id",
           element: <ViewOrderDetail />,
         },
+        // {
+        //   path: "payment/:id",
+        //   element: <Payment />,
+        // },
+        
       ],
     },
+    // {
+    //   path: "pay-success",
+    //   element: <SuccessPage />,
+    // },
 
     {
       path: "staff",

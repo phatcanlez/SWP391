@@ -128,7 +128,6 @@ function Price({ fishData, addressData }) {
     setSelectedShippingMethod(e.target.value);
   };
 
-
   return (
     <Card>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
