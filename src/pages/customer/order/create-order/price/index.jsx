@@ -1,7 +1,21 @@
 import { CarOutlined } from "@ant-design/icons";
 import { Card, Radio, Checkbox, Space } from "antd";
+import { useEffect, useState } from "react";
+import api from "../../../../../config/axios";
 
 function Price() {
+  const [extraservice, setExtraService] = useState([]);
+  const fetchExtra = async () => {
+    try {
+      const response = await api.get("extraservice");
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchExtra();
+  }, []);
   return (
     <Card>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>

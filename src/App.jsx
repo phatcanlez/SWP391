@@ -40,6 +40,8 @@ import FAQHome from "./pages/FAQ";
 import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
+// import Payment from "./pages/customer/payment";
+// import SuccessPage from "./pages/customer/payment/success";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -171,8 +173,17 @@ function App() {
           path: "view-order/:id",
           element: <ViewOrderDetail />,
         },
+        // {
+        //   path: "payment/:id",
+        //   element: <Payment />,
+        // },
+        
       ],
     },
+    // {
+    //   path: "pay-success",
+    //   element: <SuccessPage />,
+    // },
 
     {
       path: "staff",
