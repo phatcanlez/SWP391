@@ -7,16 +7,23 @@ import {
   Row,
   Col,
   Typography,
+  Space,
+  Modal,
 } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import { useState, useEffect } from "react";
-import { UploadOutlined } from "@ant-design/icons";
-import { Button, Upload } from "antd";
+import {
+  UploadOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
+import { Button, Upload, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Statistic from "antd/es/statistic/Statistic";
 
 const { Option } = Select;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const sizeOptions = [
   { sizeInCM: "-19.9", sizeInInch: "7.86", points: 1.25 },
@@ -51,11 +58,62 @@ function Fish() {
     large: 0,
     extraLarge: 0,
   });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
 
-  const props = {
-    onChange({ file, fileList }) {
-      if (file.status !== "uploading") {
-        console.log(file, fileList);
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(
+      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+    );
+  };
+
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handleCancel = () => setPreviewOpen(false);
+
+  const koiImageProps = {
+    name: "imgKoi",
+    action: "/api/upload",
+    listType: "picture-card",
+    onPreview: handlePreview,
+    onChange(info) {
+      if (info.file.status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} fish image uploaded successfully`);
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} fish image upload failed.`);
+      }
+    },
+  };
+
+  const licenseImageProps = {
+    name: "license",
+    action: "/api/upload",
+    listType: "picture-card",
+    onPreview: handlePreview,
+    onChange(info) {
+      if (info.file.status !== "uploading") {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} license uploaded successfully`);
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} license upload failed.`);
       }
     },
   };
@@ -106,24 +164,18 @@ function Fish() {
 
     // Calculate boxes based on points
     while (totalPoints > 0) {
-      if (totalPoints >= 18) {
+      if (totalPoints >= 16) {
         extraLargeBoxes++;
-        totalPoints -= 18;
-      } else if (totalPoints >= 16) {
-        largeBoxes++;
         totalPoints -= 16;
-      } else if (totalPoints >= 15) {
+      } else if (totalPoints >= 12) {
+        largeBoxes++;
+        totalPoints -= 12;
+      } else if (totalPoints >= 8) {
         mediumBoxes++;
-        totalPoints -= 15;
-      } else if (totalPoints >= 14) {
-        mediumBoxes++;
-        totalPoints -= 15; // Sử dụng hộp lớn cho 14 điểm
-      } else if (totalPoints > 9) {
-        mediumBoxes++;
-        totalPoints -= 15;
+        totalPoints -= 8;
       } else {
         smallBoxes++;
-        totalPoints -= 9;
+        totalPoints -= 4;
       }
     }
 
@@ -142,52 +194,54 @@ function Fish() {
   };
 
   return (
-    <div>
-      <text style={{ color: "orange" }}>
-        {" "}
-        Please fill all information before move to next step{" "}
-      </text>
-      <Form
-        form={form}
-        onValuesChange={handleFormChange}
-        initialValues={JSON.parse(localStorage.getItem("fishFormData") || "{}")}
-      >
-        <Form.List name="fishDetails">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map((field, index) => (
-                <div key={field.key} style={{ marginBottom: 16 }}>
-                  <Form.Item
-                    {...field}
-                    label={`Fish #${index + 1}`}
-                    required={false}
-                    style={{ marginBottom: 0 }}
-                  >
+    <Form
+      form={form}
+      onValuesChange={handleFormChange}
+      initialValues={JSON.parse(localStorage.getItem("fishFormData") || "{}")}
+    >
+      <Form.List name="fishDetails">
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map((field, index) => (
+              <Card
+                key={field.key}
+                style={{ marginBottom: 16 }}
+                title={`Fish #${index + 1}`}
+                extra={
+                  <Button
+                    onClick={() => remove(field.name)}
+                    icon={<DeleteOutlined />}
+                    danger
+                    shape="circle"
+                  />
+                }
+              >
+                <Row gutter={[16, 16]}>
+                  <Col span={8}>
                     <Form.Item
                       name={[field.name, "weight"]}
                       label={"Weight"}
                       rules={[
                         { required: true, message: "Please enter Weight" },
                       ]}
-                      style={{ display: "inline-block", marginRight: "100px" }}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100px" }}
+                        style={{ width: "100%" }}
                         placeholder="Weight (kg)"
                       />
                     </Form.Item>
-
+                  </Col>
+                  <Col span={16}>
                     <Form.Item
                       name={[field.name, "size"]}
                       label={"Size"}
                       rules={[
                         { required: true, message: "Please select Size" },
                       ]}
-                      style={{ display: "inline-block", marginRight: "100px" }}
                     >
                       <Select
-                        style={{ width: "250px" }}
+                        style={{ width: "100%" }}
                         placeholder="Select size"
                       >
                         {sizeOptions.map((option, index) => (
@@ -197,109 +251,135 @@ function Fish() {
                         ))}
                       </Select>
                     </Form.Item>
-
+                    <Form.Item
+                      name={[field.name, "price"]}
+                      label={"Price"}
+                      rules={[
+                        { required: true, message: "Please enter Fish Size" },
+                      ]}
+                    >
+                      <InputNumber
+                        min={0}
+                        style={{ width: "100%" }}
+                        placeholder="price("
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
                     <FormItem
                       label={"Fish Image"}
                       rules={[
-                        { required: true, message: "Please import Image" },
+                        { required: true, message: "Please upload fish image" },
                       ]}
                       style={{ display: "inline-block", marginRight: "100px" }}
                     >
-                      <Upload {...props}>
-                        <Button icon={<UploadOutlined />}>Upload</Button>
+                      <Upload {...koiImageProps}>
+                        {/* Customize upload button */}
+                        <div>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload Fish Image</div>
+                        </div>
                       </Upload>
                     </FormItem>
-
+                  </Col>
+                  <Col span={12}>
                     <FormItem
-                      label={"Lisence Image"}
+                      label={"License Image"}
                       rules={[
-                        { required: true, message: "Please import License" },
+                        { required: true, message: "Please upload license" },
                       ]}
                       style={{ display: "inline-block", marginRight: "100px" }}
                     >
-                      <Upload {...props}>
-                        <Button icon={<UploadOutlined />}>Upload</Button>
+                      <Upload {...licenseImageProps}>
+                        {/* Customize upload button */}
+                        <div>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload License</div>
+                        </div>
                       </Upload>
                     </FormItem>
+                  </Col>
+                </Row>
+                <Form.Item name={[field.name, "note"]} label={"Note"}>
+                  <TextArea rows={2} />
+                </Form.Item>
+              </Card>
+            ))}
+            <Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                icon={<PlusOutlined />}
+              >
+                Add Fish
+              </Button>
+            </Form.Item>
+          </>
+        )}
+      </Form.List>
 
-                    <Form.Item
-                      name={[field.name, "note"]}
-                      label={"Note"}
-                      style={{ display: "inline-block", marginRight: "100px" }}
-                    >
-                      <TextArea rows={1} />
-                    </Form.Item>
+      <Card style={{ marginTop: 24, backgroundColor: "#f0f2f5" }}>
+        <Title level={4}>Order Summary</Title>
+        <Row gutter={[16, 16]}>
+          <Col span={12}>
+            <Card size="small">
+              <Statistic
+                title="Total Weight"
+                value={totalWeight}
+                precision={2}
+                suffix="kg"
+              />
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card size="small">
+              <Statistic title="Total Fish" value={fishCount} suffix="fish" />
+            </Card>
+          </Col>
+        </Row>
+        <Title level={5} style={{ marginTop: 16 }}>
+          Box Requirements
+        </Title>
+        <Row gutter={[16, 16]}>
+          <Col span={6}>
+            <Card size="small">
+              <Statistic title="Small Boxes" value={boxCounts.small} />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small">
+              <Statistic title="Medium Boxes" value={boxCounts.medium} />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small">
+              <Statistic title="Large Boxes" value={boxCounts.large} />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small">
+              <Statistic
+                title="Extra Large Boxes"
+                value={boxCounts.extraLarge}
+              />
+            </Card>
+          </Col>
+        </Row>
+      </Card>
 
-                    <Button
-                      onClick={() => remove(field.name)}
-                      color="danger"
-                      variant="outlined"
-                      type="link"
-                    >
-                      Remove Fish
-                    </Button>
-                  </Form.Item>
-                </div>
-              ))}
-              <Form.Item>
-                <Button type="dashed" onClick={() => add()} block>
-                  Add Fish
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
-
-        <Card style={{ marginTop: 24, backgroundColor: "#f0f2f5" }}>
-          <Title level={4}>Order Summary</Title>
-          <Row gutter={[16, 16]}>
-            <Col span={12}>
-              <Card size="small">
-                <Statistic
-                  title="Total Weight"
-                  value={totalWeight}
-                  precision={2}
-                  suffix="kg"
-                />
-              </Card>
-            </Col>
-            <Col span={12}>
-              <Card size="small">
-                <Statistic title="Total Fish" value={fishCount} suffix="fish" />
-              </Card>
-            </Col>
-          </Row>
-          <Title level={5} style={{ marginTop: 16 }}>
-            Box Requirements
-          </Title>
-          <Row gutter={[16, 16]}>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic title="Small Boxes" value={boxCounts.small} />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic title="Medium Boxes" value={boxCounts.medium} />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic title="Large Boxes" value={boxCounts.large} />
-              </Card>
-            </Col>
-            <Col span={6}>
-              <Card size="small">
-                <Statistic
-                  title="Extra Large Boxes"
-                  value={boxCounts.extraLarge}
-                />
-              </Card>
-            </Col>
-          </Row>
-        </Card>
-      </Form>
-    </div>
+      {/* Preview Modal */}
+      <Modal
+        open={previewOpen}
+        title={previewTitle}
+        footer={null}
+        onCancel={handleCancel}
+      >
+        <img alt="preview" style={{ width: "100%" }} src={previewImage} />
+      </Modal>
+    </Form>
   );
 }
 

@@ -35,13 +35,13 @@ import FAQ from "./components/faq";
 import Account from "./pages/customer/account";
 
 import Report from "./pages/admin/manage-report";
-import Order from "./pages/admin/manage-order/order";
+
 import FAQHome from "./pages/FAQ";
 import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
-// import Payment from "./pages/customer/payment";
-// import SuccessPage from "./pages/customer/payment/success";
+import Overview from "./pages/admin/overview";
+
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -111,16 +111,24 @@ function App() {
       ),
       children: [
         {
-          path: "report",
-          element: <Report />,
+          path: "overview",
+          element: <Overview />,
         },
-        // {
-        //   path: "",
-        //   element: <DashboardItem />,
-        // },
         {
           path: "order",
-          element: <Order />,
+          element: <AllOrder />,
+        },
+        {
+          path: "waiting-order",
+          element: <WaitingOrder />,
+        },
+        {
+          path: "rejected-order",
+          element: <FailOrder />,
+        },
+        {
+          path: "report",
+          element: <Report />,
         },
         {
           path: "manage-user",
@@ -149,6 +157,14 @@ function App() {
         {
           path: "feedback",
           element: <Feedback />,
+        },
+        {
+          path: "FAQ",
+          element: <FAQ />,
+        },
+        {
+          path: "FAQ",
+          element: <FAQ />,
         },
       ],
     },
