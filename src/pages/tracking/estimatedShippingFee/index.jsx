@@ -13,11 +13,12 @@ const { Option } = Select;
 
 function EstimatedShippingFee() {
   const appRef = useRef();
+  const resultRef = useRef(null);
   const [shippingCost, setShippingCost] = useState(0);
-  const [mediumBoxNeeded, setMediumBoxNeeded] = useState(0);
-  const [noOfBoxesLarge, setNoOfBoxesLarge] = useState(0);
-  const [extraLargeBoxesQuantity, setExtraLargeBoxesQuantity] = useState(0);
-  const [specialLargeBoxesQuantity, setSpecialLargeBoxesQuantity] = useState(0);
+  const [smallBox, setSmallBox] = useState(0);
+  const [mediumBox, setMediumBox] = useState(0);
+  const [largeBox, setLargeBox] = useState(0);
+  const [extraLargeBox, setExtraLargeBox] = useState(0);
   const [data, setData] = useState([]);
   const [selectedCity, setSelectedCity] = useState(undefined);
   const [selectedDistrict, setSelectedDistrict] = useState(undefined);
@@ -142,16 +143,16 @@ function EstimatedShippingFee() {
     "16",
     "18",
   ];
-  let mediumBoxPoints = 9;
+  let smallBoxPoints = 9;
 
-  let largeBoxPoints = 15;
+  let mediumBoxPoints = 15;
 
   const calculatePoints = async () => {
     let totalPoints = 0;
-    let mediumBoxNeeded = 0,
-      noOfBoxesLarge = 0,
-      extraLargeBoxesQuantity = 0,
-      specialLargeBoxesQuantity = 0;
+    let smallBox = 0,
+      mediumBox = 0,
+      largeBox = 0,
+      extraLargeBox = 0;
 
     for (let i = 0; i < pointsArray.length - 2; i++) {
       let points =
@@ -161,63 +162,63 @@ function EstimatedShippingFee() {
 
     let remainingPoints = 0;
 
-    let extraLargeBoxesIndex = Number(pointsArray.length - 2);
+    let largeBoxesIndex = Number(pointsArray.length - 2);
 
-    extraLargeBoxesQuantity =
+    largeBox =
+      parseFloat(
+        document.getElementById("KOIQuantity" + largeBoxesIndex).value
+      ) || 0;
+
+    let extraLargeBoxesIndex = Number(pointsArray.length - 1);
+    extraLargeBox =
       parseFloat(
         document.getElementById("KOIQuantity" + extraLargeBoxesIndex).value
       ) || 0;
 
-    let specialLargeBoxesIndex = Number(pointsArray.length - 1);
-    specialLargeBoxesQuantity =
-      parseFloat(
-        document.getElementById("KOIQuantity" + specialLargeBoxesIndex).value
-      ) || 0;
-
-    if (totalPoints % mediumBoxPoints == 0) {
-      mediumBoxNeeded = totalPoints / mediumBoxPoints;
+    if (totalPoints % smallBoxPoints == 0) {
+      smallBox = totalPoints / smallBoxPoints;
       remainingPoints = 0;
-    } else if (totalPoints % largeBoxPoints == 0) {
-      noOfBoxesLarge = totalPoints / largeBoxPoints;
+    } else if (totalPoints % mediumBoxPoints == 0) {
+      mediumBox = totalPoints / mediumBoxPoints;
       remainingPoints = 0;
     } else {
-      if (totalPoints < largeBoxPoints && totalPoints < mediumBoxPoints) {
-        mediumBoxNeeded = 1;
-        remainingPoints = mediumBoxPoints - totalPoints;
+      if (totalPoints < mediumBoxPoints && totalPoints < smallBoxPoints) {
+        smallBox = 1;
+        remainingPoints = smallBoxPoints - totalPoints;
       } else if (
-        totalPoints <= largeBoxPoints &&
-        totalPoints > mediumBoxPoints
+        totalPoints <= mediumBoxPoints &&
+        totalPoints > smallBoxPoints
       ) {
-        noOfBoxesLarge = 1;
-        remainingPoints = largeBoxPoints - totalPoints;
+        mediumBox = 1;
+        remainingPoints = mediumBoxPoints - totalPoints;
       } else {
-        noOfBoxesLarge = totalPoints / largeBoxPoints;
+        mediumBox = totalPoints / mediumBoxPoints;
         remainingPoints = Math.abs(
-          Math.floor(noOfBoxesLarge) * largeBoxPoints - totalPoints
+          Math.floor(mediumBox) * mediumBoxPoints - totalPoints
         );
         if (remainingPoints <= 9) {
-          mediumBoxNeeded++;
-          remainingPoints = mediumBoxPoints - remainingPoints;
+          smallBox++;
+          remainingPoints = smallBoxPoints - remainingPoints;
         } else if (remainingPoints > 9 && remainingPoints <= 15) {
-          mediumBoxNeeded += 2;
-          remainingPoints = mediumBoxPoints * mediumBoxNeeded - remainingPoints;
+          smallBox += 2;
+          remainingPoints = smallBoxPoints * smallBox - remainingPoints;
         }
       }
     }
 
-    setMediumBoxNeeded(mediumBoxNeeded);
-    setNoOfBoxesLarge(noOfBoxesLarge);
-    setExtraLargeBoxesQuantity(extraLargeBoxesQuantity);
-    setSpecialLargeBoxesQuantity(specialLargeBoxesQuantity);
+    setSmallBox(smallBox);
+    setMediumBox(mediumBox);
+    setLargeBox(largeBox);
+    setExtraLargeBox(extraLargeBox);
     let values = {
       kilometers: parseFloat(distance),
       shipMethodID: selectedMethod,
       weight: weight,
       boxAmountDTO: {
-        smallBox: mediumBoxNeeded,
-        mediumBox: Math.floor(noOfBoxesLarge),
-        largeBox: extraLargeBoxesQuantity,
-        extraLargeBox: specialLargeBoxesQuantity,
+        smallBox: smallBox,
+        mediumBox: Math.floor(mediumBox),
+        largeBox: largeBox,
+        extraLargeBox: extraLargeBox,
       },
     };
 
@@ -226,6 +227,11 @@ function EstimatedShippingFee() {
     try {
       const response = await api.post("tracking/estimate", values);
       setShippingCost(response.data);
+      setTimeout(() => {
+        if (resultRef.current) {
+          resultRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
     } catch (err) {
       console.error("Fetching error: ", err);
     }
@@ -422,25 +428,22 @@ function EstimatedShippingFee() {
             <div>Number of box you need</div>
             <div id="boxesNeeded"></div>
             <div style={{ color: "red", paddingTop: 50 }}>
-              {mediumBoxNeeded +
-                noOfBoxesLarge +
-                extraLargeBoxesQuantity +
-                specialLargeBoxesQuantity ===
-              0
+              {smallBox + mediumBox + largeBox + extraLargeBox === 0
                 ? "_ boxes"
-                : mediumBoxNeeded +
+                : smallBox +
                   " small boxes , " +
-                  Math.floor(noOfBoxesLarge) +
+                  Math.floor(mediumBox) +
                   " medium boxes, " +
-                  extraLargeBoxesQuantity +
+                  largeBox +
                   " large boxes and " +
-                  specialLargeBoxesQuantity +
+                  extraLargeBox +
                   " extra large boxes"}
             </div>
           </div>
           <div
             className="estimatedshippingfee__products__right__rectangle"
             id="estimate"
+            ref={resultRef}
           >
             <img src={airplane} />
             <div>Total shipping cost</div>
@@ -596,9 +599,10 @@ function EstimatedShippingFee() {
         <br />
         <br />
         <button onClick={calculatePoints}>
-          <a href="#estimate" style={{ textDecoration: "none", color: "#fff" }}>
+          {/* <a href="#estimate" style={{ textDecoration: "none", color: "#fff" }}>
             Tracking
-          </a>
+          </a> */}
+          Tracking
         </button>
       </div>
     </div>

@@ -17,10 +17,11 @@ function BillOfLading() {
       const response = await api.get(`orders/${values.orderId}`);
       setOrderId(values.orderId);
       setData(response.data.status);
-      const lastStatus = response.data.status[response.data.status.length - 1];
-      if (lastStatus) {
-        setCurrent(getCurrentStatus(lastStatus.statusInfo));
-      }
+      setCurrent(response.data.status.length - 1);
+      // const lastStatus = response.data.status[response.data.status.length - 1];
+      // if (lastStatus) {
+      //   setCurrent(getCurrentStatus(lastStatus.statusInfo));
+      // }
       setDisplay("");
       toast.success("Successfull");
 
@@ -34,20 +35,20 @@ function BillOfLading() {
     }
   };
 
-  const getCurrentStatus = (statusInfo) => {
-    switch (statusInfo) {
-      case "WAITING":
-        return 0;
-      case "APPROVED":
-        return 1;
-      case "PENDING":
-        return 2;
-      case "SUCCESS":
-        return 3;
-      default:
-        return -1; // No valid status
-    }
-  };
+  // const getCurrentStatus = (statusInfo) => {
+  //   switch (statusInfo) {
+  //     case "WAITING":
+  //       return 0;
+  //     case "APPROVED":
+  //       return 1;
+  //     case "PENDING":
+  //       return 2;
+  //     case "SUCCESS":
+  //       return 3;
+  //     default:
+  //       return -1; // No valid status
+  //   }
+  // };
 
   useEffect(() => handleTracking, []);
 
