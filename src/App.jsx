@@ -49,6 +49,7 @@ import AllOrder_AD, {
 } from "./pages/admin/manage-order";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
 
+
 function App() {
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
@@ -203,8 +204,20 @@ function App() {
           path: "view-order/:id",
           element: <ViewOrderDetail />,
         },
+        // {
+        //   path: "payment/:id",
+        //   element: <Payment />,
+        // },
+        
       ],
     },
+
+    // {
+    //   path: "pay-success",
+    //   element: <SuccessPage />,
+    // },
+
+
     {
       path: "staff",
       element: (
