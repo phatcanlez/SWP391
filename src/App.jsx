@@ -203,8 +203,17 @@ function App() {
           path: "view-order/:id",
           element: <ViewOrderDetail />,
         },
+        // {
+        //   path: "payment/:id",
+        //   element: <Payment />,
+        // },
       ],
     },
+    // {
+    //   path: "pay-success",
+    //   element: <SuccessPage />,
+    // },
+
     {
       path: "staff",
       element: (

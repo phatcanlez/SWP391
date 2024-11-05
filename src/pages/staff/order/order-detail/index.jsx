@@ -1,4 +1,4 @@
-import api from "../../../../config/axios";
+
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import "./index.css";

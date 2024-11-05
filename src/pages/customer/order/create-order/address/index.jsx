@@ -327,9 +327,9 @@ const Address = forwardRef((props, ref) => {
               disabled={!selectedCity}
             >
               {districts.map((district) => (
-                <Option key={district.Id} value={district.Id}>
+                <Select.Option key={district.Id} value={district.Id}>
                   {district.Name}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
@@ -346,9 +346,9 @@ const Address = forwardRef((props, ref) => {
               disabled={!selectedDistrict}
             >
               {wards.map((ward) => (
-                <Option key={ward.Id} value={ward.Id}>
+                <Select.Option key={ward.Id} value={ward.Id}>
                   {ward.Name}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>
