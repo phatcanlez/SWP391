@@ -1,11 +1,18 @@
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import TextArea from "antd/es/input/TextArea";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  DirectionsService,
+  DirectionsRenderer,
+} from "@react-google-maps/api";
 import { Button, Form, Input, Modal, Select, Space, Spin } from "antd";
 //import "./index.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import api from "../../../../../config/axios";
+import App from "../../../../tracking/estimatedShippingFee/google";
 
 // eslint-disable-next-line react/display-name
 const Address = forwardRef((props, ref) => {
@@ -32,6 +39,13 @@ const Address = forwardRef((props, ref) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [distance, setDistance] = useState(0);
+  const [directions, setDirections] = useState(null);
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+
+  const appRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -168,9 +182,18 @@ const Address = forwardRef((props, ref) => {
     }
     if (where === "From") {
       form.setFieldsValue({ senderAddress: selectedAddress });
+      setTempSelectionsFrom(selectedAddress);
     }
     if (where === "To") {
       form.setFieldsValue({ receiverAddress: selectedAddress });
+      setTempSelectionsTo(selectedAddress);
+    }
+
+    if (
+      (tempSelectionsFrom && selectedAddress) ||
+      (selectedAddress && tempSelectionsTo)
+    ) {
+      appRef.current.setLocations(tempSelectionsFrom, selectedAddress);
     }
 
     handleHideModal();
@@ -201,16 +224,22 @@ const Address = forwardRef((props, ref) => {
     console.log(tempSelectionsTo);
   }, [tempSelectionsTo]);
 
-
-  const handleAddress = () =>{
+  const handleAddress = () => {
     try {
       const setvalue = {
-        reciverAdress: d
+        reciverAdress: d,
       };
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
+
+  const handleGetDistance = (newDistance) => {
+    setDistance(newDistance);
+    localStorage.setItem("orderDistance", newDistance.toString());
+    console.log("Distance saved:", newDistance);
+  };
+
   return (
     <Form
       form={form}
@@ -241,9 +270,25 @@ const Address = forwardRef((props, ref) => {
       >
         <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
-      <Button onClick={handleShowModal} value="From">
-        Select sender location
-      </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <Button
+          type="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            handleShowModal(e);
+          }}
+          value="From"
+          style={{ width: "200px" }}
+        >
+          Select sender location
+        </Button>
+      </div>
 
       <div> Receiver Information</div>
       <Form.Item
@@ -273,13 +318,33 @@ const Address = forwardRef((props, ref) => {
       >
         <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
-      <Button onClick={handleShowModal} value="To">
-        Select receiver location
-      </Button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <Button
+          type="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            handleShowModal(e);
+          }}
+          value="To"
+          style={{ width: "200px" }}
+        >
+          Select receiver location
+        </Button>
+      </div>
 
       <Form.Item label="Note" name="note">
         <TextArea rows={1} />
       </Form.Item>
+
+      {/* <div style={{ marginTop: 20 }}>
+        <App ref={appRef} getDistance={handleGetDistance} />
+      </div> */}
 
       <Modal
         open={isOpen}
@@ -314,6 +379,7 @@ const Address = forwardRef((props, ref) => {
               ))}
             </Select>
           </Form.Item>
+
           <Form.Item
             label="District"
             name="district"
@@ -321,7 +387,7 @@ const Address = forwardRef((props, ref) => {
           >
             <Select
               showSearch
-              style={{ width: 200 }}
+              style={{ width: "100%" }}
               onChange={handleDistrictChange}
               placeholder="Select District"
               disabled={!selectedCity}
@@ -333,6 +399,7 @@ const Address = forwardRef((props, ref) => {
               ))}
             </Select>
           </Form.Item>
+
           <Form.Item
             label="Ward"
             name="ward"
@@ -340,7 +407,7 @@ const Address = forwardRef((props, ref) => {
           >
             <Select
               showSearch
-              style={{ width: 200 }}
+              style={{ width: "100%" }}
               onChange={handleWardChange}
               placeholder="Select Ward"
               disabled={!selectedDistrict}
@@ -352,8 +419,15 @@ const Address = forwardRef((props, ref) => {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Address" name="address">
-            <Input />
+
+          <Form.Item
+            label="Address"
+            name="address"
+            rules={[
+              { required: true, message: "Please enter specific address" },
+            ]}
+          >
+            <Input placeholder="Enter house number, street name..." />
           </Form.Item>
         </Form>
       </Modal>

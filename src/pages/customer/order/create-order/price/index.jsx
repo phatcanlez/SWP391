@@ -15,6 +15,7 @@ function Price({ fishData, addressData }) {
   const [weightPrice, setWeightPrice] = useState(0);
   //const [distancePrice, setDistancePrice] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
+  const [estimatePrice, setEstimatePrice] = useState(0);
 
   // Load saved data when component mounts
   useEffect(() => {
@@ -40,26 +41,16 @@ function Price({ fishData, addressData }) {
   }, [selectedServices, selectedShippingMethod, totalPrice, extraServices]);
 
   const getTotalWeightFromStorage = () => {
-    // Set cứng weight là 5kg
-    return 5;
-
-    /*
-    const weightFromStorage = localStorage.getItem("totalWeight");
-    console.log("Weight from direct storage:", weightFromStorage);
-    
-    if (weightFromStorage) {
-      return parseFloat(weightFromStorage);
+    try {
+      const savedFishData = JSON.parse(localStorage.getItem("fishFormData"));
+      if (savedFishData?.totalWeight) {
+        return parseFloat(savedFishData.totalWeight);
+      }
+      return 0;
+    } catch (error) {
+      console.error("Error getting total weight:", error);
+      return 0;
     }
-    
-    const savedFishData = JSON.parse(localStorage.getItem("fishFormData"));
-    console.log("Saved fish data:", savedFishData);
-    
-    if (savedFishData?.totalWeight) {
-      return parseFloat(savedFishData.totalWeight);
-    }
-    
-    return 0;
-    */
   };
 
   useEffect(() => {
@@ -164,8 +155,13 @@ function Price({ fishData, addressData }) {
   //API estimate
   const fetchEstimatePrice = async () => {
     try {
-      // Lấy box counts từ localStorage
       const savedFishData = JSON.parse(localStorage.getItem("fishFormData"));
+      const distance = parseFloat(localStorage.getItem("savedDistance"));
+      
+      if (!distance && distance !== 0) {
+        console.warn("No distance found in localStorage");
+      }
+
       const boxCounts = savedFishData?.boxCounts || {
         small: 0,
         medium: 0,
@@ -174,8 +170,8 @@ function Price({ fishData, addressData }) {
       };
 
       const requestBody = {
-        kilometers: 100, // Fixed distance
-        weight: 5, // Fixed weight
+        kilometers: distance || 0,
+        weight: getTotalWeightFromStorage(),
         shipMethodID: selectedShippingMethod,
         boxAmountDTO: {
           smallBox: boxCounts.small || 0,
@@ -185,20 +181,19 @@ function Price({ fishData, addressData }) {
         },
       };
 
-      console.log("Estimate request body:", requestBody);
-
+      console.log("Estimate request:", requestBody);
       const response = await api.post("tracking/estimate", requestBody);
       console.log("Estimate response:", response.data);
-      
 
+      setEstimatePrice(response.data || 0);
       return response.data;
     } catch (error) {
       console.error("Error fetching estimate:", error);
+      setEstimatePrice(0);
       return null;
     }
   };
 
-  // Sửa lại calculateTotalPrice
   const calculateTotalPrice = async () => {
     try {
       setLoading(true);
@@ -208,35 +203,42 @@ function Price({ fishData, addressData }) {
         return;
       }
 
-      // Lấy giá từ API estimate
-      const estimateData = await fetchEstimatePrice();
+      const shippingFee = await fetchEstimatePrice();
 
-      if (!estimateData) {
-        console.warn("No estimate data received");
+      if (!shippingFee) {
+        setEstimatePrice(0);
+        setTotalPrice(0);
         return;
       }
 
-      // Set shipping fee từ estimate response
-      setWeightPrice(estimateData.price || 0);
-      console.log("Shipping fee from estimate:", estimateData.price);
+      setEstimatePrice(shippingFee);
 
-      // Tính tổng extra services
-      const extraServicesTotal = extraServices
-        .filter((service) => selectedServices.includes(service.extraServiceId))
-        .reduce((sum, service) => sum + service.price, 0);
-      console.log("Extra services total:", extraServicesTotal);
+      const extraServicesTotal = selectedServices.reduce((total, serviceId) => {
+        const service = extraServices.find(s => s.extraServiceId === serviceId);
+        return total + (service ? service.price : 0);
+      }, 0);
 
-      // Tính tổng cuối cùng = shipping fee + extra services
-      const total = (estimateData.price || 0) + extraServicesTotal;
-      console.log("Final total calculation:", {
-        shippingFee: estimateData.price,
+      console.log("Price calculation:", {
+        shippingFee,
         extraServicesTotal,
-        total,
+        total: shippingFee + extraServicesTotal
       });
 
-      setTotalPrice(total);
+      const finalTotal = shippingFee + extraServicesTotal;
+      setTotalPrice(finalTotal);
+
+      const priceData = {
+        selectedServices,
+        selectedShippingMethod,
+        totalPrice: finalTotal,
+        estimatePrice: shippingFee
+      };
+      localStorage.setItem("priceFormData", JSON.stringify(priceData));
+      localStorage.setItem("orderTotalPrice", finalTotal.toString());
+
     } catch (error) {
       console.error("Error calculating total price:", error);
+      setEstimatePrice(0);
       setTotalPrice(0);
     } finally {
       setLoading(false);
@@ -244,15 +246,20 @@ function Price({ fishData, addressData }) {
   };
 
   const handleServiceChange = (serviceId, checked) => {
-    if (checked) {
-      setSelectedServices([...selectedServices, serviceId]);
-    } else {
-      setSelectedServices(selectedServices.filter((id) => id !== serviceId));
+    const newSelectedServices = checked
+      ? [...selectedServices, serviceId]
+      : selectedServices.filter(id => id !== serviceId);
+    
+    setSelectedServices(newSelectedServices);
+    
+    if (selectedShippingMethod) {
+      calculateTotalPrice();
     }
   };
 
   const handleShippingMethodChange = (e) => {
     setSelectedShippingMethod(e.target.value);
+    calculateTotalPrice();
   };
 
   useEffect(() => {
@@ -264,7 +271,7 @@ function Price({ fishData, addressData }) {
     if (selectedShippingMethod) {
       calculateTotalPrice();
     }
-  }, [selectedShippingMethod, selectedServices]);
+  }, [selectedShippingMethod, selectedServices, extraServices]);
 
   return (
     <Card>
@@ -364,18 +371,19 @@ function Price({ fishData, addressData }) {
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
-              <Text strong>${weightPrice.toFixed(2)}</Text>
+              <Text strong>${(estimatePrice || 0).toFixed(2)}</Text>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
                 $
-                {extraServices
-                  .filter((service) =>
-                    selectedServices.includes(service.extraServiceId)
-                  )
-                  .reduce((sum, service) => sum + service.price, 0)
-                  .toFixed(2)}
+                {(
+                  extraServices
+                    .filter((service) =>
+                      selectedServices.includes(service.extraServiceId)
+                    )
+                    .reduce((sum, service) => sum + service.price, 0) || 0
+                ).toFixed(2)}
               </Text>
             </div>
             <div
@@ -389,7 +397,7 @@ function Price({ fishData, addressData }) {
             >
               <Title level={4}>Total:</Title>
               <Title level={4} type="danger">
-                ${totalPrice.toFixed(2)}
+                ${(totalPrice || 0).toFixed(2)}
               </Title>
             </div>
           </Space>
