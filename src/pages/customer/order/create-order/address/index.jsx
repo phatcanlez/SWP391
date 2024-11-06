@@ -342,9 +342,9 @@ const Address = forwardRef((props, ref) => {
         <TextArea rows={1} />
       </Form.Item>
 
-      <div style={{ marginTop: 20 }}>
+      {/* <div style={{ marginTop: 20 }}>
         <App ref={appRef} getDistance={handleGetDistance} />
-      </div>
+      </div> */}
 
       <Modal
         open={isOpen}
