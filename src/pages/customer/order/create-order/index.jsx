@@ -7,7 +7,6 @@ import { useState, useRef, useEffect } from "react";
 import Address from "./address";
 import Fish from "./fish";
 import Price from "./price";
-
 const { TextArea } = Input;
 const { Step } = Steps;
 
@@ -27,7 +26,6 @@ function FormDisabledDemo() {
       localStorage.removeItem("fishFormData");
       localStorage.removeItem("addressFormData");
       localStorage.removeItem("priceFormData");
-    
     } catch (err) {
       toast.error(err.response?.data || "An error occurred");
     }

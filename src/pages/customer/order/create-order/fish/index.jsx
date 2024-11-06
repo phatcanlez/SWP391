@@ -21,6 +21,7 @@ import {
 import { Button, Upload, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Statistic from "antd/es/statistic/Statistic";
+import uploadFile from "../../../../../config/file";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -61,6 +62,9 @@ function Fish() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [fishImages, setFishImages] = useState({});
+  const [licenseImages, setLicenseImages] = useState({});
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -84,58 +88,201 @@ function Fish() {
 
   const handleCancel = () => setPreviewOpen(false);
 
-  const koiImageProps = {
-    name: "imgKoi",
-    action: "/api/upload",
-    listType: "picture-card",
-    onPreview: handlePreview,
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} fish image uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} fish image upload failed.`);
-      }
-    },
+  const handleUpload = async (file) => {
+    try {
+      console.log("Starting upload file:", file.name);
+      const base64 = await getBase64(file);
+      console.log("Generated base64 string length:", base64.length);
+      return base64;
+    } catch (error) {
+      console.error("Error in handleUpload:", error);
+      message.error("Failed to process image");
+      return null;
+    }
   };
 
-  const licenseImageProps = {
-    name: "license",
-    action: "/api/upload",
+  const getKoiImageProps = (fishIndex) => ({
+    name: "imgKoi",
     listType: "picture-card",
     onPreview: handlePreview,
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} license uploaded successfully`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} license upload failed.`);
+    defaultFileList: fishImages[fishIndex]?.url
+      ? [
+          {
+            uid: "-1",
+            name: "Fish Image",
+            status: "done",
+            url: fishImages[fishIndex].url,
+          },
+        ]
+      : [],
+    customRequest: async ({ file, onSuccess, onError }) => {
+      try {
+        console.log("Starting Koi image upload for index:", fishIndex);
+        const base64Url = await handleUpload(file);
+        if (base64Url) {
+          console.log("Successfully generated base64 for Koi image");
+          const updatedImages = {
+            ...fishImages,
+            [fishIndex]: {
+              url: base64Url,
+              base64: base64Url,
+              status: 'done'
+            },
+          };
+          setFishImages(updatedImages);
+          console.log("Updated fish images state:", updatedImages);
+
+          const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
+          savedData.fishImages = updatedImages;
+          localStorage.setItem("fishFormData", JSON.stringify(savedData));
+          console.log("Saved fish images to localStorage");
+
+          onSuccess();
+        } else {
+          onError(new Error("Failed to process image"));
+        }
+      } catch (error) {
+        console.error("Error in Koi image upload:", error);
+        onError(error);
       }
     },
-  };
+    onChange(info) {
+      if (info.file.status === "done") {
+        message.success(`${info.file.name} fish image processed successfully`);
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} fish image processing failed.`);
+      }
+    },
+  });
+
+  const getLicenseImageProps = (fishIndex) => ({
+    name: "license",
+    listType: "picture-card",
+    onPreview: handlePreview,
+    defaultFileList: licenseImages[fishIndex]?.url
+      ? [
+          {
+            uid: "-1",
+            name: "License Image",
+            status: "done",
+            url: licenseImages[fishIndex].url,
+          },
+        ]
+      : [],
+    customRequest: async ({ file, onSuccess, onError }) => {
+      try {
+        console.log("Starting License image upload for index:", fishIndex);
+        const base64Url = await handleUpload(file);
+        if (base64Url) {
+          console.log("Successfully generated base64 for License image");
+          const updatedImages = {
+            ...licenseImages,
+            [fishIndex]: {
+              url: base64Url,
+              base64: base64Url,
+              status: 'done'
+            },
+          };
+          setLicenseImages(updatedImages);
+          console.log("Updated license images state:", updatedImages);
+
+          const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
+          savedData.licenseImages = updatedImages;
+          localStorage.setItem("fishFormData", JSON.stringify(savedData));
+          console.log("Saved license images to localStorage");
+
+          onSuccess();
+        } else {
+          onError(new Error("Failed to process image"));
+        }
+      } catch (error) {
+        console.error("Error in License image upload:", error);
+        onError(error);
+      }
+    },
+    onChange(info) {
+      if (info.file.status === "done") {
+        message.success(
+          `${info.file.name} license image processed successfully`
+        );
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} license image processing failed.`);
+      }
+    },
+  });
 
   useEffect(() => {
-    // Load saved data when component mounts
-    const savedData = localStorage.getItem("fishFormData");
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      form.setFieldsValue(parsedData);
-      updateSummary(parsedData);
-    }
-  }, [form]);
+    const loadSavedData = () => {
+      try {
+        console.log("Starting to load saved data");
+        const savedData = localStorage.getItem("fishFormData");
+        if (savedData) {
+          console.log("Found saved data in localStorage");
+          const parsedData = JSON.parse(savedData);
+          
+          // Load form data
+          form.setFieldsValue(parsedData);
+          updateSummary(parsedData);
+
+          // Load fish images
+          if (parsedData.fishImages) {
+            console.log("Found saved fish images:", parsedData.fishImages);
+            const restoredFishImages = {};
+            Object.entries(parsedData.fishImages).forEach(([key, value]) => {
+              if (value && value.base64) {
+                restoredFishImages[key] = {
+                  url: value.base64,
+                  base64: value.base64,
+                  status: 'done'
+                };
+              }
+            });
+            setFishImages(restoredFishImages);
+            console.log("Restored fish images:", restoredFishImages);
+          }
+
+          // Load license images
+          if (parsedData.licenseImages) {
+            console.log("Found saved license images:", parsedData.licenseImages);
+            const restoredLicenseImages = {};
+            Object.entries(parsedData.licenseImages).forEach(([key, value]) => {
+              if (value && value.base64) {
+                restoredLicenseImages[key] = {
+                  url: value.base64,
+                  base64: value.base64,
+                  status: 'done'
+                };
+              }
+            });
+            setLicenseImages(restoredLicenseImages);
+            console.log("Restored license images:", restoredLicenseImages);
+          }
+        } else {
+          console.log("No saved data found in localStorage");
+        }
+      } catch (error) {
+        console.error("Error loading saved data:", error);
+      }
+    };
+
+    loadSavedData();
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("totalWeight", totalWeight.toString());
+    console.log("Saving total weight:", totalWeight);
+  }, [totalWeight]);
 
   const updateSummary = (values) => {
     const newTotalWeight = calculateTotalWeight(values.fishDetails);
     const newBoxCounts = calculateBoxes(values.fishDetails);
     const newFishCount = values.fishDetails?.length || 0;
+    const newTotalPrice = calculateTotalPrice(values.fishDetails);
 
     setTotalWeight(newTotalWeight);
     setBoxCounts(newBoxCounts);
     setFishCount(newFishCount);
+    setTotalPrice(newTotalPrice);
   };
 
   const calculateTotalWeight = (fishDetails) => {
@@ -162,7 +309,6 @@ function Fish() {
     let largeBoxes = 0;
     let extraLargeBoxes = 0;
 
-    // Calculate boxes based on points
     while (totalPoints > 0) {
       if (totalPoints >= 16) {
         extraLargeBoxes++;
@@ -187,10 +333,84 @@ function Fish() {
     };
   };
 
+  const calculateTotalPrice = (fishDetails) => {
+    const total = (fishDetails || []).reduce(
+      (sum, fish) => sum + (parseFloat(fish.price) || 0),
+      0
+    );
+    return parseFloat(total.toFixed(2));
+  };
+
   const handleFormChange = (changedValues, allValues) => {
+    console.log("Form values changed:", changedValues);
     updateSummary(allValues);
-    // Save form data to localStorage
-    localStorage.setItem("fishFormData", JSON.stringify(allValues));
+
+    console.log("Current fish images:", fishImages);
+    console.log("Current license images:", licenseImages);
+
+    // Lưu ảnh cá
+    const fishImagesData = {};
+    Object.entries(fishImages).forEach(([key, value]) => {
+      if (value && value.base64) {
+        fishImagesData[key] = {
+          url: value.base64,
+          base64: value.base64,
+          status: 'done'
+        };
+      }
+    });
+
+    // Lưu ảnh giấy phép
+    const licenseImagesData = {};
+    Object.entries(licenseImages).forEach(([key, value]) => {
+      if (value && value.base64) {
+        licenseImagesData[key] = {
+          url: value.base64,
+          base64: value.base64,
+          status: 'done'
+        };
+      }
+    });
+
+    const dataToSave = {
+      ...allValues,
+      totalWeight: calculateTotalWeight(allValues.fishDetails),
+      boxCounts: calculateBoxes(allValues.fishDetails),
+      fishImages: fishImagesData,
+      licenseImages: licenseImagesData,
+      totalPrice: calculateTotalPrice(allValues.fishDetails)
+    };
+
+    console.log("Saving data to localStorage:", dataToSave);
+    localStorage.setItem("fishFormData", JSON.stringify(dataToSave));
+  };
+
+  const handleRemoveImage = (type, fishIndex) => {
+    if (type === "fish") {
+      setFishImages((prev) => {
+        const newImages = { ...prev };
+        delete newImages[fishIndex];
+        return newImages;
+      });
+    } else if (type === "license") {
+      setLicenseImages((prev) => {
+        const newImages = { ...prev };
+        delete newImages[fishIndex];
+        return newImages;
+      });
+    }
+
+    const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
+    if (type === "fish") {
+      if (savedData.fishImages) {
+        delete savedData.fishImages[fishIndex];
+      }
+    } else if (type === "license") {
+      if (savedData.licenseImages) {
+        delete savedData.licenseImages[fishIndex];
+      }
+    }
+    localStorage.setItem("fishFormData", JSON.stringify(savedData));
   };
 
   return (
@@ -232,7 +452,7 @@ function Fish() {
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={16}>
+                  <Col span={8}>
                     <Form.Item
                       name={[field.name, "size"]}
                       label={"Size"}
@@ -251,17 +471,19 @@ function Fish() {
                         ))}
                       </Select>
                     </Form.Item>
+                  </Col>
+                  <Col span={8}>
                     <Form.Item
                       name={[field.name, "price"]}
                       label={"Price"}
                       rules={[
-                        { required: true, message: "Please enter Fish Size" },
+                        { required: true, message: "Please enter Price" },
                       ]}
                     >
                       <InputNumber
                         min={0}
                         style={{ width: "100%" }}
-                        placeholder="price("
+                        placeholder="Price ($)"
                       />
                     </Form.Item>
                   </Col>
@@ -275,12 +497,29 @@ function Fish() {
                       ]}
                       style={{ display: "inline-block", marginRight: "100px" }}
                     >
-                      <Upload {...koiImageProps}>
-                        {/* Customize upload button */}
-                        <div>
-                          <PlusOutlined />
-                          <div style={{ marginTop: 8 }}>Upload Fish Image</div>
-                        </div>
+                      <Upload 
+                        {...getKoiImageProps(field.name)}
+                        onRemove={() => handleRemoveImage("fish", field.name)}
+                        fileList={
+                          fishImages[field.name]?.url
+                            ? [
+                                {
+                                  uid: "-1",
+                                  name: "Fish Image",
+                                  status: "done",
+                                  url: fishImages[field.name].url,
+                                  thumbUrl: fishImages[field.name].url
+                                },
+                              ]
+                            : []
+                        }
+                      >
+                        {!fishImages[field.name]?.url && (
+                          <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload Fish Image</div>
+                          </div>
+                        )}
                       </Upload>
                     </FormItem>
                   </Col>
@@ -292,12 +531,29 @@ function Fish() {
                       ]}
                       style={{ display: "inline-block", marginRight: "100px" }}
                     >
-                      <Upload {...licenseImageProps}>
-                        {/* Customize upload button */}
-                        <div>
-                          <PlusOutlined />
-                          <div style={{ marginTop: 8 }}>Upload License</div>
-                        </div>
+                      <Upload 
+                        {...getLicenseImageProps(field.name)}
+                        onRemove={() => handleRemoveImage("license", field.name)}
+                        fileList={
+                          licenseImages[field.name]?.url
+                            ? [
+                                {
+                                  uid: "-1",
+                                  name: "License Image",
+                                  status: "done",
+                                  url: licenseImages[field.name].url,
+                                  thumbUrl: licenseImages[field.name].url
+                                },
+                              ]
+                            : []
+                        }
+                      >
+                        {!licenseImages[field.name]?.url && (
+                          <div>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload License Image</div>
+                          </div>
+                        )}
                       </Upload>
                     </FormItem>
                   </Col>
@@ -324,7 +580,7 @@ function Fish() {
       <Card style={{ marginTop: 24, backgroundColor: "#f0f2f5" }}>
         <Title level={4}>Order Summary</Title>
         <Row gutter={[16, 16]}>
-          <Col span={12}>
+          <Col span={8}>
             <Card size="small">
               <Statistic
                 title="Total Weight"
@@ -334,9 +590,19 @@ function Fish() {
               />
             </Card>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Card size="small">
               <Statistic title="Total Fish" value={fishCount} suffix="fish" />
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card size="small">
+              <Statistic
+                title="Total Price"
+                value={totalPrice}
+                precision={2}
+                prefix="$"
+              />
             </Card>
           </Col>
         </Row>
@@ -370,7 +636,6 @@ function Fish() {
         </Row>
       </Card>
 
-      {/* Preview Modal */}
       <Modal
         open={previewOpen}
         title={previewTitle}
