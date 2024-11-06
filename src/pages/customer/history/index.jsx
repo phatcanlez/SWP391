@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   ArrowDownOutlined,
   EnvironmentOutlined,
-  FileSearchOutlined,
   FrownOutlined,
 } from "@ant-design/icons";
 import { Alert, Form, Input, Modal, Rate } from "antd";
@@ -18,7 +17,9 @@ function ViewHistory() {
   const [orderHistory, setOrderHistory] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [form] = useForm();
+  const [reportform] = useForm();
   const [openModal, setOpenModal] = useState(false);
+  const [openReportModal, setOpenReportModal] = useState(false);
 
   const fetchHistory = async () => {
     try {
@@ -47,11 +48,28 @@ function ViewHistory() {
     } catch (error) {
       console.log(error);
       toast.error("You have already feedback this order!");
+      setOpenModal(false);
+    }
+  };
+
+  const handleComplain = async (value) => {
+    value.order = selectedOrderId;
+    try {
+      await api.post("report", value);
+      fetchHistory();
+      setSelectedOrderId(null);
+      toast.success("Successfully");
+      setOpenReportModal(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("You have already complain this order!");
+      setOpenReportModal(false);
     }
   };
 
   const handelCancel = () => {
     setOpenModal(false);
+    setOpenReportModal(false);
     setSelectedOrderId(null);
   };
 
@@ -59,6 +77,12 @@ function ViewHistory() {
     setSelectedOrderId(orderId);
     console.log(selectedOrderId);
     setOpenModal(true);
+  };
+
+  const handleReportOpen = (orderId) => {
+    setSelectedOrderId(orderId);
+    console.log(selectedOrderId);
+    setOpenReportModal(true);
   };
 
   return (
@@ -71,6 +95,9 @@ function ViewHistory() {
                 key={order.orderID}
                 order={order}
                 onFeedbackClick={() => handleOpen(order.orderID)}
+                onReportClick={() => {
+                  handleReportOpen(order.orderID);
+                }}
               />
             ))
           ) : (
@@ -99,11 +126,30 @@ function ViewHistory() {
           </Form.Item>
         </Form>
       </Modal>
+
+      <Modal
+        title="Feedback "
+        open={openReportModal}
+        onCancel={handelCancel}
+        onOk={() => {
+          reportform.submit();
+        }}
+      >
+        <Form
+          labelCol={{ span: 24 }}
+          form={reportform}
+          onFinish={handleComplain}
+        >
+          <Form.Item label="Complain" name="reportContent">
+            <Input.TextArea />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
 
-const History = ({ order, onFeedbackClick }) => {
+const History = ({ order, onFeedbackClick, onReportClick }) => {
   const navigate = useNavigate();
   const getAlertType = (status) => {
     switch (status) {
@@ -126,6 +172,7 @@ const History = ({ order, onFeedbackClick }) => {
           <h3>orderID: </h3>
           <p className="item">{order?.orderID}</p>
         </div>
+
         <Alert message={order?.status} type={getAlertType(order?.status)} />
 
         <div className="order__item">
@@ -160,12 +207,23 @@ const History = ({ order, onFeedbackClick }) => {
         >
           View Detail
         </button>
+
+        {order?.status === "SUCCESS" && (
+          <button
+            onClick={onFeedbackClick}
+            className=" btn-his"
+            style={{ backgroundColor: "#e25822" }}
+          >
+            Feedback
+          </button>
+        )}
+
         <button
-          onClick={onFeedbackClick}
+          onClick={onReportClick}
           className=" btn-his"
-          style={{ backgroundColor: "#e25822" }}
+          style={{ backgroundColor: "#000" }}
         >
-          Feedback
+          Complain
         </button>
       </div>
     </div>

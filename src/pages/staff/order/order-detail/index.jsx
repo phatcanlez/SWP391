@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
 import { approve } from "../../../../redux/features/orderSlice";
+import api from "../../../../config/axios";
 
 function OrderDetail() {
   const { id } = useParams();
