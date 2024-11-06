@@ -29,6 +29,8 @@ function StaffOrder({ path, isPaging = false }) {
         setTotalOrders(response.data.totalElements); // Assuming API provides total elements
       } else {
         finalData = response.data;
+        console.log(finalData);
+        setTotalOrders(response.data?.length); 
       }
       setOrder(finalData); // Assuming your API returns orders in 'content'
       setLoading(false);
@@ -60,12 +62,12 @@ function StaffOrder({ path, isPaging = false }) {
     },
     {
       title: "Created Date",
-      dataIndex: "status", 
+      dataIndex: "status",
       key: "status.date",
       render: (status) => {
-        if (!status?.date) return '-';
-        return status.date.split('T')[0]; // Cắt chuỗi tại ký tự T
-      }
+        if (!status?.date) return "-";
+        return status.date.split("T")[0]; // Cắt chuỗi tại ký tự T
+      },
     },
     {
       title: "Status",

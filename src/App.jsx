@@ -41,7 +41,9 @@ import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
 import Overview from "./pages/admin/overview";
-
+import ApproveOrder from "./pages/staff/order/approve-order";
+import Reject from "./pages/staff/reject-page";
+import OrderSuccess from "./pages/staff/success-page";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -193,7 +195,6 @@ function App() {
         //   path: "payment/:id",
         //   element: <Payment />,
         // },
-        
       ],
     },
     // {
@@ -240,6 +241,18 @@ function App() {
         {
           path: "view-feedback",
           element: <StaffFeedback />,
+        },
+        {
+          path: "approved",
+          element: <ApproveOrder />,
+        },
+        {
+          path: "reject",
+          element: <Reject />,
+        },
+        {
+          path: "success",
+          element: <OrderSuccess />,
         },
       ],
     },
