@@ -44,6 +44,7 @@ function ViewHistory() {
       fetchHistory();
       setSelectedOrderId(null);
       toast.success("Successfully");
+      form.resetFields();
       setOpenModal(false);
     } catch (error) {
       console.log(error);
@@ -59,6 +60,7 @@ function ViewHistory() {
       fetchHistory();
       setSelectedOrderId(null);
       toast.success("Successfully");
+      reportform.resetFields();
       setOpenReportModal(false);
     } catch (error) {
       console.log(error);

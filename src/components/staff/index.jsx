@@ -6,6 +6,7 @@ import "../staff/index.css";
 import {
   ClockCircleOutlined,
   CommentOutlined,
+  FrownOutlined,
   MenuOutlined,
   PushpinOutlined,
   QuestionCircleOutlined,
@@ -31,6 +32,7 @@ const Staff = () => {
     getItem("History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
     getItem("Feedback", "view-feedback", <CommentOutlined />),
+    getItem("Complain", "view-complain", <FrownOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
   ].filter(Boolean); // filter out null items
 

@@ -8,7 +8,7 @@ import api from "../../../../config/axios";
 function SuccessPage() {
   const params = useGetParams();
   console.log(params);
-  const orderID = params("orderID");
+  const orderID = params("orderId");
   console.log(orderID);
   const vnp = params("vnp_TransactionStatus");
   console.log(vnp);
@@ -17,6 +17,7 @@ function SuccessPage() {
   const postOrderID = async () => {
     try {
       const response = await api.put(`payment-status?orderId=${orderID}`);
+       
     } catch (error) {
       toast.error(error);
     }
@@ -41,7 +42,7 @@ function SuccessPage() {
             type="primary"
             key="console"
             onClick={() => {
-              navigate("/history");
+              navigate("/customer-service/history");
             }}
           >
             Go Order History
