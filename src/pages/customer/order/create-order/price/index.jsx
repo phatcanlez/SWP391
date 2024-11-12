@@ -1,21 +1,22 @@
 import { CarOutlined } from "@ant-design/icons";
-import { Card, Radio, Checkbox, Space, Spin, Typography } from "antd";
-import { useState, useEffect } from "react";
+import { Card, Radio, Checkbox, Space, Spin, Typography, message } from "antd";
+import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../../../../config/axios";
+import { useSelector } from "react-redux";
 
 const { Title, Text } = Typography;
 
-function Price({ fishData, addressData }) {
+const Price = forwardRef((props, ref) => {
   const [extraServices, setExtraServices] = useState([]);
   const [shippingMethods, setShippingMethods] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedShippingMethod, setSelectedShippingMethod] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [weightPrice, setWeightPrice] = useState(0);
-  //const [distancePrice, setDistancePrice] = useState(0);
-  const [totalWeight, setTotalWeight] = useState(0);
   const [estimatePrice, setEstimatePrice] = useState(0);
+  const [totalWeight, setTotalWeight] = useState(0);
+  const navigate = useNavigate();
 
   // Load saved data when component mounts
   useEffect(() => {
@@ -60,13 +61,7 @@ function Price({ fishData, addressData }) {
 
   useEffect(() => {
     calculateTotalPrice();
-  }, [
-    fishData,
-    addressData,
-    selectedServices,
-    selectedShippingMethod,
-    totalWeight,
-  ]);
+  }, [selectedServices, selectedShippingMethod, totalWeight]);
 
   const fetchExtraServices = async () => {
     try {
@@ -157,7 +152,7 @@ function Price({ fishData, addressData }) {
     try {
       const savedFishData = JSON.parse(localStorage.getItem("fishFormData"));
       const distance = parseFloat(localStorage.getItem("savedDistance"));
-      
+
       if (!distance && distance !== 0) {
         console.warn("No distance found in localStorage");
       }
@@ -214,14 +209,16 @@ function Price({ fishData, addressData }) {
       setEstimatePrice(shippingFee);
 
       const extraServicesTotal = selectedServices.reduce((total, serviceId) => {
-        const service = extraServices.find(s => s.extraServiceId === serviceId);
+        const service = extraServices.find(
+          (s) => s.extraServiceId === serviceId
+        );
         return total + (service ? service.price : 0);
       }, 0);
 
       console.log("Price calculation:", {
         shippingFee,
         extraServicesTotal,
-        total: shippingFee + extraServicesTotal
+        total: shippingFee + extraServicesTotal,
       });
 
       const finalTotal = shippingFee + extraServicesTotal;
@@ -231,11 +228,10 @@ function Price({ fishData, addressData }) {
         selectedServices,
         selectedShippingMethod,
         totalPrice: finalTotal,
-        estimatePrice: shippingFee
+        estimatePrice: shippingFee,
       };
       localStorage.setItem("priceFormData", JSON.stringify(priceData));
       localStorage.setItem("orderTotalPrice", finalTotal.toString());
-
     } catch (error) {
       console.error("Error calculating total price:", error);
       setEstimatePrice(0);
@@ -248,10 +244,10 @@ function Price({ fishData, addressData }) {
   const handleServiceChange = (serviceId, checked) => {
     const newSelectedServices = checked
       ? [...selectedServices, serviceId]
-      : selectedServices.filter(id => id !== serviceId);
-    
+      : selectedServices.filter((id) => id !== serviceId);
+
     setSelectedServices(newSelectedServices);
-    
+
     if (selectedShippingMethod) {
       calculateTotalPrice();
     }
@@ -263,15 +259,85 @@ function Price({ fishData, addressData }) {
   };
 
   useEffect(() => {
-    console.log("Setting fixed weight: 5kg");
-    setTotalWeight(5);
-  }, []); // Chỉ chạy một lần khi component mount
+    const weight = getTotalWeightFromStorage();
+    setTotalWeight(weight);
+  }, []);
 
   useEffect(() => {
     if (selectedShippingMethod) {
       calculateTotalPrice();
     }
   }, [selectedShippingMethod, selectedServices, extraServices]);
+  const user = useSelector((store) => store.user);
+  useImperativeHandle(ref, () => ({
+    validateFields: () => {
+      if (!selectedShippingMethod) {
+        throw new Error("Please select a shipping method");
+      }
+      return Promise.resolve(true);
+    },
+    submitOrder: async () => {
+      try {
+        const fishData = JSON.parse(localStorage.getItem("fishFormData"));
+        const addressData = JSON.parse(localStorage.getItem("orderFormData"));
+        const distance = parseFloat(localStorage.getItem("savedDistance"));
+
+        const orderData = {
+          reciverAdress: addressData.receiverAddress,
+          senderAddress: addressData.senderAddress,
+          senderPhoneNumber: addressData.senderPhoneNumber,
+          expDeliveryDate: new Date().toISOString(),
+          orderPrice: parseFloat(fishData.totalPrice || 0),
+          note: addressData.note || "",
+          reciverPhoneNumber: addressData.receiverPhoneNumber,
+          reciverName: addressData.receiverName,
+          totalPrice: parseFloat(totalPrice || 0),
+          smallBox: parseInt(fishData.boxCounts?.small || 0),
+          mediumBox: parseInt(fishData.boxCounts?.medium || 0),
+          largeBox: parseInt(fishData.boxCounts?.large || 0),
+          extraLargeBox: parseInt(fishData.boxCounts?.extraLarge || 0),
+          kilometer: parseFloat(distance || 0),
+          totalWeight: parseFloat(getTotalWeightFromStorage() || 0),
+          quantity: parseInt(fishData.fishDetails?.length || 0),
+          type: "OVERSEA",
+          shipMethod: parseInt(selectedShippingMethod),
+          extraService: selectedServices.map((id) => parseInt(id)),
+          username: user.username,
+        };
+
+        console.log("Submitting order:", orderData);
+        const orderResponse = await api.post("orders", orderData);
+        console.log("Order created successfully:", orderResponse.data);
+
+        if (orderResponse.data) {
+          message.success("Order created successfully!");
+
+          // Clear localStorage
+          localStorage.removeItem("fishFormData");
+          localStorage.removeItem("addressFormData");
+          localStorage.removeItem("priceFormData");
+          localStorage.removeItem("savedDistance");
+          localStorage.removeItem("orderTotalPrice");
+          localStorage.removeItem("orderFormData");
+
+          // Navigate to order detail page with orderId
+          console.log(orderResponse.data);
+          navigate(`/customer-service/view-order/${orderResponse.data.orderID}`);
+          return orderResponse.data;
+        } else {
+          throw new Error("No order ID received from server");
+        }
+      } catch (error) {
+        console.error("Error creating order:", error);
+        message.error(
+          error.response?.data?.message ||
+            error.message ||
+            "Failed to create order"
+        );
+        throw error;
+      }
+    },
+  }));
 
   return (
     <Card>
@@ -405,6 +471,8 @@ function Price({ fishData, addressData }) {
       </Space>
     </Card>
   );
-}
+});
+
+Price.displayName = "Price";
 
 export default Price;

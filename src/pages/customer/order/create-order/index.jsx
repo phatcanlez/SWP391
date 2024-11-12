@@ -17,19 +17,19 @@ function FormDisabledDemo() {
   const formRefs = useRef([]);
   const [stepData, setStepData] = useState({});
 
-  const handleSubmit = async (values) => {
-    console.log(values);
-    try {
-      const response = await api.post("orders", values);
-      console.log(response);
-      toast.success("Successful");
-      localStorage.removeItem("fishFormData");
-      localStorage.removeItem("addressFormData");
-      localStorage.removeItem("priceFormData");
-    } catch (err) {
-      toast.error(err.response?.data || "An error occurred");
-    }
-  };
+  // const handleSubmit = async (values) => {
+  //   console.log(values);
+  //   try {
+  //     const response = await api.post("orders", values);
+  //     console.log(response);
+  //     toast.success("Successful");
+  //     localStorage.removeItem("fishFormData");
+  //     localStorage.removeItem("addressFormData");
+  //     localStorage.removeItem("priceFormData");
+  //   } catch (err) {
+  //     toast.error(err.response?.data || "An error occurred");
+  //   }
+  // };
 
   const steps = [
     {
@@ -71,21 +71,18 @@ function FormDisabledDemo() {
     const currentForm = formRefs.current[current];
     if (currentForm) {
       try {
-        const values = await currentForm.validateFields();
-        setStepData((prevData) => {
-          const newData = { ...prevData, ...values };
-          localStorage.setItem("orderFormData", JSON.stringify(newData));
-          return newData;
-        });
+        await currentForm.validateFields();
+
         if (current === steps.length - 1) {
-          //last step, submit the form
-          await handleSubmit(stepData);
+          // Nếu là bước cuối cùng (Price), gọi submitOrder
+          await currentForm.submitOrder();
+          //navigate(`/customer-service/view-order/${orderResponse.data}`);
         } else {
           setCurrent(current + 1);
         }
       } catch (errorInfo) {
         console.log("Validation failed:", errorInfo);
-        toast.error("Please fill in all information before continuing.");
+        toast.error("Please fill in all required information.");
       }
     } else {
       setCurrent(current + 1);
@@ -95,15 +92,28 @@ function FormDisabledDemo() {
   const prev = () => {
     const currentForm = formRefs.current[current];
     if (currentForm) {
-      const values = currentForm.getFieldsValue();
-      setStepData((prevData) => {
-        const newData = { ...prevData, ...values };
-        localStorage.setItem("orderFormData", JSON.stringify(newData));
-        return newData;
-      });
+      try {
+        const values = currentForm.getFieldsValue();
+        setStepData((prevData) => {
+          const newData = { ...prevData, ...values };
+          localStorage.setItem("orderFormData", JSON.stringify(newData));
+          return newData;
+        });
+      } catch (error) {
+        console.error("Error saving current step data:", error);
+      }
     }
+    // Luôn cho phép quay lại step trước
     setCurrent(current - 1);
   };
+  
+  {
+    current > 0 && (
+      <Button style={{ margin: "0 8px" }} onClick={prev} type="default">
+        Previous
+      </Button>
+    );
+  }
 
   const clearAll = () => {
     // Clear all form data
@@ -129,7 +139,7 @@ function FormDisabledDemo() {
   };
 
   return (
-    <Form form={form} onFinish={handleSubmit}>
+    <Form form={form}>
       <h6>Create Order</h6>
       <div>
         <Steps current={current}>
