@@ -306,10 +306,29 @@ const Price = forwardRef((props, ref) => {
           username: user.username,
         };
 
-        console.log(user);
         console.log("Submitting order:", orderData);
-        const response = await api.post("orders", orderData);
-        console.log("Order created successfully:", response.data);
+        const orderResponse = await api.post("orders", orderData);
+        console.log("Order created successfully:", orderResponse.data);
+
+        // // Sau khi tạo order thành công, submit license cho từng con cá
+        // const orderId = orderResponse.data.id; // Lấy order ID từ response
+
+        // // Submit license cho từng con cá
+        // for (let i = 0; i < fishData.fishDetails.length; i++) {
+        //   const fish = fishData.fishDetails[i];
+        //   const licenseData = {
+        //     order: orderId,
+        //     name: "koi",
+        //     imgKoi: fishData.fishImages[i]?.base64 || "",
+        //     imgLicense: fishData.licenseImages[i]?.base64 || "",
+        //     priceOfKoi: parseFloat(fish.price),
+        //     weight: parseFloat(fish.weight),
+        //     size: fish.size,
+        //     description: fish.note || "",
+        //   };
+
+        //   await api.post("license", licenseData);
+        // }
 
         message.success("Order created successfully!");
 
@@ -322,15 +341,16 @@ const Price = forwardRef((props, ref) => {
         localStorage.removeItem("orderFormData");
 
         navigate("/customer/orders");
-        return response.data;
+        return orderResponse.data;
+
       } catch (error) {
         console.error("Error creating order:", error);
         message.error(
-          error.response?.data?.message || "Failed to create order"
+          error.response?.data?.message || error.message || "Failed to create order"
         );
         throw error;
       }
-    },
+    }
   }));
 
   return (

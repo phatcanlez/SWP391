@@ -189,6 +189,18 @@ const Address = forwardRef((props, ref) => {
       setTempSelectionsTo(selectedAddress);
     }
 
+    const formData = form.getFieldsValue();
+    const addressData = {
+      senderAddress: where === "From" ? selectedAddress : formData.senderAddress,
+      senderPhoneNumber: formData.senderPhoneNumber,
+      receiverAddress: where === "To" ? selectedAddress : formData.receiverAddress,
+      receiverName: formData.receiverName,
+      receiverPhoneNumber: formData.receiverPhoneNumber,
+      note: formData.note
+    };
+    
+    localStorage.setItem('orderFormData', JSON.stringify(addressData));
+
     if (
       (tempSelectionsFrom && selectedAddress) ||
       (selectedAddress && tempSelectionsTo)
@@ -240,6 +252,32 @@ const Address = forwardRef((props, ref) => {
     console.log("Distance saved:", newDistance);
   };
 
+  // Add onValuesChange handler to save form data whenever any field changes
+  const handleFormValuesChange = () => {
+    const formData = form.getFieldsValue();
+    localStorage.setItem('orderFormData', JSON.stringify({
+      senderAddress: formData.senderAddress,
+      senderPhoneNumber: formData.senderPhoneNumber,
+      receiverAddress: formData.receiverAddress,
+      receiverName: formData.receiverName,
+      receiverPhoneNumber: formData.receiverPhoneNumber,
+      note: formData.note
+    }));
+  };
+
+  useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    if (savedData) {
+      form.setFieldsValue(savedData);
+      if (savedData.senderAddress) {
+        setTempSelectionsFrom(savedData.senderAddress);
+      }
+      if (savedData.receiverAddress) {
+        setTempSelectionsTo(savedData.receiverAddress);
+      }
+    }
+  }, []);
+
   return (
     <Form
       form={form}
@@ -253,6 +291,7 @@ const Address = forwardRef((props, ref) => {
       style={{
         maxWidth: 1000,
       }}
+      onValuesChange={handleFormValuesChange}
     >
       <div> Sender Information</div>
       <Form.Item
