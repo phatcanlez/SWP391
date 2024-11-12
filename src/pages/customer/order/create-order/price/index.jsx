@@ -282,7 +282,6 @@ const Price = forwardRef((props, ref) => {
         const addressData = JSON.parse(localStorage.getItem("orderFormData"));
         const distance = parseFloat(localStorage.getItem("savedDistance"));
 
-        // Format orderData theo đúng API spec
         const orderData = {
           reciverAdress: addressData.receiverAddress,
           senderAddress: addressData.senderAddress,
@@ -310,47 +309,34 @@ const Price = forwardRef((props, ref) => {
         const orderResponse = await api.post("orders", orderData);
         console.log("Order created successfully:", orderResponse.data);
 
-        // // Sau khi tạo order thành công, submit license cho từng con cá
-        // const orderId = orderResponse.data.id; // Lấy order ID từ response
+        if (orderResponse.data) {
+          message.success("Order created successfully!");
 
-        // // Submit license cho từng con cá
-        // for (let i = 0; i < fishData.fishDetails.length; i++) {
-        //   const fish = fishData.fishDetails[i];
-        //   const licenseData = {
-        //     order: orderId,
-        //     name: "koi",
-        //     imgKoi: fishData.fishImages[i]?.base64 || "",
-        //     imgLicense: fishData.licenseImages[i]?.base64 || "",
-        //     priceOfKoi: parseFloat(fish.price),
-        //     weight: parseFloat(fish.weight),
-        //     size: fish.size,
-        //     description: fish.note || "",
-        //   };
+          // Clear localStorage
+          localStorage.removeItem("fishFormData");
+          localStorage.removeItem("addressFormData");
+          localStorage.removeItem("priceFormData");
+          localStorage.removeItem("savedDistance");
+          localStorage.removeItem("orderTotalPrice");
+          localStorage.removeItem("orderFormData");
 
-        //   await api.post("license", licenseData);
-        // }
-
-        message.success("Order created successfully!");
-
-        // Clear localStorage sau khi submit thành công
-        localStorage.removeItem("fishFormData");
-        localStorage.removeItem("addressFormData");
-        localStorage.removeItem("priceFormData");
-        localStorage.removeItem("savedDistance");
-        localStorage.removeItem("orderTotalPrice");
-        localStorage.removeItem("orderFormData");
-
-        navigate("/customer/orders");
-        return orderResponse.data;
-
+          // Navigate to order detail page with orderId
+          console.log(orderResponse.data);
+          navigate(`/customer-service/view-order/${orderResponse.data.orderID}`);
+          return orderResponse.data;
+        } else {
+          throw new Error("No order ID received from server");
+        }
       } catch (error) {
         console.error("Error creating order:", error);
         message.error(
-          error.response?.data?.message || error.message || "Failed to create order"
+          error.response?.data?.message ||
+            error.message ||
+            "Failed to create order"
         );
         throw error;
       }
-    }
+    },
   }));
 
   return (

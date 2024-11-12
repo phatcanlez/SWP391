@@ -76,6 +76,7 @@ function FormDisabledDemo() {
         if (current === steps.length - 1) {
           // Nếu là bước cuối cùng (Price), gọi submitOrder
           await currentForm.submitOrder();
+          //navigate(`/customer-service/view-order/${orderResponse.data}`);
         } else {
           setCurrent(current + 1);
         }
