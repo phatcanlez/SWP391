@@ -330,9 +330,7 @@ const Price = forwardRef((props, ref) => {
       } catch (error) {
         console.error("Error creating order:", error);
         message.error(
-          error.response?.data?.message ||
-            error.message ||
-            "Failed to create order"
+          error.response?.data?.message || error.message || "Failed to create order"
         );
         throw error;
       }
@@ -341,7 +339,7 @@ const Price = forwardRef((props, ref) => {
 
   return (
     <Card>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",
@@ -349,12 +347,11 @@ const Price = forwardRef((props, ref) => {
             alignItems: "center",
           }}
         >
-          <h4>Shipping method</h4>
+          <h4>Shipping Method</h4>
         </div>
 
         <Spin spinning={loading}>
           <Radio.Group
-            style={{ width: "100%" }}
             onChange={handleShippingMethodChange}
             value={selectedShippingMethod}
           >
