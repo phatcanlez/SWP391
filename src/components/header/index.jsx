@@ -12,26 +12,26 @@ function Header() {
   return (
     <header className="header">
       <div className="header__logo">
-        {user?.role === "STAFF" && (
+        {user ? (
           <>
-            <Link to="/staff/order">
-              <img src={logo} alt="Logo" width={80} />
-            </Link>
+            {user?.role === "STAFF" && (
+              <Link to="/staff/order">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+            {user?.role === "CUSTOMER" && (
+              <Link to="/customer-service/order">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+            {user?.role === "MANAGER" && (
+              <Link to="/dashboard/overview">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
           </>
-        )}
-        {user?.role === "CUSTOMER" && (
-          <>
-            <Link to="customer-service/order">
-              <img src={logo} alt="Logo" width={80} />
-            </Link>
-          </>
-        )}
-        {user?.role === "MANAGER" && (
-          <>
-            <Link to="dashboard/overview">
-              <img src={logo} alt="Logo" width={80} />
-            </Link>
-          </>
+        ) : (
+          <img src={logo} alt="Logo" width={80} />
         )}
       </div>
       <nav className="header__nav">
