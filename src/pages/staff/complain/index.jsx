@@ -114,6 +114,12 @@ const ComplainDetail = ({ order, onReportClick }) => {
             {order?.reportContent}
           </p>
         </div>
+        <div className="order__item">
+          <p style={{ color: "#727272" }}>Replied: </p>
+          <p style={{ color: "#727272", fontSize: "16px" }}>
+            {order?.empReply}
+          </p>
+        </div>
       </div>
       <div className="btn-wrapper">
         <Alert message={order?.status} type={getAlertType(order?.status)} />
