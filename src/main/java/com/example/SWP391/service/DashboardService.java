@@ -67,13 +67,13 @@ public class DashboardService {
 
         public Map<String,Object> caculateMonthlyRevenue(){
             Map<String, Object> stats = new HashMap<>();
-            List<Object[]> list = paymentRepository.caculateMonthlyRevenue();
+            List<Object[]> list = paymentRepository.calculateMonthlyRevenueByYear();
             List<Map<String,Object>> result = new ArrayList<>();
             for (Object[] i : list) {
                 Map<String,Object> map = new HashMap<>();
+                Object day = i[2] + "/" + i[1];
                 map.put("totalPrice", i[0]);
-                map.put("week", i[1]);
-                map.put("day", i[2]);
+                map.put("day", day);
                 result.add(map);
             }
             stats.put("monthlyRevenue", result);

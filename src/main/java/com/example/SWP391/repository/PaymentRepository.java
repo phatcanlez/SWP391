@@ -15,8 +15,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 //            "group by MONTH(p.timeOfPay),  Week(p.timeOfPay) " +
 //            "order by MONTH(p.timeOfPay), Week(p.timeOfPay)")
 
-    @Query("SELECT SUM(o.totalPrice), WEEK(p.timeOfPay), DAY(p.timeOfPay) " +
+    @Query("SELECT SUM(o.totalPrice), YEAR(p.timeOfPay), MONTH(p.timeOfPay) " +
             "FROM Payment p JOIN p.orders o WHERE p.status = 'SUCCESS' " +
-            "GROUP BY WEEK(p.timeOfPay), DAY(p.timeOfPay)")
-    List<Object[]> caculateMonthlyRevenue();
+            "GROUP BY YEAR(p.timeOfPay), MONTH(p.timeOfPay)")
+    List<Object[]> calculateMonthlyRevenueByYear();
 }
