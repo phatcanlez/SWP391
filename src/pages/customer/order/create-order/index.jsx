@@ -60,6 +60,7 @@ function FormDisabledDemo() {
     }
   }, []);
 
+
   useEffect(() => {
     const currentForm = formRefs.current[current];
     if (currentForm && currentForm.setFieldsValue) {
@@ -196,5 +197,4 @@ function FormDisabledDemo() {
     </Form>
   );
 }
-
 export default FormDisabledDemo;

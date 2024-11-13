@@ -1,6 +1,5 @@
 package com.example.SWP391.model.DTO.OrderDTO;
 
-import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,8 +29,6 @@ public class OrderRequest {
     double orderPrice;
 
     String note;
-
-    String image;
 
     @NotBlank(message = "Phone number of receiver is required")
     @Pattern(regexp = "\\d{10}", message = "Invalid phone number!")

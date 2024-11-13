@@ -3,8 +3,10 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.*;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.OrderDTO.OrderImageRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderRequest;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
+import com.example.SWP391.model.DTO.OrderDTO.OrdersReponsePage;
 import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
@@ -13,8 +15,11 @@ import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,19 +46,32 @@ public class OrderService {
     @Autowired
     OrderDetailService orderDetailService;
 
-    public List<OrderResponse> getAllOrders() {
-        List<Orders> list = orderRepository.findAll();
-        return list.stream().map(order -> {
+    public OrdersReponsePage getAllOrders(int page, int size) {
+        Page<Orders> orders = orderRepository.findAll(PageRequest.of(page, size));
+        List<OrderResponse> orderResponses = orders.stream().map(order -> {
             OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
             orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
             return orderResponse;
         }).toList();
+        OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
+        ordersReponsePage.setContent(orderResponses);
+        ordersReponsePage.setPageNumbers(orders.getNumber());
+        ordersReponsePage.setTotalElements(orders.getTotalElements());
+        ordersReponsePage.setTotalPages(orders.getTotalPages());
+        ordersReponsePage.setNummberOfElement(orders.getNumberOfElements());
+        return ordersReponsePage;
     }
 
     public OrderResponse createOrder(OrderRequest order) {
         try {
             Orders newOrder = modelMapper.map(order, Orders.class);
             Account account = accountRepository.findByUsername(order.getUsername());
+
+            if (account == null) {
+                throw new NotFoundException("Account not found");
+            }
+
             newOrder.setAccount(account);
             Status status = new Status();
             status.setStatusInfo(StatusInfo.WAITING);
@@ -66,6 +84,7 @@ public class OrderService {
             payment.setOrders(newOrder);
             payment.setStatus(Paystatus.UNPAYED.toString());
             paymentRepository.save(payment);
+            newOrder.setPayment(payment);
             newOrder = orderRepository.save(newOrder);
             OrderDetailRequest orderDetail = modelMapper.map(order, OrderDetailRequest.class);
             orderDetail.setOrderID(newOrder.getOrderID());
@@ -74,9 +93,14 @@ public class OrderService {
             orderDetailService.createOrderDetail(orderDetail);
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
+            orderResponse.setPayment(newOrder.getPayment().getStatus());
             return orderResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NotFoundException e) {
+
+
+            throw new NotFoundException(" Account not found");
+        }catch (Exception e) {
+
             throw new DuplicateException("Unexpected error!");
         }
     }
@@ -108,20 +132,20 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatus(String status) {
+    public List<OrderResponse> viewOrderByStatus(StatusInfo status) {
         try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == statusInfo) {
+                if (orders.getStatus().getLast().getStatusInfo() == status) {
                     list.add(orders);
                 }
             }
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -129,14 +153,14 @@ public class OrderService {
         }
     }
 
-    public List<OrderResponse> viewOrderByStatusAndEmpId(String status, String empId) {
+    public List<OrderResponse> viewOrderByStatusAndEmpId(StatusInfo status, String empId) {
         try {
-            StatusInfo statusInfo = StatusInfo.valueOf(status);
-            List<Status> statuses = statusRepository.findByStatusInfo(statusInfo);
+
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == statusInfo
+                if (orders.getStatus().getLast().getStatusInfo() == status
                         && orders.getStatus().getLast().getEmpId().equals(empId)) {
                     list.add(orders);
                 }
@@ -144,6 +168,7 @@ public class OrderService {
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -158,10 +183,38 @@ public class OrderService {
             return list.stream().map(order -> {
                 OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
                 orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
             throw new NotFoundException("Error");
+        }
+    }
+
+    public void createOrdersFromJson(String jsonArray) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<OrderRequest> orders = objectMapper.readValue(jsonArray, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderRequest.class));
+            for (OrderRequest order : orders) {
+                createOrder(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create orders from JSON array", e);
+        }
+    }
+
+    public String updateImage(OrderImageRequest orderImageRequest) {
+        Orders existingOrder = orderRepository.findByorderID(orderImageRequest.getOrderId());
+        if (existingOrder == null) {
+            throw new NotFoundException("Not found!");
+        }
+        try {
+            existingOrder.setImage(orderImageRequest.getImage());
+            orderRepository.save(existingOrder);
+            return "Image updated successfully";
+        } catch (Exception e) {
+            throw new DuplicateException("Update fail");
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.PriceListWeight;
 import com.example.SWP391.service.PriceListWeightService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class PriceListWeightAPI {
 
         @Autowired
@@ -35,8 +37,8 @@ public class PriceListWeightAPI {
 
 
         @PutMapping("/api/pricelistweight")
-        public ResponseEntity updatePriceWeight(@RequestBody @Valid PriceListWeight priceListWeight, long id) {
-            return ResponseEntity.ok(priceListWeightService.updatePriceWeight(priceListWeight, id));
+        public ResponseEntity updatePriceWeight(@RequestBody @Valid PriceListWeight priceListWeight) {
+            return ResponseEntity.ok(priceListWeightService.updatePriceWeight(priceListWeight));
         }
 
 }

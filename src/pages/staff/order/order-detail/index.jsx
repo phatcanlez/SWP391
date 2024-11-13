@@ -1,10 +1,9 @@
-
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import "./index.css";
-import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, DoubleRightOutlined, LoadingOutlined, PhoneOutlined, SmileOutlined } from "@ant-design/icons";
 import License from "../license";
-import { Button, Form, Input, Modal, Rate } from "antd";
+import { Button, Form, Input, Modal, Rate, Steps } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -257,9 +256,7 @@ function OrderDetail() {
 
       <h5 className="title">Delivery status</h5>
       <div className="bg-w">
-        {(status === "APPROVED" ||
-          status === "PENDING" ||
-          status === "SUCCESS") && (
+        {(status === "APPROVED" || status === "PENDING") && (
           <>
             <InProcess />
             {(status === "APPROVED" || status === "PENDING") && (
@@ -269,6 +266,34 @@ function OrderDetail() {
                 </button>
               </>
             )}
+          </>
+        )}
+        {status === "SUCCESS" && (
+          <>
+            <Steps className="step"
+              items={[
+                {
+                  title: "Approved",
+                  status: "finish",
+                  icon: <CheckCircleOutlined />,
+                },
+                {
+                  title: "Preparing",
+                  status: "finish",
+                  icon: <LoadingOutlined />,
+                },
+                {
+                  title: "On delivery",
+                  status: "finish",
+                  icon: <DoubleRightOutlined />,
+                },
+                {
+                  title: "DONE",
+                  status: "finish",
+                  icon: <SmileOutlined />,
+                },
+              ]}
+            />
             {status === "SUCCESS" && (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button className="fb-btn btn-item" onClick={showFBModal}>

@@ -2,6 +2,7 @@ package com.example.SWP391.controller;
 
 import com.example.SWP391.entity.BoxPrice;
 import com.example.SWP391.service.BoxPriceService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class BoxPriceAPI {
 
         @Autowired
@@ -34,8 +36,8 @@ public class BoxPriceAPI {
         }
 
 
-        @PutMapping("/api/boxprice")
-        public ResponseEntity updateLicense(@RequestBody @Valid BoxPrice boxPrice, long id) {
+        @PutMapping("/api/boxprice/{id}")
+        public ResponseEntity updateLicense(@RequestBody @Valid BoxPrice boxPrice,@PathVariable long id) {
             return ResponseEntity.ok(boxPriceService.updateBoxPrice(boxPrice, id));
         }
 
