@@ -347,7 +347,7 @@ const Price = forwardRef((props, ref) => {
               console.log(
                 `Submitting license for fish ${index + 1}:`, licenseData);
               try {
-                //await api.post("licence", licenseData);
+                await api.post("licence", licenseData);
                 console.log(`License ${index + 1} submitted successfully`);
               } catch (licenseError) {
                 console.error(

@@ -45,23 +45,6 @@ const sizeOptions = [
   { sizeInCM: "73.1 - 83", sizeInInch: "28.8 - 32.6", points: 18 },
 ];
 
-// Thêm hàm để rút gọn base64 string
-const compressBase64 = (base64String) => {
-  if (!base64String) return "";
-  
-  // Lấy phần data sau prefix "data:image/..."
-  const base64Data = base64String.split(',')[1] || base64String;
-  
-  // Giới hạn độ dài string để phù hợp với database
-  const maxLength = 65000; // Điều chỉnh theo giới hạn của database
-  if (base64Data.length > maxLength) {
-    console.warn("Base64 string too long, truncating...");
-    return base64Data.substring(0, maxLength);
-  }
-  
-  return base64Data;
-};
-
 function Fish() {
   const [fishCount, setFishCount] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
@@ -142,7 +125,7 @@ function Fish() {
           };
           localStorage.setItem("fishFormData", JSON.stringify(savedData));
           console.log("Saved fish images to localStorage");
-
+          
           onSuccess();
         } else {
           onError(new Error("Failed to process image"));
@@ -574,6 +557,7 @@ function Fish() {
                             </div>
                           </div>
                         )}
+                        
                       </Upload>
                     </FormItem>
                   </Col>
