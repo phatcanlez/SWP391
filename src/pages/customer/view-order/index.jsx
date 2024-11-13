@@ -23,7 +23,7 @@ function ViewOrderDetail() {
   const [current, setCurrent] = useState(-1);
   const [staffDetail, setStaffDetail] = useState(null);
   const user = useSelector((store) => store.user);
-  const [isPaid, setIsPaid] = useState(false);
+  // const [isPaid, setIsPaid] = useState(false);
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -31,7 +31,7 @@ function ViewOrderDetail() {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
-      setIsPaid(response.data.isPaid || false);
+      // setIsPaid(response.data.isPaid || false);
       if (response.data.status.length > 0) {
         const lastStatus =
           response.data.status[response.data.status.length - 1];
@@ -54,7 +54,7 @@ function ViewOrderDetail() {
       setLoading(false);
     }
   };
-
+  console.log(order);
   const getCurrentStatus = (statusInfo) => {
     switch (statusInfo) {
       case "WAITING":
@@ -69,28 +69,28 @@ function ViewOrderDetail() {
         return -1;
     }
   };
-  const handleTracking = async (values) => {
-    console.log(values);
-    try {
-      const response = await api.get(`orders/${values.orderId}`);
-      setOrderId(values.orderId);
-      setData(response.data.status);
-      const lastStatus = response.data.status[response.data.status.length - 1];
-      if (lastStatus) {
-        setCurrent(getCurrentStatus(lastStatus.statusInfo));
-      }
-      setDisplay("");
-      toast.success("Successfull");
+  // const handleTracking = async (values) => {
+  //   console.log(values);
+  //   try {
+  //     const response = await api.get(`orders/${values.orderId}`);
+  //     setOrderId(values.orderId);
+  //     setData(response.data.status);
+  //     const lastStatus = response.data.status[response.data.status.length - 1];
+  //     if (lastStatus) {
+  //       setCurrent(getCurrentStatus(lastStatus.statusInfo));
+  //     }
+  //     setDisplay("");
+  //     toast.success("Successfull");
 
-      setTimeout(() => {
-        if (resultRef.current) {
-          resultRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
-    } catch (err) {
-      toast.error(err.response.data.Error);
-    }
-  };
+  //     setTimeout(() => {
+  //       if (resultRef.current) {
+  //         resultRef.current.scrollIntoView({ behavior: "smooth" });
+  //       }
+  //     }, 100);
+  //   } catch (err) {
+  //     toast.error(err.response.data.Error);
+  //   }
+  // };
   useEffect(() => {
     fetchOrderDetail(id);
   }, [id]);
@@ -394,7 +394,7 @@ function ViewOrderDetail() {
         )}
       </div>
 
-      {status === "WAITING" && !isPaid && (
+      {order?.payment?.status === "UNPAYED" && (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
           <Button
             type="primary"
