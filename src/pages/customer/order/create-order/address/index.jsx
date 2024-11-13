@@ -213,51 +213,39 @@ const Address = forwardRef((props, ref) => {
         tempSelections.cityName;
     }
 
+    // Get current form values
     const currentFormValues = form.getFieldsValue();
     
-    // Cập nhật địa chỉ mới
+    // Get existing data from localStorage
+    const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    
     if (where === "From") {
       form.setFieldsValue({ senderAddress: selectedAddress });
       setTempSelectionsFrom(selectedAddress);
       
-      // Lưu vào localStorage với tất cả thông tin form
+      // Update localStorage with all form data
       localStorage.setItem('orderFormData', JSON.stringify({
+        ...existingData,
         ...currentFormValues,
-        senderAddress: selectedAddress,
-        senderPhoneNumber: currentFormValues.senderPhoneNumber,
-        receiverAddress: currentFormValues.receiverAddress,
-        receiverName: currentFormValues.receiverName,
-        receiverPhoneNumber: currentFormValues.receiverPhoneNumber,
-        note: currentFormValues.note
+        senderAddress: selectedAddress
       }));
-      console.log("From address set:", selectedAddress);
     }
     if (where === "To") {
       form.setFieldsValue({ receiverAddress: selectedAddress });
       setTempSelectionsTo(selectedAddress);
       
-      // Lưu vào localStorage với tất cả thông tin form
+      // Update localStorage with all form data
       localStorage.setItem('orderFormData', JSON.stringify({
+        ...existingData,
         ...currentFormValues,
-        receiverAddress: selectedAddress,
-        senderAddress: currentFormValues.senderAddress,
-        senderPhoneNumber: currentFormValues.senderPhoneNumber,
-        receiverName: currentFormValues.receiverName,
-        receiverPhoneNumber: currentFormValues.receiverPhoneNumber,
-        note: currentFormValues.note
+        receiverAddress: selectedAddress
       }));
-      console.log("To address set:", selectedAddress);
     }
 
     if (
       (tempSelectionsFrom && selectedAddress) ||
       (selectedAddress && tempSelectionsTo)
     ) {
-      console.log("Setting locations for distance calculation:");
-      console.log("From:", tempSelectionsFrom);
-      console.log("To:", selectedAddress);
-      
-      // Set locations for App component to calculate distance
       appRef.current.setLocations(
         where === "From" ? selectedAddress : tempSelectionsFrom,
         where === "To" ? selectedAddress : tempSelectionsTo
@@ -305,19 +293,30 @@ const Address = forwardRef((props, ref) => {
   const handleGetDistance = (newDistance) => {
     if (newDistance && newDistance > 0) {
       setDistance(newDistance);
-      localStorage.setItem("savedDistance", newDistance.toString());
-      console.log("Distance saved to localStorage:", newDistance);
+      
+      // Lưu vào orderFormData
+      const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+      const updatedData = {
+        ...existingData,
+        kilometer: newDistance
+      };
+      
+      localStorage.setItem('orderFormData', JSON.stringify(updatedData));
+      console.log("Distance saved to localStorage:", {
+        newDistance,
+        updatedData
+      });
     }
   };
 
   // Add onValuesChange handler to save form data whenever any field changes
   const handleFormValuesChange = () => {
-    const formData = form.getFieldsValue();
+    const formValues = form.getFieldsValue();
     const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
     
     localStorage.setItem('orderFormData', JSON.stringify({
       ...existingData,
-      ...formData
+      ...formValues
     }));
   };
 
@@ -340,8 +339,9 @@ const Address = forwardRef((props, ref) => {
 
   // Thêm useEffect để load distance khi component mount
   useEffect(() => {
-    // Load saved distance
-    const savedDistance = localStorage.getItem("savedDistance");
+    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    const savedDistance = savedData.kilometer || localStorage.getItem('savedDistance');
+    
     if (savedDistance) {
       setDistance(parseFloat(savedDistance));
       console.log("Loaded saved distance:", savedDistance);
@@ -355,6 +355,52 @@ const Address = forwardRef((props, ref) => {
       console.log("Distance updated and saved:", distance);
     }
   }, [distance]);
+
+  useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    if (savedData.distance) {
+      setDistance(savedData.distance);
+    }
+  }, []);
+
+  // Add logging when locations are set
+  useEffect(() => {
+    if (tempSelectionsFrom && tempSelectionsTo) {
+      console.log("Both locations set:", {
+        from: tempSelectionsFrom,
+        to: tempSelectionsTo,
+        currentDistance: distance
+      });
+    }
+  }, [tempSelectionsFrom, tempSelectionsTo, distance]);
+
+  // Add logging when distance changes
+  useEffect(() => {
+    console.log("Distance state updated:", {
+      distance: distance,
+      storedData: JSON.parse(localStorage.getItem('orderFormData') || '{}')
+    });
+  }, [distance]);
+
+  // Add useEffect to update distance when locations change
+  useEffect(() => {
+    if (tempSelectionsFrom && tempSelectionsTo) {
+      console.log("Locations updated:", {
+        from: tempSelectionsFrom,
+        to: tempSelectionsTo,
+        currentDistance: distance
+      });
+      
+      // If we have a distance, make sure it's saved
+      if (distance > 0) {
+        const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+        localStorage.setItem('orderFormData', JSON.stringify({
+          ...existingData,
+          kilometer: distance
+        }));
+      }
+    }
+  }, [tempSelectionsFrom, tempSelectionsTo, distance]);
 
   return (
     <Form
@@ -462,13 +508,10 @@ const Address = forwardRef((props, ref) => {
       </Form.Item>
 
       <div className="estimatedshippingfee__map">
-        {/* <App 
-          ref={appRef} 
-          getDistance={(distance) => {
-            console.log("Distance received from Google Maps:", distance);
-            handleGetDistance(distance);
-          }}
-        /> */}
+        <App 
+          ref={appRef}
+          getDistance={handleGetDistance}
+        />
       </div>
 
       <Modal

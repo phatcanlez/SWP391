@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber } from "antd";
+import { Button, Form, Input, InputNumber, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../../../config/axios";
@@ -74,15 +74,32 @@ function FormDisabledDemo() {
         await currentForm.validateFields();
 
         if (current === steps.length - 1) {
-          // Nếu là bước cuối cùng (Price), gọi submitOrder
+          // Kiểm tra dữ liệu trước khi submit
+          const fishData = JSON.parse(localStorage.getItem("fishFormData") || '{}');
+          
+          // Kiểm tra dữ liệu cá
+          if (!fishData.fishDetails || fishData.fishDetails.length === 0) {
+            message.error("Please add at least one fish");
+            return;
+          }
+
+          // // Kiểm tra địa chỉ
+          // if (!addressData.senderAddress || !addressData.receiverAddress) {
+          //   message.error("Please complete address information");
+          //   return;
+          // }
+
           await currentForm.submitOrder();
-          //navigate(`/customer-service/view-order/${orderResponse.data}`);
         } else {
           setCurrent(current + 1);
         }
       } catch (errorInfo) {
-        console.log("Validation failed:", errorInfo);
-        toast.error("Please fill in all required information.");
+        console.error("Validation failed:", errorInfo);
+        if (errorInfo.message) {
+          message.error(errorInfo.message);
+        } else {
+          message.error("Please fill in all required information correctly");
+        }
       }
     } else {
       setCurrent(current + 1);
