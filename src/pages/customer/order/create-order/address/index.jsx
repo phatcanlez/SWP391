@@ -169,7 +169,7 @@ const Address = forwardRef((props, ref) => {
       const loader = new Loader({
         apiKey: "YOUR_GOOGLE_MAPS_API_KEY",
         version: "weekly",
-        libraries: ["places", "geometry"]
+        libraries: ["places", "geometry"],
       });
 
       const google = await loader.load();
@@ -179,7 +179,7 @@ const Address = forwardRef((props, ref) => {
         origins: [origin],
         destinations: [destination],
         travelMode: google.maps.TravelMode.DRIVING,
-        unitSystem: google.maps.UnitSystem.METRIC
+        unitSystem: google.maps.UnitSystem.METRIC,
       });
 
       if (response.rows[0].elements[0].status === "OK") {
@@ -215,31 +215,39 @@ const Address = forwardRef((props, ref) => {
 
     // Get current form values
     const currentFormValues = form.getFieldsValue();
-    
+
     // Get existing data from localStorage
-    const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
-    
+    const existingData = JSON.parse(
+      localStorage.getItem("orderFormData") || "{}"
+    );
+
     if (where === "From") {
       form.setFieldsValue({ senderAddress: selectedAddress });
       setTempSelectionsFrom(selectedAddress);
-      
+
       // Update localStorage with all form data
-      localStorage.setItem('orderFormData', JSON.stringify({
-        ...existingData,
-        ...currentFormValues,
-        senderAddress: selectedAddress
-      }));
+      localStorage.setItem(
+        "orderFormData",
+        JSON.stringify({
+          ...existingData,
+          ...currentFormValues,
+          senderAddress: selectedAddress,
+        })
+      );
     }
     if (where === "To") {
       form.setFieldsValue({ receiverAddress: selectedAddress });
       setTempSelectionsTo(selectedAddress);
-      
+
       // Update localStorage with all form data
-      localStorage.setItem('orderFormData', JSON.stringify({
-        ...existingData,
-        ...currentFormValues,
-        receiverAddress: selectedAddress
-      }));
+      localStorage.setItem(
+        "orderFormData",
+        JSON.stringify({
+          ...existingData,
+          ...currentFormValues,
+          receiverAddress: selectedAddress,
+        })
+      );
     }
 
     if (
@@ -293,18 +301,20 @@ const Address = forwardRef((props, ref) => {
   const handleGetDistance = (newDistance) => {
     if (newDistance && newDistance > 0) {
       setDistance(newDistance);
-      
+
       // Lưu vào orderFormData
-      const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+      const existingData = JSON.parse(
+        localStorage.getItem("orderFormData") || "{}"
+      );
       const updatedData = {
         ...existingData,
-        kilometer: newDistance
+        kilometer: newDistance,
       };
-      
-      localStorage.setItem('orderFormData', JSON.stringify(updatedData));
+
+      localStorage.setItem("orderFormData", JSON.stringify(updatedData));
       console.log("Distance saved to localStorage:", {
         newDistance,
-        updatedData
+        updatedData,
       });
     }
   };
@@ -312,16 +322,21 @@ const Address = forwardRef((props, ref) => {
   // Add onValuesChange handler to save form data whenever any field changes
   const handleFormValuesChange = () => {
     const formValues = form.getFieldsValue();
-    const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
-    
-    localStorage.setItem('orderFormData', JSON.stringify({
-      ...existingData,
-      ...formValues
-    }));
+    const existingData = JSON.parse(
+      localStorage.getItem("orderFormData") || "{}"
+    );
+
+    localStorage.setItem(
+      "orderFormData",
+      JSON.stringify({
+        ...existingData,
+        ...formValues,
+      })
+    );
   };
 
   useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
     if (savedData) {
       form.setFieldsValue(savedData);
       if (savedData.senderAddress) {
@@ -339,9 +354,10 @@ const Address = forwardRef((props, ref) => {
 
   // Thêm useEffect để load distance khi component mount
   useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
-    const savedDistance = savedData.kilometer || localStorage.getItem('savedDistance');
-    
+    const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
+    const savedDistance =
+      savedData.kilometer || localStorage.getItem("savedDistance");
+
     if (savedDistance) {
       setDistance(parseFloat(savedDistance));
       console.log("Loaded saved distance:", savedDistance);
@@ -357,7 +373,7 @@ const Address = forwardRef((props, ref) => {
   }, [distance]);
 
   useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
     if (savedData.distance) {
       setDistance(savedData.distance);
     }
@@ -369,7 +385,7 @@ const Address = forwardRef((props, ref) => {
       console.log("Both locations set:", {
         from: tempSelectionsFrom,
         to: tempSelectionsTo,
-        currentDistance: distance
+        currentDistance: distance,
       });
     }
   }, [tempSelectionsFrom, tempSelectionsTo, distance]);
@@ -378,7 +394,7 @@ const Address = forwardRef((props, ref) => {
   useEffect(() => {
     console.log("Distance state updated:", {
       distance: distance,
-      storedData: JSON.parse(localStorage.getItem('orderFormData') || '{}')
+      storedData: JSON.parse(localStorage.getItem("orderFormData") || "{}"),
     });
   }, [distance]);
 
@@ -388,16 +404,21 @@ const Address = forwardRef((props, ref) => {
       console.log("Locations updated:", {
         from: tempSelectionsFrom,
         to: tempSelectionsTo,
-        currentDistance: distance
+        currentDistance: distance,
       });
-      
+
       // If we have a distance, make sure it's saved
       if (distance > 0) {
-        const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
-        localStorage.setItem('orderFormData', JSON.stringify({
-          ...existingData,
-          kilometer: distance
-        }));
+        const existingData = JSON.parse(
+          localStorage.getItem("orderFormData") || "{}"
+        );
+        localStorage.setItem(
+          "orderFormData",
+          JSON.stringify({
+            ...existingData,
+            kilometer: distance,
+          })
+        );
       }
     }
   }, [tempSelectionsFrom, tempSelectionsTo, distance]);
@@ -448,7 +469,18 @@ const Address = forwardRef((props, ref) => {
             handleShowModal(e);
           }}
           value="From"
-          style={{ width: "200px" }}
+          style={{ 
+            width: "200px",
+            backgroundColor: "#e25822",
+            borderColor: "#e25822",
+            height: "40px",
+            borderRadius: "6px",
+            boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
+            '&:hover': {
+              backgroundColor: "#d14812",
+              borderColor: "#d14812",
+            }
+          }}
         >
           Select sender location
         </Button>
@@ -497,7 +529,18 @@ const Address = forwardRef((props, ref) => {
             handleShowModal(e);
           }}
           value="To"
-          style={{ width: "200px" }}
+          style={{ 
+            width: "200px",
+            backgroundColor: "#e25822",
+            borderColor: "#e25822",
+            height: "40px",
+            borderRadius: "6px",
+            boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
+            '&:hover': {
+              backgroundColor: "#d14812",
+              borderColor: "#d14812",
+            }
+          }}
         >
           Select receiver location
         </Button>
@@ -508,10 +551,7 @@ const Address = forwardRef((props, ref) => {
       </Form.Item>
 
       <div className="estimatedshippingfee__map">
-        <App 
-          ref={appRef}
-          getDistance={handleGetDistance}
-        />
+        <App ref={appRef} getDistance={handleGetDistance} />
       </div>
 
       <Modal
@@ -519,6 +559,12 @@ const Address = forwardRef((props, ref) => {
         title="Select location"
         onCancel={handleHideModal}
         onOk={handleOK}
+        okButtonProps={{
+          style: {
+            backgroundColor: "#e25822",
+            borderColor: "#e25822",
+          }
+        }}
       >
         <Form
           form={modalForm}

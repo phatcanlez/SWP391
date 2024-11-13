@@ -7,13 +7,11 @@ import {
   Col,
   Typography,
   Modal,
+  Image,
 } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import { useState, useEffect } from "react";
-import {
-  DeleteOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Upload, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Statistic from "antd/es/statistic/Statistic";
@@ -61,19 +59,35 @@ function Fish() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [fishImages, setFishImages] = useState({});
   const [licenseImages, setLicenseImages] = useState({});
+  const [fileList, setFileList] = useState([]);
 
   const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+    let previewUrl = file.url;
+    if (!previewUrl && file.originFileObj) {
+      previewUrl = await getBase64(file.originFileObj);
     }
-
-    setPreviewImage(file.url || file.preview);
+    setPreviewImage(previewUrl);
     setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-    );
   };
-
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const uploadButton = (
+    <button
+      style={{
+        border: 0,
+        background: "none",
+      }}
+      type="button"
+    >
+      <PlusOutlined />
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </button>
+  );
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -88,13 +102,13 @@ function Fish() {
     name: "imgKoi",
     listType: "picture-card",
     onPreview: handlePreview,
-    defaultFileList: fishImages[fishIndex]?.url
+    defaultFileList: fishImages[fishIndex]?.base64
       ? [
           {
             uid: "-1",
             name: "Fish Image",
             status: "done",
-            url: fishImages[fishIndex].url,
+            url: `data:image/jpeg;base64,${fishImages[fishIndex].base64}`,
           },
         ]
       : [],
@@ -103,29 +117,30 @@ function Fish() {
         console.log("Starting Koi image upload for index:", fishIndex);
         const base64Url = await uploadFile(file);
         if (base64Url) {
-
           const updatedImages = {
             ...fishImages,
             [fishIndex]: {
-              //url: URL.createObjectURL(file),
-              base64: base64Url, 
+              base64: base64Url,
               status: "done",
             },
           };
           setFishImages(updatedImages);
 
-          const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
+          const savedData = JSON.parse(
+            localStorage.getItem("fishFormData") || "{}"
+          );
           savedData.fishImages = {
             ...savedData.fishImages,
             [fishIndex]: {
-              //url: URL.createObjectURL(file),
-              base64: base64Url, 
+              base64: base64Url,
               status: "done",
             },
           };
           localStorage.setItem("fishFormData", JSON.stringify(savedData));
           console.log("Saved fish images to localStorage");
-          
+
+          // Load lại ảnh sau khi upload
+          loadSavedImages();
           onSuccess();
         } else {
           onError(new Error("Failed to process image"));
@@ -163,28 +178,29 @@ function Fish() {
         console.log("Starting License image upload for index:", fishIndex);
         const base64Url = await uploadFile(file);
         if (base64Url) {
-
           const updatedImages = {
             ...licenseImages,
             [fishIndex]: {
-              //url: URL.createObjectURL(file),
-              base64: base64Url, 
+              base64: base64Url,
               status: "done",
             },
           };
           setLicenseImages(updatedImages);
 
-          const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
+          const savedData = JSON.parse(
+            localStorage.getItem("fishFormData") || "{}"
+          );
           savedData.licenseImages = {
             ...savedData.licenseImages,
             [fishIndex]: {
-              //url: URL.createObjectURL(file),
-              base64: base64Url, 
+              base64: base64Url,
             },
           };
           localStorage.setItem("fishFormData", JSON.stringify(savedData));
           console.log("Saved license images to localStorage");
 
+          // Load lại ảnh sau khi upload
+          loadSavedImages();
           onSuccess();
         } else {
           onError(new Error("Failed to process image"));
@@ -205,64 +221,53 @@ function Fish() {
     },
   });
 
-  useEffect(() => {
-    const loadSavedData = () => {
-      try {
-        console.log("Starting to load saved data");
-        const savedData = localStorage.getItem("fishFormData");
-        if (savedData) {
-          console.log("Found saved data in localStorage");
-          const parsedData = JSON.parse(savedData);
+  const loadSavedImages = () => {
+    try {
+      const savedData = localStorage.getItem("fishFormData");
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
 
-          // Load form data
-          form.setFieldsValue(parsedData);
-          updateSummary(parsedData);
-
-          // Load fish images
-          if (parsedData.fishImages) {
-            console.log("Found saved fish images:", parsedData.fishImages);
-            const restoredFishImages = {};
-            Object.entries(parsedData.fishImages).forEach(([key, value]) => {
-              if (value && value.base64) {
-                restoredFishImages[key] = {
-                  url: value.base64,
-                  base64: value.base64,
-                  status: "done",
-                };
-              }
-            });
-            setFishImages(restoredFishImages);
-            console.log("Restored fish images:", restoredFishImages);
-          }
-
-          // Load license images
-          if (parsedData.licenseImages) {
-            console.log(
-              "Found saved license images:",
-              parsedData.licenseImages
-            );
-            const restoredLicenseImages = {};
-            Object.entries(parsedData.licenseImages).forEach(([key, value]) => {
-              if (value && value.base64) {
-                restoredLicenseImages[key] = {
-                  url: value.base64,
-                  base64: value.base64,
-                  status: "done",
-                };
-              }
-            });
-            setLicenseImages(restoredLicenseImages);
-            console.log("Restored license images:", restoredLicenseImages);
-          }
-        } else {
-          console.log("No saved data found in localStorage");
+        // Load fish images
+        if (parsedData.fishImages) {
+          console.log("Found saved fish images:", parsedData.fishImages);
+          const restoredFishImages = {};
+          Object.entries(parsedData.fishImages).forEach(([key, value]) => {
+            if (value && value.base64) {
+              restoredFishImages[key] = {
+                url: value.base64,
+                base64: value.base64,
+                status: "done",
+              };
+            }
+          });
+          setFishImages(restoredFishImages);
+          console.log("Restored fish images:", restoredFishImages);
         }
-      } catch (error) {
-        console.error("Error loading saved data:", error);
-      }
-    };
 
-    loadSavedData();
+        // Load license images
+        if (parsedData.licenseImages) {
+          console.log("Found saved license images:", parsedData.licenseImages);
+          const restoredLicenseImages = {};
+          Object.entries(parsedData.licenseImages).forEach(([key, value]) => {
+            if (value && value.base64) {
+              restoredLicenseImages[key] = {
+                url: value.base64,
+                base64: value.base64,
+                status: "done",
+              };
+            }
+          });
+          setLicenseImages(restoredLicenseImages);
+          console.log("Restored license images:", restoredLicenseImages);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading saved images:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadSavedImages();
   }, []);
 
   useEffect(() => {
@@ -380,7 +385,57 @@ function Fish() {
 
     console.log("Saving data to localStorage:", dataToSave);
     localStorage.setItem("fishFormData", JSON.stringify(dataToSave));
+
+    // Load lại tất cả thông tin
+    loadAllData();
   };
+
+  // Thêm hàm mới để load tất cả dữ liệu
+  const loadAllData = () => {
+    try {
+      const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
+      
+      // Load form values
+      form.setFieldsValue(savedData);
+      
+      // Load images
+      loadSavedImages();
+      
+      // Load summary data
+      if (savedData.fishDetails) {
+        updateSummary(savedData);
+      }
+      
+      // Load total weight
+      if (savedData.totalWeight) {
+        setTotalWeight(savedData.totalWeight);
+      }
+      
+      // Load box counts
+      if (savedData.boxCounts) {
+        setBoxCounts(savedData.boxCounts);
+      }
+      
+      // Load fish count
+      if (savedData.fishDetails) {
+        setFishCount(savedData.fishDetails.length);
+      }
+      
+      // Load total price
+      if (savedData.totalPrice) {
+        setTotalPrice(savedData.totalPrice);
+      }
+
+      console.log("All data reloaded successfully");
+    } catch (error) {
+      console.error("Error loading all data:", error);
+    }
+  };
+
+  // Cập nhật useEffect để load dữ liệu khi component mount
+  useEffect(() => {
+    loadAllData();
+  }, []);
 
   const handleRemoveImage = (type, fishIndex) => {
     if (type === "fish") {
@@ -422,29 +477,38 @@ function Fish() {
             {fields.map((field, index) => (
               <Card
                 key={field.key}
-                style={{ marginBottom: 16 }}
-                title={`Fish #${index + 1}`}
+                style={{ 
+                  marginBottom: 24,
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                }}
+                title={
+                  <div style={{ color: '#e25822', fontSize: '18px', fontWeight: 'bold' }}>
+                    Fish #{index + 1}
+                  </div>
+                }
                 extra={
                   <Button
                     onClick={() => remove(field.name)}
-                    icon={<DeleteOutlined />}
-                    danger
+                    icon={<DeleteOutlined style={{ color: '#fff' }} />}
+                    style={{ 
+                      backgroundColor: '#ff4d4f',
+                      borderColor: '#ff4d4f',
+                    }}
                     shape="circle"
                   />
                 }
               >
-                <Row gutter={[16, 16]}>
+                <Row gutter={[24, 24]}>
                   <Col span={8}>
                     <Form.Item
                       name={[field.name, "weight"]}
-                      label={"Weight"}
-                      rules={[
-                        { required: true, message: "Please enter Weight" },
-                      ]}
+                      label={<span style={{ fontWeight: 500 }}>Weight</span>}
+                      rules={[{ required: true, message: "Please enter Weight" }]}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", borderRadius: '6px' }}
                         placeholder="Weight (kg)"
                       />
                     </Form.Item>
@@ -452,14 +516,13 @@ function Fish() {
                   <Col span={8}>
                     <Form.Item
                       name={[field.name, "size"]}
-                      label={"Size"}
-                      rules={[
-                        { required: true, message: "Please select Size" },
-                      ]}
+                      label={<span style={{ fontWeight: 500 }}>Size</span>}
+                      rules={[{ required: true, message: "Please select Size" }]}
                     >
                       <Select
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", borderRadius: '6px' }}
                         placeholder="Select size"
+                        dropdownStyle={{ borderRadius: '6px' }}
                       >
                         {sizeOptions.map((option, index) => (
                           <Option key={index} value={option.sizeInCM}>
@@ -472,27 +535,22 @@ function Fish() {
                   <Col span={8}>
                     <Form.Item
                       name={[field.name, "price"]}
-                      label={"Price"}
-                      rules={[
-                        { required: true, message: "Please enter Price" },
-                      ]}
+                      label={<span style={{ fontWeight: 500 }}>Price</span>}
+                      rules={[{ required: true, message: "Please enter Price" }]}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", borderRadius: '6px' }}
                         placeholder="Price ($)"
                       />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row gutter={[16, 16]}>
+                <Row gutter={[24, 24]}>
                   <Col span={12}>
                     <FormItem
-                      label={"Fish Image"}
-                      rules={[
-                        { required: true, message: "Please upload fish image" },
-                      ]}
-                      style={{ display: "inline-block", marginRight: "100px" }}
+                      label={<span style={{ fontWeight: 500 }}>Fish Image</span>}
+                      rules={[{ required: true, message: "Please upload fish image" }]}
                     >
                       <Upload
                         {...getKoiImageProps(field.name)}
@@ -510,11 +568,21 @@ function Fish() {
                               ]
                             : []
                         }
+                        style={{ borderRadius: '6px' }}
                       >
                         {!fishImages[field.name]?.url && (
-                          <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>
+                          <div style={{ 
+                            padding: '16px',
+                            border: '1px dashed #d9d9d9',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s',
+                            '&:hover': {
+                              borderColor: '#e25822'
+                            }
+                          }}>
+                            <PlusOutlined style={{ color: '#e25822' }} />
+                            <div style={{ marginTop: 8, color: '#666' }}>
                               Upload Fish Image
                             </div>
                           </div>
@@ -524,17 +592,12 @@ function Fish() {
                   </Col>
                   <Col span={12}>
                     <FormItem
-                      label={"License Image"}
-                      rules={[
-                        { required: true, message: "Please upload license" },
-                      ]}
-                      style={{ display: "inline-block", marginRight: "100px" }}
+                      label={<span style={{ fontWeight: 500 }}>License Image</span>}
+                      rules={[{ required: true, message: "Please upload license" }]}
                     >
                       <Upload
                         {...getLicenseImageProps(field.name)}
-                        onRemove={() =>
-                          handleRemoveImage("license", field.name)
-                        }
+                        onRemove={() => handleRemoveImage("license", field.name)}
                         fileList={
                           licenseImages[field.name]?.url
                             ? [
@@ -548,22 +611,38 @@ function Fish() {
                               ]
                             : []
                         }
+                        style={{ borderRadius: '6px' }}
                       >
                         {!licenseImages[field.name]?.url && (
-                          <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>
+                          <div style={{ 
+                            padding: '16px',
+                            border: '1px dashed #d9d9d9',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s',
+                            '&:hover': {
+                              borderColor: '#e25822'
+                            }
+                          }}>
+                            <PlusOutlined style={{ color: '#e25822' }} />
+                            <div style={{ marginTop: 8, color: '#666' }}>
                               Upload License Image
                             </div>
                           </div>
                         )}
-                        
                       </Upload>
                     </FormItem>
                   </Col>
                 </Row>
-                <Form.Item name={[field.name, "note"]} label={"Note"}>
-                  <TextArea rows={2} />
+                <Form.Item 
+                  name={[field.name, "note"]} 
+                  label={<span style={{ fontWeight: 500 }}>Note</span>}
+                >
+                  <TextArea 
+                    rows={2} 
+                    style={{ borderRadius: '6px' }}
+                    placeholder="Enter notes about this fish..."
+                  />
                 </Form.Item>
               </Card>
             ))}
@@ -573,6 +652,17 @@ function Fish() {
                 onClick={() => add()}
                 block
                 icon={<PlusOutlined />}
+                style={{ 
+                  height: '45px',
+                  borderColor: '#e25822',
+                  color: '#e25822',
+                  borderRadius: '6px',
+                  marginBottom: '24px',
+                  '&:hover': {
+                    color: '#fff',
+                    backgroundColor: '#e25822'
+                  }
+                }}
               >
                 Add Fish
               </Button>
@@ -581,73 +671,108 @@ function Fish() {
         )}
       </Form.List>
 
-      <Card style={{ marginTop: 24, backgroundColor: "#f0f2f5" }}>
-        <Title level={4}>Order Summary</Title>
+      <Card 
+        style={{ 
+          marginTop: 24, 
+          backgroundColor: "#fff",
+          borderRadius: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        }}
+      >
+        <Title level={4} style={{ color: '#e25822', marginBottom: 24 }}>Order Summary</Title>
         <Row gutter={[16, 16]}>
           <Col span={8}>
-            <Card size="small">
+            <Card size="small" style={{ borderRadius: '6px' }}>
               <Statistic
-                title="Total Weight"
+                title={<span style={{ color: '#666' }}>Total Weight</span>}
                 value={totalWeight}
                 precision={2}
                 suffix="kg"
+                valueStyle={{ color: '#000' }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small">
-              <Statistic title="Total Fish" value={fishCount} suffix="fish" />
+            <Card size="small" style={{ borderRadius: '6px' }}>
+              <Statistic
+                title={<span style={{ color: '#666' }}>Total Fish</span>}
+                value={fishCount}
+                suffix="fish"
+                valueStyle={{ color: '#000' }}
+              />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small">
+            <Card size="small" style={{ borderRadius: '6px' }}>
               <Statistic
-                title="Total Price"
+                title={<span style={{ color: '#666' }}>Total Price</span>}
                 value={totalPrice}
                 precision={2}
                 prefix="$"
+                valueStyle={{ color: '#000' }}
               />
             </Card>
           </Col>
         </Row>
-        <Title level={5} style={{ marginTop: 16 }}>
+        
+        <Title level={5} style={{ margin: '24px 0 16px', color: '#000' }}>
           Box Requirements
         </Title>
         <Row gutter={[16, 16]}>
           <Col span={6}>
-            <Card size="small">
-              <Statistic title="Small Boxes" value={boxCounts.small} />
+            <Card size="small" style={{ borderRadius: '6px' }}>
+              <Statistic 
+                title={<span style={{ color: '#666' }}>Small Boxes</span>}
+                value={boxCounts.small}
+                valueStyle={{ color: '#000' }}
+              />
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small">
-              <Statistic title="Medium Boxes" value={boxCounts.medium} />
+            <Card size="small" style={{ borderRadius: '6px' }}>
+              <Statistic 
+                title={<span style={{ color: '#666' }}>Medium Boxes</span>}
+                value={boxCounts.medium}
+                valueStyle={{ color: '#000' }}
+              />
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small">
-              <Statistic title="Large Boxes" value={boxCounts.large} />
+            <Card size="small" style={{ borderRadius: '6px' }}>
+              <Statistic 
+                title={<span style={{ color: '#666' }}>Large Boxes</span>}
+                value={boxCounts.large}
+                valueStyle={{ color: '#000' }}
+              />
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small">
+            <Card size="small" style={{ borderRadius: '6px' }}>
               <Statistic
-                title="Extra Large Boxes"
+                title={<span style={{ color: '#666' }}>Extra Large Boxes</span>}
                 value={boxCounts.extraLarge}
+                valueStyle={{ color: '#000' }}
               />
             </Card>
           </Col>
         </Row>
       </Card>
 
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
-        footer={null}
-        onCancel={handleCancel}
-      >
-        <img alt="preview" style={{ width: "100%" }} src={previewImage} />
-      </Modal>
+      {previewImage && (
+        <Image
+          style={{ display: "none" }}
+          preview={{
+            visible: previewOpen,
+            src: previewImage,
+            onVisibleChange: (visible) => {
+              setPreviewOpen(visible);
+              if (!visible) {
+                setPreviewImage("");
+              }
+            },
+          }}
+        />
+      )}
     </Form>
   );
 }

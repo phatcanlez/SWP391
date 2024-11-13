@@ -61,6 +61,7 @@ function CustomerComplain() {
       dataIndex: "reportContent",
       key: "reportContent",
       ellipsis: true,
+      width: 350,
       render: (text) => (
         <Text
           style={{ cursor: "pointer", color: "#000000" }}
@@ -99,7 +100,9 @@ function CustomerComplain() {
     <div style={{ padding: "24px" }}>
       <Card>
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Title level={3} style={{ color: "#E25822" }}>My Complains</Title>
+          <Title level={3} style={{ color: "#E25822" }}>
+            My Complains
+          </Title>
 
           <Table
             columns={columns}
