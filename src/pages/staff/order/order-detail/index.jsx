@@ -27,6 +27,7 @@ function OrderDetail() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
@@ -134,7 +135,7 @@ function OrderDetail() {
       toast.error(error);
     }
   };
-
+  console.log(order);
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -261,7 +262,12 @@ function OrderDetail() {
       </div>
 
       <h5 className="title">Delivery status</h5>
+
       <div className="bg-w">
+        <div className="">
+          <p>Payment's status: </p>
+          <p>{order?.payment?.status}</p>
+        </div>
         {(status === "APPROVED" || status === "PENDING") && (
           <>
             <InProcess />
@@ -320,6 +326,7 @@ function OrderDetail() {
         <p>Loading...</p>
       ) : (
         <div className="btn-wrap">
+          {}
           {status === "WAITING" && (
             <>
               <Button className="btn btn-r" onClick={showModal}>
