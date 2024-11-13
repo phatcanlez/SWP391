@@ -45,8 +45,6 @@ import Overview from "./pages/admin/overview";
 import AllOrder_AD, {
   FailOrder_AD,
   History_AD,
-  Refunded_AD,
-  UnRefund_AD,
   WaitingOrder_AD,
 } from "./pages/admin/manage-order";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
@@ -153,14 +151,6 @@ function App() {
         {
           path: "history",
           element: <History_AD />,
-        },
-        {
-          path: "un-refund",
-          element: <UnRefund_AD />,
-        },
-        {
-          path: "refunded",
-          element: <Refunded_AD />,
         },
         {
           path: "report",
