@@ -1,15 +1,23 @@
 import { Button, Result } from "antd";
-const PaymentFail = () => (
-  <Result
-    status="error"
-    title="Submission Failed"
-    subTitle="Please check and modify the following information before resubmitting."
-    extra={[
-      <Button type="primary" key="console">
-        Go Console
-      </Button>,
-      <Button key="buy">Buy Again</Button>,
-    ]}
-  ></Result>
-);
+import { useNavigate } from "react-router-dom";
+function PaymentFail() {
+  const navigate = useNavigate();
+  return (
+    <Result
+      status="error"
+      title="Submission Failed"
+      subTitle="Please check and modify the following information before resubmitting."
+      extra={[
+        <Button
+          key="buy"
+          onClick={() => {
+            navigate("/customer-service/history");
+          }}
+        >
+          Buy Again
+        </Button>,
+      ]}
+    ></Result>
+  );
+}
 export default PaymentFail;

@@ -171,7 +171,7 @@ const History = ({ order, onFeedbackClick, onReportClick }) => {
     <div className="bg-w order">
       <div className="order__wrapper">
         <div className="order__item">
-          <h3>orderID: </h3>
+          <h3>OrderID: </h3>
           <p className="item">{order?.orderID}</p>
         </div>
 
