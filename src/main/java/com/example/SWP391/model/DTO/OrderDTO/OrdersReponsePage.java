@@ -7,8 +7,9 @@ import java.util.List;
 
 @Data
 public class OrdersReponsePage {
-    List<Orders> content;
+    List<OrderResponse> content;
     int pageNumbers;
-    int totalElements;
+    long totalElements;
     int totalPages;
+    int nummberOfElement;
 }

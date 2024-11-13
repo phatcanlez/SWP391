@@ -3,6 +3,7 @@ package com.example.SWP391.controller;
 
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.service.StatusService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class StatusAPI {
 
     @Autowired
@@ -17,7 +19,11 @@ public class StatusAPI {
 
     @PostMapping("/api/status")
     public ResponseEntity createStatus(@RequestBody @Valid StatusRequest statusRequest) {
-        return ResponseEntity.ok(statusService.createStatus(statusRequest));
+        try {
+            return ResponseEntity.ok(statusService.createStatus(statusRequest));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @GetMapping("/api/status")
@@ -30,8 +36,8 @@ public class StatusAPI {
         return ResponseEntity.ok(statusService.viewStatusById(id));
     }
 
-    @PutMapping("/api/status")
-    public ResponseEntity updateStatus(StatusRequest statusRequest, long Id) {
+    @PutMapping("/api/status/{id}")
+    public ResponseEntity updateStatus(StatusRequest statusRequest,@PathVariable long Id) {
         return ResponseEntity.ok(statusService.updateStatus(statusRequest, Id));
     }
 }

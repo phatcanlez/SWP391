@@ -43,8 +43,8 @@ public class PriceListWeightService {
         }
     }
 
-    public PriceListWeight updatePriceWeight(PriceListWeight priceListWeight, long Id){
-        PriceListWeight oldPriceWeight = priceListWeightRepository.findPriceListWeightByPriceListId(Id);
+    public PriceListWeight updatePriceWeight(PriceListWeight priceListWeight){
+        PriceListWeight oldPriceWeight = priceListWeightRepository.findPriceListWeightByPriceListId(priceListWeight.getPriceListId());
         if(oldPriceWeight == null){
             throw new NotFoundException("Not found!");
         }

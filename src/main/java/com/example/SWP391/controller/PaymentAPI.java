@@ -3,6 +3,7 @@ package com.example.SWP391.controller;
 import com.example.SWP391.entity.Payment;
 import com.example.SWP391.model.DTO.paymentDTO.PaymentRequest;
 import com.example.SWP391.service.PaymentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin("*")
+@SecurityRequirement(name = "api")
 public class PaymentAPI {
 
         @Autowired
@@ -35,9 +37,21 @@ public class PaymentAPI {
         }
 
 
+//        @PutMapping("/api/payment/{id}")
+//        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest) {
+//            return ResponseEntity.ok(paymentService.updatePayment(paymentRequest));
+//        }
+
         @PutMapping("/api/payment")
-        public ResponseEntity updateLicense(@RequestBody @Valid PaymentRequest paymentRequest, long id) {
-            return ResponseEntity.ok(paymentService.updatePayment(paymentRequest, id));
+        public ResponseEntity updatePaymentUser(@RequestParam String orderId) {
+            return ResponseEntity.ok(paymentService.updatePayment(orderId));
         }
+
+        @PutMapping("/api/payment-status")
+        public ResponseEntity updatePaymentStatus(@RequestParam String orderId) {
+                return ResponseEntity.ok(paymentService.updatePaymentStatus(orderId));
+        }
+
+
 
 }
