@@ -8,7 +8,6 @@ import { format, parseISO } from "date-fns";
 
 import { Button, Steps } from "antd";
 
-
 function ViewOrderDetail() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
@@ -19,7 +18,9 @@ function ViewOrderDetail() {
   const resultRef = useRef(null);
   const [data, setData] = useState([]);
   const [orderId, setOrderId] = useState("");
+  const [staffInfo, setStaffInfo] = useState("");
   const [current, setCurrent] = useState(-1);
+  const [staffDetail, setStaffDetail] = useState(null);
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -28,9 +29,20 @@ function ViewOrderDetail() {
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
       if (response.data.status.length > 0) {
-        setStatus(
-          response.data.status[response.data.status.length - 1]?.statusInfo
-        );
+        const lastStatus =
+          response.data.status[response.data.status.length - 1];
+        setStatus(lastStatus.statusInfo);
+        setStaffInfo(lastStatus.empId);
+
+        if (lastStatus.empId) {
+          try {
+            const staffResponse = await api.get(`account/${lastStatus.empId}`);
+            setStaffDetail(staffResponse.data);
+            console.log("Staff detail:", staffResponse.data);
+          } catch (staffError) {
+            console.error("Error fetching staff detail:", staffError);
+          }
+        }
       }
     } catch (err) {
       toast.error(err.response.data);
@@ -38,6 +50,7 @@ function ViewOrderDetail() {
       setLoading(false);
     }
   };
+
   const getCurrentStatus = (statusInfo) => {
     switch (statusInfo) {
       case "WAITING":
@@ -76,7 +89,6 @@ function ViewOrderDetail() {
   };
   useEffect(() => {
     fetchOrderDetail(id);
-
   }, [id]);
 
   useEffect(() => {
@@ -88,7 +100,6 @@ function ViewOrderDetail() {
       }
     }
   }, [order]);
-
 
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
@@ -287,8 +298,49 @@ function ViewOrderDetail() {
             "--ant-primary-5": "#e25822",
           }}
         />
-
       </div>
+
+      <h5 className="title" style={{ marginBottom: "20px" }}>
+        Staff Info
+      </h5>
+      <div className="bg-w" style={{ marginTop: "20px", padding: "20px" }}>
+        {staffDetail ? (
+          <div className="staff-info">
+            <div className="item">
+              <p>
+                <span className="color">Staff Name:</span> {staffDetail.name}
+              </p>
+            </div>
+            <div className="item">
+              <p>
+                <span className="color">Phone:</span> {staffDetail.phoneNumber}
+              </p>
+            </div>
+            <div className="item">
+              <p>
+                <span className="color">Email:</span> {staffDetail.email}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p>No staff information available</p>
+        )}
+      </div>
+
+      {status === "WAITING" && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <Button
+            type="primary"
+            onClick={handleBuy}
+            style={{
+              backgroundColor: "#e25822",
+              borderColor: "#e25822",
+            }}
+          >
+            Proceed to Payment
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
