@@ -40,15 +40,24 @@
     }
 
     .title {
-        margin-bottom: 15px;
+        margin: 20px 0px;
         font-size: 22px !important;
         font-weight: 600;
         padding-left: 25px;
     }
 
     .send-section {
-        display: flex;
-        justify-content: space-around;
+
+        display: grid;
+        grid-template-columns: 1fr 0.5fr 1fr;
+        ;
+        /* 3 cột có kích thước bằng nhau */
+        /* Khoảng cách giữa các ô */
+        justify-items: center;
+
+        padding-bottom: 15px;
+
+
 
         .item {
             display: flex;
@@ -100,6 +109,8 @@
             justify-items: center;
             gap: 60px;
             padding-bottom: 15px;
+
+
         }
 
         .item-cnt {
@@ -138,4 +149,16 @@
     }
 
 
+}
+
+.fb-btn {
+    background-color: #e25822;
+}
+
+.fail-btn {
+    background-color: #000000;
+}
+
+.ant-modal .ant-modal-title {
+    color: #e25822;
 }

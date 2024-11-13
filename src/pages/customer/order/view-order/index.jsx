@@ -1,8 +1,10 @@
-import React from 'react'
+import { Button } from 'antd'
 
 function ViewOrder() {
   return (
-    <div>ViewOrder</div>
+    <div>ViewOrder<Button htmlType='submit'>Create</Button>
+    </div>
+    
   )
 }
 
