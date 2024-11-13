@@ -151,7 +151,7 @@ const Price = forwardRef((props, ref) => {
   const fetchEstimatePrice = async () => {
     try {
       const savedFishData = JSON.parse(localStorage.getItem("fishFormData"));
-      const distance = parseFloat(localStorage.getItem("savedDistance"));
+      const distance = parseFloat(localStorage.getItem("orderDistance"));
 
       if (!distance && distance !== 0) {
         console.warn("No distance found in localStorage");
@@ -271,17 +271,33 @@ const Price = forwardRef((props, ref) => {
   const user = useSelector((store) => store.user);
   useImperativeHandle(ref, () => ({
     validateFields: () => {
+      // Kiểm tra shipping method
       if (!selectedShippingMethod) {
+        message.error("Please select a shipping method");
         throw new Error("Please select a shipping method");
       }
+
+      // Kiểm tra giá trị
+      if (!totalPrice || totalPrice <= 0) {
+        message.error("Invalid total price");
+        throw new Error("Invalid total price");
+      }
+
+      // Kiểm tra estimate price
+      if (!estimatePrice || estimatePrice <= 0) {
+        message.error("Invalid shipping fee");
+        throw new Error("Invalid shipping fee");
+      }
+
       return Promise.resolve(true);
     },
     submitOrder: async () => {
       try {
         const fishData = JSON.parse(localStorage.getItem("fishFormData"));
         const addressData = JSON.parse(localStorage.getItem("orderFormData"));
-        const distance = parseFloat(localStorage.getItem("savedDistance"));
+        const distance = parseFloat(localStorage.getItem("orderDistance"));
 
+        // Submit order first
         const orderData = {
           reciverAdress: addressData.receiverAddress,
           senderAddress: addressData.senderAddress,
@@ -310,6 +326,39 @@ const Price = forwardRef((props, ref) => {
         console.log("Order created successfully:", orderResponse.data);
 
         if (orderResponse.data) {
+          // Submit license for each fish
+          if (
+            fishData.fishDetails &&
+            fishData.fishImages &&
+            fishData.licenseImages
+          ) {
+            for (const [index, fish] of fishData.fishDetails.entries()) {
+              const licenseData = {
+                name: `Fish ${index + 1}`,
+                imgLicense: fishData.licenseImages[index]?.base64 || "",
+                imgKoi: fishData.fishImages[index]?.base64 || "",
+                priceOfKoi: parseFloat(fish.price) || 0,
+                weight: parseFloat(fish.weight) || 0,
+                size: parseFloat(fish.size) || 0,
+                description: fish.note || "",
+                order: orderResponse.data.orderID,
+              };
+
+              console.log(
+                `Submitting license for fish ${index + 1}:`, licenseData);
+              try {
+                //await api.post("licence", licenseData);
+                console.log(`License ${index + 1} submitted successfully`);
+              } catch (licenseError) {
+                console.error(
+                  `Error submitting license ${index + 1}:`,
+                  licenseError
+                );
+                throw licenseError;
+              }
+            }
+          }
+
           message.success("Order created successfully!");
 
           // Clear localStorage
@@ -319,11 +368,13 @@ const Price = forwardRef((props, ref) => {
           localStorage.removeItem("savedDistance");
           localStorage.removeItem("orderTotalPrice");
           localStorage.removeItem("orderFormData");
+          localStorage.removeItem("orderDistance");
 
-          // Navigate to order detail page with orderId
-          console.log(orderResponse.data);
-          navigate(`/customer-service/view-order/${orderResponse.data.orderID}`);
-          return orderResponse.data;
+          // Navigate to order detail page
+          navigate(
+            `/customer-service/view-order/${orderResponse.data.orderID}`
+          );
+          return orderResponse.data.orderID;
         } else {
           throw new Error("No order ID received from server");
         }
@@ -341,7 +392,7 @@ const Price = forwardRef((props, ref) => {
 
   return (
     <Card>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space direction="vertical" style={{ width: "100%" }}>
         <div
           style={{
             display: "flex",
@@ -349,12 +400,11 @@ const Price = forwardRef((props, ref) => {
             alignItems: "center",
           }}
         >
-          <h4>Shipping method</h4>
+          <h4>Shipping Method</h4>
         </div>
 
         <Spin spinning={loading}>
           <Radio.Group
-            style={{ width: "100%" }}
             onChange={handleShippingMethodChange}
             value={selectedShippingMethod}
           >

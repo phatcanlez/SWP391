@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import api from "../../../../../config/axios";
 import App from "../../../../tracking/estimatedShippingFee/google";
+// Import thêm thư viện để tính khoảng cách
+import { Loader } from "@googlemaps/js-api-loader";
 
 // eslint-disable-next-line react/display-name
 const Address = forwardRef((props, ref) => {
@@ -161,6 +163,36 @@ const Address = forwardRef((props, ref) => {
     setIsOpen(false);
   }
 
+  // Thêm hàm tính khoảng cách
+  const calculateDistance = async (origin, destination) => {
+    try {
+      const loader = new Loader({
+        apiKey: "YOUR_GOOGLE_MAPS_API_KEY",
+        version: "weekly",
+        libraries: ["places", "geometry"]
+      });
+
+      const google = await loader.load();
+      const service = new google.maps.DistanceMatrixService();
+
+      const response = await service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC
+      });
+
+      if (response.rows[0].elements[0].status === "OK") {
+        const distanceInKm = response.rows[0].elements[0].distance.value / 1000;
+        return distanceInKm;
+      }
+      return 0;
+    } catch (error) {
+      console.error("Error calculating distance:", error);
+      return 0;
+    }
+  };
+
   function handleSubmit(values) {
     let selectedAddress = "";
     if (values.address) {
@@ -180,32 +212,44 @@ const Address = forwardRef((props, ref) => {
         ", " +
         tempSelections.cityName;
     }
+
+    // Get current form values
+    const currentFormValues = form.getFieldsValue();
+    
+    // Get existing data from localStorage
+    const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    
     if (where === "From") {
       form.setFieldsValue({ senderAddress: selectedAddress });
       setTempSelectionsFrom(selectedAddress);
+      
+      // Update localStorage with all form data
+      localStorage.setItem('orderFormData', JSON.stringify({
+        ...existingData,
+        ...currentFormValues,
+        senderAddress: selectedAddress
+      }));
     }
     if (where === "To") {
       form.setFieldsValue({ receiverAddress: selectedAddress });
       setTempSelectionsTo(selectedAddress);
+      
+      // Update localStorage with all form data
+      localStorage.setItem('orderFormData', JSON.stringify({
+        ...existingData,
+        ...currentFormValues,
+        receiverAddress: selectedAddress
+      }));
     }
-
-    const formData = form.getFieldsValue();
-    const addressData = {
-      senderAddress: where === "From" ? selectedAddress : formData.senderAddress,
-      senderPhoneNumber: formData.senderPhoneNumber,
-      receiverAddress: where === "To" ? selectedAddress : formData.receiverAddress,
-      receiverName: formData.receiverName,
-      receiverPhoneNumber: formData.receiverPhoneNumber,
-      note: formData.note
-    };
-    
-    localStorage.setItem('orderFormData', JSON.stringify(addressData));
 
     if (
       (tempSelectionsFrom && selectedAddress) ||
       (selectedAddress && tempSelectionsTo)
     ) {
-      appRef.current.setLocations(tempSelectionsFrom, selectedAddress);
+      appRef.current.setLocations(
+        where === "From" ? selectedAddress : tempSelectionsFrom,
+        where === "To" ? selectedAddress : tempSelectionsTo
+      );
     }
 
     handleHideModal();
@@ -247,21 +291,32 @@ const Address = forwardRef((props, ref) => {
   };
 
   const handleGetDistance = (newDistance) => {
-    setDistance(newDistance);
-    localStorage.setItem("orderDistance", newDistance.toString());
-    console.log("Distance saved:", newDistance);
+    if (newDistance && newDistance > 0) {
+      setDistance(newDistance);
+      
+      // Lưu vào orderFormData
+      const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+      const updatedData = {
+        ...existingData,
+        kilometer: newDistance
+      };
+      
+      localStorage.setItem('orderFormData', JSON.stringify(updatedData));
+      console.log("Distance saved to localStorage:", {
+        newDistance,
+        updatedData
+      });
+    }
   };
 
   // Add onValuesChange handler to save form data whenever any field changes
   const handleFormValuesChange = () => {
-    const formData = form.getFieldsValue();
+    const formValues = form.getFieldsValue();
+    const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    
     localStorage.setItem('orderFormData', JSON.stringify({
-      senderAddress: formData.senderAddress,
-      senderPhoneNumber: formData.senderPhoneNumber,
-      receiverAddress: formData.receiverAddress,
-      receiverName: formData.receiverName,
-      receiverPhoneNumber: formData.receiverPhoneNumber,
-      note: formData.note
+      ...existingData,
+      ...formValues
     }));
   };
 
@@ -278,6 +333,75 @@ const Address = forwardRef((props, ref) => {
     }
   }, []);
 
+  useEffect(() => {
+    console.log("Current distance state:", distance);
+  }, [distance]);
+
+  // Thêm useEffect để load distance khi component mount
+  useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    const savedDistance = savedData.kilometer || localStorage.getItem('savedDistance');
+    
+    if (savedDistance) {
+      setDistance(parseFloat(savedDistance));
+      console.log("Loaded saved distance:", savedDistance);
+    }
+  }, []);
+
+  // Thêm useEffect để theo dõi thay đổi của distance
+  useEffect(() => {
+    if (distance > 0) {
+      localStorage.setItem("savedDistance", distance.toString());
+      console.log("Distance updated and saved:", distance);
+    }
+  }, [distance]);
+
+  useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+    if (savedData.distance) {
+      setDistance(savedData.distance);
+    }
+  }, []);
+
+  // Add logging when locations are set
+  useEffect(() => {
+    if (tempSelectionsFrom && tempSelectionsTo) {
+      console.log("Both locations set:", {
+        from: tempSelectionsFrom,
+        to: tempSelectionsTo,
+        currentDistance: distance
+      });
+    }
+  }, [tempSelectionsFrom, tempSelectionsTo, distance]);
+
+  // Add logging when distance changes
+  useEffect(() => {
+    console.log("Distance state updated:", {
+      distance: distance,
+      storedData: JSON.parse(localStorage.getItem('orderFormData') || '{}')
+    });
+  }, [distance]);
+
+  // Add useEffect to update distance when locations change
+  useEffect(() => {
+    if (tempSelectionsFrom && tempSelectionsTo) {
+      console.log("Locations updated:", {
+        from: tempSelectionsFrom,
+        to: tempSelectionsTo,
+        currentDistance: distance
+      });
+      
+      // If we have a distance, make sure it's saved
+      if (distance > 0) {
+        const existingData = JSON.parse(localStorage.getItem('orderFormData') || '{}');
+        localStorage.setItem('orderFormData', JSON.stringify({
+          ...existingData,
+          kilometer: distance
+        }));
+      }
+    }
+  }, [tempSelectionsFrom, tempSelectionsTo, distance]);
+
   return (
     <Form
       form={form}
@@ -293,7 +417,7 @@ const Address = forwardRef((props, ref) => {
       }}
       onValuesChange={handleFormValuesChange}
     >
-      <div> Sender Information</div>
+      <div>Sender Information</div>
       <Form.Item
         label="Phone Number"
         name="senderPhoneNumber"
@@ -309,6 +433,7 @@ const Address = forwardRef((props, ref) => {
       >
         <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
+
       <div
         style={{
           display: "flex",
@@ -329,7 +454,7 @@ const Address = forwardRef((props, ref) => {
         </Button>
       </div>
 
-      <div> Receiver Information</div>
+      <div>Receiver Information</div>
       <Form.Item
         label="Receiver's Name"
         name="receiverName"
@@ -357,6 +482,7 @@ const Address = forwardRef((props, ref) => {
       >
         <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
+
       <div
         style={{
           display: "flex",
@@ -381,9 +507,12 @@ const Address = forwardRef((props, ref) => {
         <TextArea rows={1} />
       </Form.Item>
 
-      {/* <div style={{ marginTop: 20 }}>
-        <App ref={appRef} getDistance={handleGetDistance} />
-      </div> */}
+      <div className="estimatedshippingfee__map">
+        <App 
+          ref={appRef}
+          getDistance={handleGetDistance}
+        />
+      </div>
 
       <Modal
         open={isOpen}

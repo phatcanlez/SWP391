@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FormOutlined, UserOutlined } from "@ant-design/icons";
+import { FormOutlined, HistoryOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
@@ -15,7 +15,7 @@ function getItem(label, key, icon, children) {
 const items = [
   getItem("Account", "account", <UserOutlined />),
   getItem("Create Order", "order", <FormOutlined />),
-  getItem("Orders History", "history", <FormOutlined />),
+  getItem("Orders History", "history", <HistoryOutlined />),
 ];
 
 const CustomerService = () => {
