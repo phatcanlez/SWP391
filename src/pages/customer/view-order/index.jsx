@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
 import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
-import { Button } from "antd";
+
+import { Button, Steps } from "antd";
+
 
 function ViewOrderDetail() {
   const { id } = useParams();
@@ -13,6 +15,11 @@ function ViewOrderDetail() {
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
   const [loading, setLoading] = useState(false);
+  const [display, setDisplay] = useState("none");
+  const resultRef = useRef(null);
+  const [data, setData] = useState([]);
+  const [orderId, setOrderId] = useState("");
+  const [current, setCurrent] = useState(-1);
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -31,11 +38,58 @@ function ViewOrderDetail() {
       setLoading(false);
     }
   };
+  const getCurrentStatus = (statusInfo) => {
+    switch (statusInfo) {
+      case "WAITING":
+        return 0;
+      case "APPROVED":
+        return 1;
+      case "PENDING":
+        return 2;
+      case "SUCCESS":
+        return 3;
+      default:
+        return -1;
+    }
+  };
+  const handleTracking = async (values) => {
+    console.log(values);
+    try {
+      const response = await api.get(`orders/${values.orderId}`);
+      setOrderId(values.orderId);
+      setData(response.data.status);
+      const lastStatus = response.data.status[response.data.status.length - 1];
+      if (lastStatus) {
+        setCurrent(getCurrentStatus(lastStatus.statusInfo));
+      }
+      setDisplay("");
+      toast.success("Successfull");
+
+      setTimeout(() => {
+        if (resultRef.current) {
+          resultRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } catch (err) {
+      toast.error(err.response.data.Error);
+    }
+  };
   useEffect(() => {
     fetchOrderDetail(id);
-  }, []);
 
-  console.log(order);
+  }, [id]);
+
+  useEffect(() => {
+    if (order?.status?.length > 0) {
+      const lastStatus = order.status[order.status.length - 1];
+      if (lastStatus) {
+        setCurrent(getCurrentStatus(lastStatus.statusInfo));
+        setStatus(lastStatus.statusInfo);
+      }
+    }
+  }, [order]);
+
+
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
     try {
@@ -173,28 +227,67 @@ function ViewOrderDetail() {
           </div>
 
           <p>
-            Total price:{" "}
+            Total fish price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
               {order.orderPrice}
             </span>
           </p>
         </div>
       </div>
-      {/*       
-      <h5 className="title">Delivery status</h5>
-      <div className="bg-w">
-        
-      </div> */}
 
-      <h5 className="title">Payment</h5>
-      <div className="bg-w">
-        {order?.payment?.status === "UNPAYED" ? (
-          <div>
-            <Button onClick={handleBuy}>Continue to pay for delivery</Button>
-          </div>
-        ) : (
-          <p>You have already pay for this order</p>
-        )}
+      <h5 className="title" style={{ marginBottom: "20px" }}>
+        Order History
+      </h5>
+      <div className="bg-w" style={{ marginTop: "20px" }}>
+        <Steps
+          className="billoflading__result__step"
+          progressDot
+          current={current}
+          direction="vertical"
+          items={
+            order?.status?.map((statusItem) => ({
+              title: (
+                <div
+                  className="billoflading__result__step__title"
+                  style={{
+                    color: "#e25822",
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                  }}
+                >
+                  {statusItem.statusInfo}
+                </div>
+              ),
+              description: (
+                <div style={{ padding: "10px 0" }}>
+                  <div
+                    className="billoflading__result__step__time"
+                    style={{
+                      color: "#666",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    {new Date(statusItem.date).toLocaleString()}
+                  </div>
+                  <div
+                    className="billoflading__result__step__description"
+                    style={{
+                      color: "#333",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {statusItem.description}
+                  </div>
+                </div>
+              ),
+            })) || []
+          }
+          style={{
+            "--ant-primary-color": "#e25822",
+            "--ant-primary-5": "#e25822",
+          }}
+        />
+
       </div>
     </div>
   );
