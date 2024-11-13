@@ -14,7 +14,9 @@ import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.DateConversionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderService {
     @Autowired
     OrderRepository orderRepository;
@@ -102,10 +105,9 @@ public class OrderService {
             return orderResponse;
         } catch (NotFoundException e) {
 
-
             throw new NotFoundException(" Account not found");
         }catch (Exception e) {
-
+            log.error(e.getMessage());
             throw new DuplicateException("Unexpected error!");
         }
     }
