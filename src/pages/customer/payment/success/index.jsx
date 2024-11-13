@@ -17,8 +17,12 @@ function SuccessPage() {
   const postOrderID = async () => {
     try {
       const response = await api.put(`payment-status?orderId=${orderID}`);
+      if (response.status === 200) {
+        toast.success("Payment processed successfully");
+      }
     } catch (error) {
-      toast.error(error);
+      toast.error("Error updating payment status");
+      console.error(error);
     }
   };
 
@@ -28,7 +32,7 @@ function SuccessPage() {
     } else {
       navigate("/pay-fail");
     }
-  }, []);
+  }, [vnp, orderID]);
 
   return (
     <div>
