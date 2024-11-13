@@ -393,34 +393,36 @@ function Fish() {
   // Thêm hàm mới để load tất cả dữ liệu
   const loadAllData = () => {
     try {
-      const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
-      
+      const savedData = JSON.parse(
+        localStorage.getItem("fishFormData") || "{}"
+      );
+
       // Load form values
       form.setFieldsValue(savedData);
-      
+
       // Load images
       loadSavedImages();
-      
+
       // Load summary data
       if (savedData.fishDetails) {
         updateSummary(savedData);
       }
-      
+
       // Load total weight
       if (savedData.totalWeight) {
         setTotalWeight(savedData.totalWeight);
       }
-      
+
       // Load box counts
       if (savedData.boxCounts) {
         setBoxCounts(savedData.boxCounts);
       }
-      
+
       // Load fish count
       if (savedData.fishDetails) {
         setFishCount(savedData.fishDetails.length);
       }
-      
+
       // Load total price
       if (savedData.totalPrice) {
         setTotalPrice(savedData.totalPrice);
@@ -477,23 +479,29 @@ function Fish() {
             {fields.map((field, index) => (
               <Card
                 key={field.key}
-                style={{ 
+                style={{
                   marginBottom: 24,
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 }}
                 title={
-                  <div style={{ color: '#e25822', fontSize: '18px', fontWeight: 'bold' }}>
+                  <div
+                    style={{
+                      color: "#e25822",
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                    }}
+                  >
                     Fish #{index + 1}
                   </div>
                 }
                 extra={
                   <Button
                     onClick={() => remove(field.name)}
-                    icon={<DeleteOutlined style={{ color: '#fff' }} />}
-                    style={{ 
-                      backgroundColor: '#ff4d4f',
-                      borderColor: '#ff4d4f',
+                    icon={<DeleteOutlined style={{ color: "#fff" }} />}
+                    style={{
+                      backgroundColor: "#ff4d4f",
+                      borderColor: "#ff4d4f",
                     }}
                     shape="circle"
                   />
@@ -504,11 +512,13 @@ function Fish() {
                     <Form.Item
                       name={[field.name, "weight"]}
                       label={<span style={{ fontWeight: 500 }}>Weight</span>}
-                      rules={[{ required: true, message: "Please enter Weight" }]}
+                      rules={[
+                        { required: true, message: "Please enter Weight" },
+                      ]}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100%", borderRadius: '6px' }}
+                        style={{ width: "100%", borderRadius: "6px" }}
                         placeholder="Weight (kg)"
                       />
                     </Form.Item>
@@ -517,12 +527,14 @@ function Fish() {
                     <Form.Item
                       name={[field.name, "size"]}
                       label={<span style={{ fontWeight: 500 }}>Size</span>}
-                      rules={[{ required: true, message: "Please select Size" }]}
+                      rules={[
+                        { required: true, message: "Please select Size" },
+                      ]}
                     >
                       <Select
-                        style={{ width: "100%", borderRadius: '6px' }}
+                        style={{ width: "100%", borderRadius: "6px" }}
                         placeholder="Select size"
-                        dropdownStyle={{ borderRadius: '6px' }}
+                        dropdownStyle={{ borderRadius: "6px" }}
                       >
                         {sizeOptions.map((option, index) => (
                           <Option key={index} value={option.sizeInCM}>
@@ -536,11 +548,13 @@ function Fish() {
                     <Form.Item
                       name={[field.name, "price"]}
                       label={<span style={{ fontWeight: 500 }}>Price</span>}
-                      rules={[{ required: true, message: "Please enter Price" }]}
+                      rules={[
+                        { required: true, message: "Please enter Price" },
+                      ]}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100%", borderRadius: '6px' }}
+                        style={{ width: "100%", borderRadius: "6px" }}
                         placeholder="Price ($)"
                       />
                     </Form.Item>
@@ -549,8 +563,12 @@ function Fish() {
                 <Row gutter={[24, 24]}>
                   <Col span={12}>
                     <FormItem
-                      label={<span style={{ fontWeight: 500 }}>Fish Image</span>}
-                      rules={[{ required: true, message: "Please upload fish image" }]}
+                      label={
+                        <span style={{ fontWeight: 500 }}>Fish Image</span>
+                      }
+                      rules={[
+                        { required: true, message: "Please upload fish image" },
+                      ]}
                     >
                       <Upload
                         {...getKoiImageProps(field.name)}
@@ -568,21 +586,23 @@ function Fish() {
                               ]
                             : []
                         }
-                        style={{ borderRadius: '6px' }}
+                        style={{ borderRadius: "6px" }}
                       >
                         {!fishImages[field.name]?.url && (
-                          <div style={{ 
-                            padding: '16px',
-                            border: '1px dashed #d9d9d9',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            '&:hover': {
-                              borderColor: '#e25822'
-                            }
-                          }}>
-                            <PlusOutlined style={{ color: '#e25822' }} />
-                            <div style={{ marginTop: 8, color: '#666' }}>
+                          <div
+                            style={{
+                              padding: "16px",
+                              border: "1px dashed #d9d9d9",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              transition: "all 0.3s",
+                              "&:hover": {
+                                borderColor: "#e25822",
+                              },
+                            }}
+                          >
+                            <PlusOutlined style={{ color: "#e25822" }} />
+                            <div style={{ marginTop: 8, color: "#666" }}>
                               Upload Fish Image
                             </div>
                           </div>
@@ -592,12 +612,18 @@ function Fish() {
                   </Col>
                   <Col span={12}>
                     <FormItem
-                      label={<span style={{ fontWeight: 500 }}>License Image</span>}
-                      rules={[{ required: true, message: "Please upload license" }]}
+                      label={
+                        <span style={{ fontWeight: 500 }}>License Image</span>
+                      }
+                      rules={[
+                        { required: true, message: "Please upload license" },
+                      ]}
                     >
                       <Upload
                         {...getLicenseImageProps(field.name)}
-                        onRemove={() => handleRemoveImage("license", field.name)}
+                        onRemove={() =>
+                          handleRemoveImage("license", field.name)
+                        }
                         fileList={
                           licenseImages[field.name]?.url
                             ? [
@@ -611,21 +637,23 @@ function Fish() {
                               ]
                             : []
                         }
-                        style={{ borderRadius: '6px' }}
+                        style={{ borderRadius: "6px" }}
                       >
                         {!licenseImages[field.name]?.url && (
-                          <div style={{ 
-                            padding: '16px',
-                            border: '1px dashed #d9d9d9',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            '&:hover': {
-                              borderColor: '#e25822'
-                            }
-                          }}>
-                            <PlusOutlined style={{ color: '#e25822' }} />
-                            <div style={{ marginTop: 8, color: '#666' }}>
+                          <div
+                            style={{
+                              padding: "16px",
+                              border: "1px dashed #d9d9d9",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              transition: "all 0.3s",
+                              "&:hover": {
+                                borderColor: "#e25822",
+                              },
+                            }}
+                          >
+                            <PlusOutlined style={{ color: "#e25822" }} />
+                            <div style={{ marginTop: 8, color: "#666" }}>
                               Upload License Image
                             </div>
                           </div>
@@ -634,13 +662,13 @@ function Fish() {
                     </FormItem>
                   </Col>
                 </Row>
-                <Form.Item 
-                  name={[field.name, "note"]} 
+                <Form.Item
+                  name={[field.name, "note"]}
                   label={<span style={{ fontWeight: 500 }}>Note</span>}
                 >
-                  <TextArea 
-                    rows={2} 
-                    style={{ borderRadius: '6px' }}
+                  <TextArea
+                    rows={2}
+                    style={{ borderRadius: "6px" }}
                     placeholder="Enter notes about this fish..."
                   />
                 </Form.Item>
@@ -652,16 +680,16 @@ function Fish() {
                 onClick={() => add()}
                 block
                 icon={<PlusOutlined />}
-                style={{ 
-                  height: '45px',
-                  borderColor: '#e25822',
-                  color: '#e25822',
-                  borderRadius: '6px',
-                  marginBottom: '24px',
-                  '&:hover': {
-                    color: '#fff',
-                    backgroundColor: '#e25822'
-                  }
+                style={{
+                  height: "45px",
+                  borderColor: "#e25822",
+                  color: "#e25822",
+                  borderRadius: "6px",
+                  marginBottom: "24px",
+                  "&:hover": {
+                    color: "#fff",
+                    backgroundColor: "#e25822",
+                  },
                 }}
               >
                 Add Fish
@@ -671,87 +699,88 @@ function Fish() {
         )}
       </Form.List>
 
-      <Card 
-        style={{ 
-          marginTop: 24, 
+      <Card
+        style={{
+          marginTop: 24,
           backgroundColor: "#fff",
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
         }}
       >
-        <Title level={4} style={{ color: '#e25822', marginBottom: 24 }}>Order Summary</Title>
+        <Title level={4} style={{ color: "#e25822", marginBottom: 24 }}>
+          Order Summary
+        </Title>
         <Row gutter={[16, 16]}>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Total Weight</span>}
+                title={<span style={{ color: "#666" }}>Total Weight</span>}
                 value={totalWeight}
                 precision={2}
                 suffix="kg"
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Total Fish</span>}
+                title={<span style={{ color: "#666" }}>Total Fish</span>}
                 value={fishCount}
                 suffix="fish"
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Total Price</span>}
+                title={<span style={{ color: "#666" }}>Total Price</span>}
                 value={totalPrice}
                 precision={2}
-                prefix="$"
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
         </Row>
-        
-        <Title level={5} style={{ margin: '24px 0 16px', color: '#000' }}>
+
+        <Title level={5} style={{ margin: "24px 0 16px", color: "#000" }}>
           Box Requirements
         </Title>
         <Row gutter={[16, 16]}>
           <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
-              <Statistic 
-                title={<span style={{ color: '#666' }}>Small Boxes</span>}
-                value={boxCounts.small}
-                valueStyle={{ color: '#000' }}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
-              <Statistic 
-                title={<span style={{ color: '#666' }}>Medium Boxes</span>}
-                value={boxCounts.medium}
-                valueStyle={{ color: '#000' }}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
-              <Statistic 
-                title={<span style={{ color: '#666' }}>Large Boxes</span>}
-                value={boxCounts.large}
-                valueStyle={{ color: '#000' }}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Extra Large Boxes</span>}
+                title={<span style={{ color: "#666" }}>Small Boxes</span>}
+                value={boxCounts.small}
+                valueStyle={{ color: "#000" }}
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
+              <Statistic
+                title={<span style={{ color: "#666" }}>Medium Boxes</span>}
+                value={boxCounts.medium}
+                valueStyle={{ color: "#000" }}
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
+              <Statistic
+                title={<span style={{ color: "#666" }}>Large Boxes</span>}
+                value={boxCounts.large}
+                valueStyle={{ color: "#000" }}
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
+              <Statistic
+                title={<span style={{ color: "#666" }}>Extra Large Boxes</span>}
                 value={boxCounts.extraLarge}
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
