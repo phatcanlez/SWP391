@@ -1,4 +1,4 @@
-import { Button, Form, Input, InputNumber } from "antd";
+import { Button, Form, Input, InputNumber, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../../../config/axios";
@@ -17,19 +17,19 @@ function FormDisabledDemo() {
   const formRefs = useRef([]);
   const [stepData, setStepData] = useState({});
 
-  const handleSubmit = async (values) => {
-    console.log(values);
-    try {
-      const response = await api.post("orders", values);
-      console.log(response);
-      toast.success("Successful");
-      localStorage.removeItem("fishFormData");
-      localStorage.removeItem("addressFormData");
-      localStorage.removeItem("priceFormData");
-    } catch (err) {
-      toast.error(err.response?.data || "An error occurred");
-    }
-  };
+  // const handleSubmit = async (values) => {
+  //   console.log(values);
+  //   try {
+  //     const response = await api.post("orders", values);
+  //     console.log(response);
+  //     toast.success("Successful");
+  //     localStorage.removeItem("fishFormData");
+  //     localStorage.removeItem("addressFormData");
+  //     localStorage.removeItem("priceFormData");
+  //   } catch (err) {
+  //     toast.error(err.response?.data || "An error occurred");
+  //   }
+  // };
 
   const steps = [
     {
@@ -71,21 +71,35 @@ function FormDisabledDemo() {
     const currentForm = formRefs.current[current];
     if (currentForm) {
       try {
-        const values = await currentForm.validateFields();
-        setStepData((prevData) => {
-          const newData = { ...prevData, ...values };
-          localStorage.setItem("orderFormData", JSON.stringify(newData));
-          return newData;
-        });
+        await currentForm.validateFields();
+
         if (current === steps.length - 1) {
-          //last step, submit the form
-          await handleSubmit(stepData);
+          // Kiểm tra dữ liệu trước khi submit
+          const fishData = JSON.parse(localStorage.getItem("fishFormData") || '{}');
+          
+          // Kiểm tra dữ liệu cá
+          if (!fishData.fishDetails || fishData.fishDetails.length === 0) {
+            message.error("Please add at least one fish");
+            return;
+          }
+
+          // // Kiểm tra địa chỉ
+          // if (!addressData.senderAddress || !addressData.receiverAddress) {
+          //   message.error("Please complete address information");
+          //   return;
+          // }
+
+          await currentForm.submitOrder();
         } else {
           setCurrent(current + 1);
         }
       } catch (errorInfo) {
-        console.log("Validation failed:", errorInfo);
-        toast.error("Please fill in all information before continuing.");
+        console.error("Validation failed:", errorInfo);
+        if (errorInfo.message) {
+          message.error(errorInfo.message);
+        } else {
+          message.error("Please fill in all required information correctly");
+        }
       }
     } else {
       setCurrent(current + 1);
@@ -95,15 +109,28 @@ function FormDisabledDemo() {
   const prev = () => {
     const currentForm = formRefs.current[current];
     if (currentForm) {
-      const values = currentForm.getFieldsValue();
-      setStepData((prevData) => {
-        const newData = { ...prevData, ...values };
-        localStorage.setItem("orderFormData", JSON.stringify(newData));
-        return newData;
-      });
+      try {
+        const values = currentForm.getFieldsValue();
+        setStepData((prevData) => {
+          const newData = { ...prevData, ...values };
+          localStorage.setItem("orderFormData", JSON.stringify(newData));
+          return newData;
+        });
+      } catch (error) {
+        console.error("Error saving current step data:", error);
+      }
     }
+    // Luôn cho phép quay lại step trước
     setCurrent(current - 1);
   };
+  
+  {
+    current > 0 && (
+      <Button style={{ margin: "0 8px" }} onClick={prev} type="default">
+        Previous
+      </Button>
+    );
+  }
 
   const clearAll = () => {
     // Clear all form data
@@ -129,7 +156,7 @@ function FormDisabledDemo() {
   };
 
   return (
-    <Form form={form} onFinish={handleSubmit}>
+    <Form form={form}>
       <h6>Create Order</h6>
       <div>
         <Steps current={current}>

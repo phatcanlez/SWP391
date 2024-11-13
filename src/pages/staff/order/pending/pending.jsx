@@ -13,11 +13,14 @@ import api from "../../../../config/axios";
 import { useForm } from "antd/es/form/Form";
 import uploadFile from "../../../../config/file";
 import "./index.css";
+import { useNavigate } from "react-router-dom";
 
 const InProcess = () => {
-  const order = useSelector((store) => store.order.data);
-  console.log(order.orderID);
+  const order = useSelector((store) => store.order);
+  console.log(order);
   const user = useSelector((store) => store.user);
+  const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -39,7 +42,7 @@ const InProcess = () => {
 
   const fetchOrderDetail = async () => {
     try {
-      const response = await api.get(`/orders/${order.orderID}`);
+      const response = await api.get(`/orders/${order?.orderID}`);
       const value = response.data;
       console.log(value);
       setViewOrder(value);
@@ -49,10 +52,12 @@ const InProcess = () => {
       console.error(err);
     }
   };
+  console.log(viewOrder);
   console.log(statuss);
   useEffect(() => {
     fetchOrderDetail();
   }, []);
+
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -110,6 +115,7 @@ const InProcess = () => {
       await api.post("/status", setvalue);
       toast.success("SUCCESSFULL");
       fetchOrderDetail();
+      navigate("/staff/success");
     } catch (error) {
       toast.error(error.response.data);
     }

@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
 import { approve } from "../../../../redux/features/orderSlice";
+import api from "../../../../config/axios";
 
 function OrderDetail() {
   const { id } = useParams();
@@ -27,6 +28,7 @@ function OrderDetail() {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
+      console.log(response.data.orderDetail.extraService);
       if (response.data.status.length > 0) {
         setStatus(
           response.data.status[response.data.status.length - 1]?.statusInfo
@@ -34,7 +36,7 @@ function OrderDetail() {
       }
       handleViewFeedBack();
     } catch (err) {
-      toast.error(err.response.data);
+      toast.error(err);
     } finally {
       setLoading(false);
     }
@@ -71,7 +73,7 @@ function OrderDetail() {
       await api.post("/status", values);
       setIsModalOpen(false);
       toast.success("REJECTED");
-      navigate("/staff/rejected-order");
+      navigate("/staff/reject");
     } catch (error) {
       toast.error(error.response.data);
     } finally {
@@ -96,7 +98,8 @@ function OrderDetail() {
           order: id,
           description: "The order is approved",
         });
-        dispatch(approve(setvalue));
+        console.log(setvalue);
+        dispatch(approve(setvalue.data));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");
@@ -120,15 +123,13 @@ function OrderDetail() {
   const [feedback, setFeedback] = useState([]);
   const handleViewFeedBack = async () => {
     try {
-      const response = await api.get(`feedback/{orderId}?orderId=${id}`);
+      const response = await api.get(`feedback/${id}`);
       console.log(response.data);
       setFeedback(response.data);
-      console.log(feedback);
     } catch (error) {
-      toast.error(error.response.data);
+      toast.error(error);
     }
   };
-
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -277,6 +278,11 @@ function OrderDetail() {
             )}
           </>
         )}
+        {status === "FAIL" && (
+          <div style={{ textAlign: "center", fontSize: "20px" }}>
+            This order has been rejected!
+          </div>
+        )}
       </div>
       {loading ? (
         <p>Loading...</p>
@@ -291,12 +297,6 @@ function OrderDetail() {
                 APPROVE
               </Button>
             </>
-          )}
-
-          {status === "FAIL" && (
-            <Button className="btn btn-a" onClick={handleAddApprove}>
-              APPROVE
-            </Button>
           )}
         </div>
       )}

@@ -11,5 +11,5 @@ const orderSlice = createSlice({
     }
 });
 
-export const { approve, done } = orderSlice.actions;
+export const { approve } = orderSlice.actions;
 export default orderSlice.reducer;

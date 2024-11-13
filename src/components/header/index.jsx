@@ -1,30 +1,38 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./index.css";
 import { Button } from "antd";
-import { CaretDownOutlined } from "@ant-design/icons";
-import { Dropdown, Space } from "antd";
 import logo from "../../img/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 function Header() {
   const user = useSelector((store) => store.user);
-
+  console.log(user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const handleNavigate = () => {
-    if(user!=null){
-      if(user.role === "STAFF")
-        navigate("/staff/order")
-      if(user.role === "ADMIN")
-        navigate("/dashboard")
-    }
-  };
+
   return (
-    <header className="header">
-      <div className="header__logo">
-        <Link to="/">
+    <header className="header"> 
+      <div className="header__logo"> 
+        {user ? (
+          <>
+            {user?.role === "STAFF" && (
+              <Link to="/staff/order">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+            {user?.role === "CUSTOMER" && (
+              <Link to="/customer-service/order">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+            {user?.role === "MANAGER" && (
+              <Link to="/dashboard/overview">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+          </>
+        ) : (
           <img src={logo} alt="Logo" width={80} />
-        </Link>
+        )}
       </div>
       <nav className="header__nav">
         <ul>
@@ -42,9 +50,6 @@ function Header() {
           </li>
           <li>
             <Link to="/FAQ">FAQ</Link>
-          </li>
-          <li>
-            <Link to="/">FEEDBACK</Link>
           </li>
         </ul>
       </nav>

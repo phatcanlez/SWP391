@@ -48,6 +48,12 @@ import AllOrder_AD, {
   WaitingOrder_AD,
 } from "./pages/admin/manage-order";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
+import ApproveOrder from "./pages/staff/order/approve-order";
+import Reject from "./pages/staff/reject-page";
+import OrderSuccess from "./pages/staff/success-page";
+import SuccessPage from "./pages/customer/payment/success";
+import PaymentFail from "./pages/customer/payment/fail";
+import Complain from "./pages/staff/complain";
 import { useEffect } from "react";
 import requestPermissions from "./config/notification";
 
@@ -216,10 +222,14 @@ function App() {
       ],
     },
 
-    // {
-    //   path: "pay-success",
-    //   element: <SuccessPage />,
-    // },
+    {
+      path: "pay-success",
+      element: <SuccessPage />,
+    },
+    {
+      path: "pay-fail",
+      element: <PaymentFail />,
+    },
 
     {
       path: "staff",
@@ -260,6 +270,22 @@ function App() {
         {
           path: "view-feedback",
           element: <StaffFeedback />,
+        },
+        {
+          path: "view-complain",
+          element: <Complain />,
+        },
+        {
+          path: "approved",
+          element: <ApproveOrder />,
+        },
+        {
+          path: "reject",
+          element: <Reject />,
+        },
+        {
+          path: "success",
+          element: <OrderSuccess />,
         },
       ],
     },

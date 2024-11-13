@@ -6,15 +6,13 @@ import "../staff/index.css";
 import {
   ClockCircleOutlined,
   CommentOutlined,
+  FrownOutlined,
   MenuOutlined,
   PushpinOutlined,
   QuestionCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Footer from "../footer";
-import { useEffect, useState } from "react";
-import api from "../../config/axios";
-import { useSelector } from "react-redux";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -25,51 +23,18 @@ function getItem(label, key, icon, children) {
 }
 
 const Staff = () => {
-  const user = useSelector((store) => store.user);
-  const [approving, setApproving] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const orderView = useSelector((store) => store.order);
-
-  const fetchApproveOrder = async () => {
-    try {
-      if (orderView != null && orderView.data != null) {
-        const order = orderView.data;
-        if (!user?.id) return; // kiểm tra nếu user chưa có
-        const approvedResponse = await api.get(`/orders/${order.orderID}`);
-        setApproving(approvedResponse.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  console.log(approving);
-  useEffect(() => {
-    if (user?.id && orderView?.data) {
-      fetchApproveOrder();
-    }
-  }, [user, orderView]);
-
   const items = [
     getItem("All Orders", "order", <MenuOutlined />, [
       getItem("Waiting", "waiting-order"),
       getItem("Rejected", "rejected-order"),
     ]),
-    orderView?.data
-      ? getItem(
-          "Approved",
-          `view/${orderView.data.orderID}`,
-          <PushpinOutlined />
-        )
-      : null,
+    getItem("Approved", "approved", <PushpinOutlined />),
     getItem("History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
     getItem("Feedback", "view-feedback", <CommentOutlined />),
+    getItem("Complain", "view-complain", <FrownOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
   ].filter(Boolean); // filter out null items
-
- 
 
   return (
     <div style={{ marginTop: "20px" }}>
