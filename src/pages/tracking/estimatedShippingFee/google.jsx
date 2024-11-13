@@ -51,7 +51,10 @@ class App extends Component {
         const distance = result.routes[0].legs[0].distance.text;
         const duration = result.routes[0].legs[0].duration.text;
         this.setState({ distance, duration }, () => {
-          this.props.getDistance(distance);
+          if (distance > 0) {
+            console.log("Calculated distance:", distance);
+            this.props.getDistance(distance);
+          }
         });
       } else {
         console.error("Error fetching directions", status);
