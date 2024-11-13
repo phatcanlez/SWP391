@@ -7,6 +7,7 @@ import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
 
 import { Button, Steps } from "antd";
+import { useSelector } from "react-redux";
 
 function ViewOrderDetail() {
   const { id } = useParams();
@@ -21,6 +22,7 @@ function ViewOrderDetail() {
   const [staffInfo, setStaffInfo] = useState("");
   const [current, setCurrent] = useState(-1);
   const [staffDetail, setStaffDetail] = useState(null);
+  const user = useSelector((store) => store.user);
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -175,7 +177,7 @@ function ViewOrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
+                <span className="color">{user?.name}</span> - (+84)
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
