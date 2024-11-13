@@ -23,7 +23,6 @@ public class Feedback {
 
     Date time;
 
-    @NotNull(message = "Star rating is required")
     int rating;
 
     @Size(min = 0, max = 200, message = "Feedback must be between 0 and 200 characters")

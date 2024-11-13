@@ -42,8 +42,8 @@ public class PriceListDistanceService {
         }
     }
 
-    public PriceListDistance updatePriceDistance(PriceListDistance priceListDistance, long Id){
-        PriceListDistance oldPriceDistance = priceListDistanceRepository.findPriceListDistanceByPriceListId(Id);
+    public PriceListDistance updatePriceDistance(PriceListDistance priceListDistance){
+        PriceListDistance oldPriceDistance = priceListDistanceRepository.findPriceListDistanceByPriceListId(priceListDistance.getPriceListId());
         if(oldPriceDistance == null){
             throw new NotFoundException("Not found!");
         }
