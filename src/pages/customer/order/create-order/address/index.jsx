@@ -300,128 +300,68 @@ const Address = forwardRef((props, ref) => {
 
   const handleGetDistance = (newDistance) => {
     if (newDistance && newDistance > 0) {
-      setDistance(newDistance);
-
-      // Lưu vào orderFormData
-      const existingData = JSON.parse(
-        localStorage.getItem("orderFormData") || "{}"
-      );
+      const roundedDistance = Math.round(newDistance * 100) / 100;
+      
+      // Cập nhật state và form ngay lập tức
+      setDistance(roundedDistance);
+      form.setFieldsValue({ kilometer: roundedDistance });
+      
+      // Lưu vào localStorage ngay lập tức với tất cả dữ liệu hiện tại
+      const currentFormValues = form.getFieldsValue();
       const updatedData = {
-        ...existingData,
-        kilometer: newDistance,
+        ...currentFormValues,
+        kilometer: roundedDistance,
       };
 
       localStorage.setItem("orderFormData", JSON.stringify(updatedData));
-      console.log("Distance saved to localStorage:", {
-        newDistance,
-        updatedData,
+
+      // Log để kiểm tra
+      console.log("Distance saved immediately:", {
+        distance: roundedDistance,
+        formData: updatedData
       });
+
+      // Thông báo cho component cha nếu cần
+      if (props.onDistanceChange) {
+        props.onDistanceChange(roundedDistance);
+      }
     }
-  };
-
-  // Add onValuesChange handler to save form data whenever any field changes
-  const handleFormValuesChange = () => {
-    const formValues = form.getFieldsValue();
-    const existingData = JSON.parse(
-      localStorage.getItem("orderFormData") || "{}"
-    );
-
-    localStorage.setItem(
-      "orderFormData",
-      JSON.stringify({
-        ...existingData,
-        ...formValues,
-      })
-    );
   };
 
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
     if (savedData) {
       form.setFieldsValue(savedData);
+      
+      if (savedData.kilometer) {
+        setDistance(savedData.kilometer);
+      }
       if (savedData.senderAddress) {
         setTempSelectionsFrom(savedData.senderAddress);
       }
       if (savedData.receiverAddress) {
         setTempSelectionsTo(savedData.receiverAddress);
       }
+      
+      console.log("Loaded saved data:", savedData);
     }
   }, []);
 
-  useEffect(() => {
-    console.log("Current distance state:", distance);
-  }, [distance]);
+  const handleFormValuesChange = (changedValues, allValues) => {
+    const existingData = JSON.parse(
+      localStorage.getItem("orderFormData") || "{}"
+    );
+    
+    const updatedData = {
+      ...existingData,
+      ...allValues,
+      kilometer: allValues.kilometer || existingData.kilometer,
+      senderAddress: allValues.senderAddress || existingData.senderAddress,
+      receiverAddress: allValues.receiverAddress || existingData.receiverAddress
+    };
 
-  // Thêm useEffect để load distance khi component mount
-  useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
-    const savedDistance =
-      savedData.kilometer || localStorage.getItem("savedDistance");
-
-    if (savedDistance) {
-      setDistance(parseFloat(savedDistance));
-      console.log("Loaded saved distance:", savedDistance);
-    }
-  }, []);
-
-  // Thêm useEffect để theo dõi thay đổi của distance
-  useEffect(() => {
-    if (distance > 0) {
-      localStorage.setItem("savedDistance", distance.toString());
-      console.log("Distance updated and saved:", distance);
-    }
-  }, [distance]);
-
-  useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
-    if (savedData.distance) {
-      setDistance(savedData.distance);
-    }
-  }, []);
-
-  // Add logging when locations are set
-  useEffect(() => {
-    if (tempSelectionsFrom && tempSelectionsTo) {
-      console.log("Both locations set:", {
-        from: tempSelectionsFrom,
-        to: tempSelectionsTo,
-        currentDistance: distance,
-      });
-    }
-  }, [tempSelectionsFrom, tempSelectionsTo, distance]);
-
-  // Add logging when distance changes
-  useEffect(() => {
-    console.log("Distance state updated:", {
-      distance: distance,
-      storedData: JSON.parse(localStorage.getItem("orderFormData") || "{}"),
-    });
-  }, [distance]);
-
-  // Add useEffect to update distance when locations change
-  useEffect(() => {
-    if (tempSelectionsFrom && tempSelectionsTo) {
-      console.log("Locations updated:", {
-        from: tempSelectionsFrom,
-        to: tempSelectionsTo,
-        currentDistance: distance,
-      });
-
-      // If we have a distance, make sure it's saved
-      if (distance > 0) {
-        const existingData = JSON.parse(
-          localStorage.getItem("orderFormData") || "{}"
-        );
-        localStorage.setItem(
-          "orderFormData",
-          JSON.stringify({
-            ...existingData,
-            kilometer: distance,
-          })
-        );
-      }
-    }
-  }, [tempSelectionsFrom, tempSelectionsTo, distance]);
+    localStorage.setItem("orderFormData", JSON.stringify(updatedData));
+  };
 
   return (
     <Form
@@ -550,8 +490,28 @@ const Address = forwardRef((props, ref) => {
         <TextArea rows={1} />
       </Form.Item>
 
+      {/* <div style={{ marginBottom: '20px' }}>
+        <Button 
+          onClick={() => {
+            const formData = form.getFieldsValue();
+            console.log("Current distance:", {
+              formValue: formData.kilometer,
+              stateValue: distance,
+              storedValue: JSON.parse(localStorage.getItem("orderFormData"))?.kilometer
+            });
+          }}
+          style={{ marginRight: '10px' }}
+        >
+          Check Distance
+        </Button>
+        <span>Current Distance: {distance} km</span>
+      </div> */}
+
       <div className="estimatedshippingfee__map">
-        <App ref={appRef} getDistance={handleGetDistance} />
+        <App 
+          ref={appRef} 
+          getDistance={handleGetDistance}
+        />
       </div>
 
       <Modal

@@ -215,9 +215,13 @@ const Price = forwardRef((props, ref) => {
         return total + (service ? service.price : 0);
       }, 0);
 
+      // Get distance from localStorage
+      const distance = localStorage.getItem("orderDistance");
+
       console.log("Price calculation:", {
         shippingFee,
         extraServicesTotal,
+        distance,
         total: shippingFee + extraServicesTotal,
       });
 
@@ -229,6 +233,7 @@ const Price = forwardRef((props, ref) => {
         selectedShippingMethod,
         totalPrice: finalTotal,
         estimatePrice: shippingFee,
+        distance: distance ? parseFloat(distance) : 0,
       };
       localStorage.setItem("priceFormData", JSON.stringify(priceData));
       localStorage.setItem("orderTotalPrice", finalTotal.toString());
@@ -295,7 +300,7 @@ const Price = forwardRef((props, ref) => {
       try {
         const fishData = JSON.parse(localStorage.getItem("fishFormData"));
         const addressData = JSON.parse(localStorage.getItem("orderFormData"));
-        const distance = parseFloat(localStorage.getItem("orderDistance"));
+        //const distance = parseFloat(localStorage.getItem("orderDistance"));
 
         // Submit order first
         const orderData = {
@@ -312,7 +317,7 @@ const Price = forwardRef((props, ref) => {
           mediumBox: parseInt(fishData.boxCounts?.medium || 0),
           largeBox: parseInt(fishData.boxCounts?.large || 0),
           extraLargeBox: parseInt(fishData.boxCounts?.extraLarge || 0),
-          kilometer: parseFloat(distance || 0),
+          kilometer: parseFloat(addressData.kilometer || 0),
           totalWeight: parseFloat(getTotalWeightFromStorage() || 0),
           quantity: parseInt(fishData.fishDetails?.length || 0),
           type: "OVERSEA",

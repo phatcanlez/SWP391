@@ -48,7 +48,7 @@ class App extends Component {
     this.directionsService.route(request, (result, status) => {
       if (status === google.maps.DirectionsStatus.OK) {
         this.directionsRenderer.setDirections(result);
-        const distance = result.routes[0].legs[0].distance.text;
+        const distance = result.routes[0].legs[0].distance.value / 1000;
         const duration = result.routes[0].legs[0].duration.text;
         this.setState({ distance, duration }, () => {
           if (distance > 0) {

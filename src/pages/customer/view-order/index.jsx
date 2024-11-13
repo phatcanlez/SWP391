@@ -178,7 +178,7 @@ function ViewOrderDetail() {
           </div>
         </div>
         <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-          Distance: {order?.orderDetail?.kilometer}
+          Distance: {order?.orderDetail?.kilometer} km
         </h6>
       </div>
 
