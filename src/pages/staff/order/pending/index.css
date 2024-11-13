@@ -12,15 +12,17 @@
 }
 
 .done-btn {
-    
+
     background-color: #2cae56cf;
-   
+
 }
-.done{
+
+.done {
     display: flex;
     justify-content: flex-end
 }
-.btn-item{
+
+.btn-item {
     font-size: 15px;
     font-weight: 500;
     margin-top: 40px;
@@ -30,6 +32,11 @@
     border-radius: 8px;
     cursor: pointer;
 }
-.nextStep-btn{
+
+.nextStep-btn {
     background-color: #e25822;
+}
+
+.ant-tooltip {
+    display: none !important;
 }
