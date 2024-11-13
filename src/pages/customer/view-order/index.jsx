@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
 import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
+import { Button } from "antd";
 
 function ViewOrderDetail() {
   const { id } = useParams();
@@ -32,7 +33,9 @@ function ViewOrderDetail() {
   };
   useEffect(() => {
     fetchOrderDetail(id);
-  }, [id, status]);
+  }, []);
+
+  console.log(order);
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
     try {
@@ -40,6 +43,17 @@ function ViewOrderDetail() {
     } catch (error) {
       console.error("Định dạng ngày không hợp lệ:", error);
       return "Ngày không hợp lệ"; // Xử lý lỗi khi parse thất bại
+    }
+  };
+
+  const handleBuy = async () => {
+    try {
+      const response = await api.put(`payment?orderId=${id}`);
+      console.log(response.data);
+      window.open(response.data);
+      fetchOrderDetail();
+    } catch (err) {
+      console.log(err);
     }
   };
   return (
@@ -165,6 +179,22 @@ function ViewOrderDetail() {
             </span>
           </p>
         </div>
+      </div>
+      {/*       
+      <h5 className="title">Delivery status</h5>
+      <div className="bg-w">
+        
+      </div> */}
+
+      <h5 className="title">Payment</h5>
+      <div className="bg-w">
+        {order?.payment?.status === "UNPAYED" ? (
+          <div>
+            <Button onClick={handleBuy}>Continue to pay for delivery</Button>
+          </div>
+        ) : (
+          <p>You have already pay for this order</p>
+        )}
       </div>
     </div>
   );

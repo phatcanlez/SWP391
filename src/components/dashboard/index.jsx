@@ -85,17 +85,19 @@ function Dashboard() {
     getItem("My Profile", "profile", <UserOutlined />),
   ];
   return (
-    <div>
+    <div style={{ marginTop: "20px" }}>
       <Layout>
-        <Sider style={{ background: "#f5f5f5" }}>
-          <Link to="/">
-            <img src={logo} alt="" />
-          </Link>
-          <h4>KOIKICHI</h4>
+        <Sider className="sider" style={{ background: "#f5f5f5" }}>
+          <div className="sider__header">
+            <Link to="/">
+              <img src={logo} alt="" />
+            </Link>
+            <h4>KOIKICHI</h4>
+          </div>
           <Menu mode="inline" items={items} />
         </Sider>
         <Layout>
-          <Content
+          <Content className="ctn"
             style={{
               margin: "0 16px",
             }}
@@ -109,7 +111,12 @@ function Dashboard() {
               <Breadcrumb.Item></Breadcrumb.Item>
             </Breadcrumb>
 
-            <div>
+            <div
+              style={{
+                padding: 24,
+                minHeight: 360,
+              }}
+            >
               <Outlet />
             </div>
           </Content>
