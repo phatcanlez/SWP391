@@ -5,7 +5,9 @@ import { toast } from "react-toastify";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
 import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
-import { Steps } from "antd";
+
+import { Button, Steps } from "antd";
+
 
 function ViewOrderDetail() {
   const { id } = useParams();
@@ -74,6 +76,7 @@ function ViewOrderDetail() {
   };
   useEffect(() => {
     fetchOrderDetail(id);
+
   }, [id]);
 
   useEffect(() => {
@@ -86,6 +89,7 @@ function ViewOrderDetail() {
     }
   }, [order]);
 
+
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
     try {
@@ -93,6 +97,17 @@ function ViewOrderDetail() {
     } catch (error) {
       console.error("Định dạng ngày không hợp lệ:", error);
       return "Ngày không hợp lệ"; // Xử lý lỗi khi parse thất bại
+    }
+  };
+
+  const handleBuy = async () => {
+    try {
+      const response = await api.put(`payment?orderId=${id}`);
+      console.log(response.data);
+      window.open(response.data);
+      fetchOrderDetail();
+    } catch (err) {
+      console.log(err);
     }
   };
   return (
@@ -219,6 +234,7 @@ function ViewOrderDetail() {
           </p>
         </div>
       </div>
+
       <h5 className="title" style={{ marginBottom: "20px" }}>
         Order History
       </h5>
@@ -271,6 +287,7 @@ function ViewOrderDetail() {
             "--ant-primary-5": "#e25822",
           }}
         />
+
       </div>
     </div>
   );

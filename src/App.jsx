@@ -30,6 +30,7 @@ import AllOrder, {
   WaitingOrder,
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
+import AdminProfile from "./pages/admin/profile";
 import FAQ from "./components/faq";
 
 import Account from "./pages/customer/account";
@@ -41,9 +42,18 @@ import StaffFeedback from "./pages/staff/feedback";
 import ViewHistory from "./pages/customer/history";
 import ViewOrderDetail from "./pages/customer/view-order";
 import Overview from "./pages/admin/overview";
+import AllOrder_AD, {
+  FailOrder_AD,
+  History_AD,
+  WaitingOrder_AD,
+} from "./pages/admin/manage-order";
+import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
 import ApproveOrder from "./pages/staff/order/approve-order";
 import Reject from "./pages/staff/reject-page";
 import OrderSuccess from "./pages/staff/success-page";
+import SuccessPage from "./pages/customer/payment/success";
+import PaymentFail from "./pages/customer/payment/fail";
+import Complain from "./pages/staff/complain";
 
 function App() {
   const ProtectRouteAuth = ({ children }) => {
@@ -118,15 +128,23 @@ function App() {
         },
         {
           path: "order",
-          element: <AllOrder />,
+          element: <AllOrder_AD />,
         },
         {
           path: "waiting-order",
-          element: <WaitingOrder />,
+          element: <WaitingOrder_AD />,
         },
         {
           path: "rejected-order",
-          element: <FailOrder />,
+          element: <FailOrder_AD />,
+        },
+        {
+          path: "view/:id",
+          element: <OrderDetail_AD />,
+        },
+        {
+          path: "history",
+          element: <History_AD />,
         },
         {
           path: "report",
@@ -165,8 +183,8 @@ function App() {
           element: <FAQ />,
         },
         {
-          path: "FAQ",
-          element: <FAQ />,
+          path: "profile",
+          element: <AdminProfile />,
         },
       ],
     },
@@ -197,10 +215,15 @@ function App() {
         // },
       ],
     },
-    // {
-    //   path: "pay-success",
-    //   element: <SuccessPage />,
-    // },
+
+    {
+      path: "pay-success",
+      element: <SuccessPage />,
+    },
+    {
+      path: "pay-fail",
+      element: <PaymentFail />,
+    },
 
     {
       path: "staff",
@@ -241,6 +264,10 @@ function App() {
         {
           path: "view-feedback",
           element: <StaffFeedback />,
+        },
+        {
+          path: "view-complain",
+          element: <Complain />,
         },
         {
           path: "approved",

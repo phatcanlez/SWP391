@@ -1,19 +1,18 @@
-
+import api from "../../../../config/axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import "./index.css";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
-import License from "../license";
+import License from "../../../staff/order/license";
 import { Button, Form, Input, Modal, Rate } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
-import InProcess from "../pending/pending";
+import InProcess from "../../../staff/order/pending/pending";
 import { approve } from "../../../../redux/features/orderSlice";
-import api from "../../../../config/axios";
 
-function OrderDetail() {
+function OrderDetail_AD() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
@@ -28,7 +27,6 @@ function OrderDetail() {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
-      console.log(response.data.orderDetail.extraService);
       if (response.data.status.length > 0) {
         setStatus(
           response.data.status[response.data.status.length - 1]?.statusInfo
@@ -36,7 +34,7 @@ function OrderDetail() {
       }
       handleViewFeedBack();
     } catch (err) {
-      toast.error(err);
+      toast.error(err.response.data);
     } finally {
       setLoading(false);
     }
@@ -73,7 +71,7 @@ function OrderDetail() {
       await api.post("/status", values);
       setIsModalOpen(false);
       toast.success("REJECTED");
-      navigate("/staff/reject");
+      navigate("/dashboard/rejected-order");
     } catch (error) {
       toast.error(error.response.data);
     } finally {
@@ -98,8 +96,7 @@ function OrderDetail() {
           order: id,
           description: "The order is approved",
         });
-        console.log(setvalue);
-        dispatch(approve(setvalue.data));
+        dispatch(approve(setvalue));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");
@@ -123,13 +120,15 @@ function OrderDetail() {
   const [feedback, setFeedback] = useState([]);
   const handleViewFeedBack = async () => {
     try {
-      const response = await api.get(`feedback/${id}`);
+      const response = await api.get(`feedback/{orderId}?orderId=${id}`);
       console.log(response.data);
       setFeedback(response.data);
+      console.log(feedback);
     } catch (error) {
-      toast.error(error);
+      toast.error(error.response.data);
     }
   };
+
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -278,11 +277,6 @@ function OrderDetail() {
             )}
           </>
         )}
-        {status === "FAIL" && (
-          <div style={{ textAlign: "center", fontSize: "20px" }}>
-            This order has been rejected!
-          </div>
-        )}
       </div>
       {loading ? (
         <p>Loading...</p>
@@ -297,6 +291,12 @@ function OrderDetail() {
                 APPROVE
               </Button>
             </>
+          )}
+
+          {status === "FAIL" && (
+            <Button className="btn btn-a" onClick={handleAddApprove}>
+              APPROVE
+            </Button>
           )}
         </div>
       )}
@@ -342,4 +342,4 @@ function OrderDetail() {
   );
 }
 
-export default OrderDetail;
+export default OrderDetail_AD;
