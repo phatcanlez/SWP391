@@ -487,7 +487,7 @@ const Price = forwardRef((props, ref) => {
                 >
                   {service.nameService}
                 </Checkbox>
-                <span>{service.price}$ </span>
+                <span>{service.price}</span>
               </div>
             ))}
           </Space>
@@ -500,12 +500,12 @@ const Price = forwardRef((props, ref) => {
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
-              <Text strong>${(estimatePrice || 0).toFixed(2)}</Text>
+              <Text strong>{(estimatePrice || 0).toFixed(2)}</Text>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
-                $
+                
                 {(
                   extraServices
                     .filter((service) =>
@@ -528,7 +528,7 @@ const Price = forwardRef((props, ref) => {
                 Total:
               </Title>
               <Title level={4} type="danger">
-                ${(totalPrice || 0).toFixed(2)}
+                {(totalPrice || 0).toFixed(2)}
               </Title>
             </div>
           </Space>

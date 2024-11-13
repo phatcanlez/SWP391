@@ -17,6 +17,7 @@ function SuccessPage() {
   const postOrderID = async () => {
     try {
       const response = await api.put(`payment-status?orderId=${orderID}`);
+      console.log(orderID);
       if (response.status === 200) {
         toast.success("Payment processed successfully");
       }
