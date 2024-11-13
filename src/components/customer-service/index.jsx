@@ -1,7 +1,15 @@
 import React, { useState } from "react";
-import { FormOutlined, HistoryOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  ExclamationCircleOutlined,
+  FormOutlined,
+  HistoryOutlined,
+  QuestionCircleOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { Layout, Menu, theme } from "antd";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import logo from "../../img/logolayout.png";
+import "./index.css";
 const { Header, Content, Footer, Sider } = Layout;
 
 function getItem(label, key, icon, children) {
@@ -16,6 +24,8 @@ const items = [
   getItem("Account", "account", <UserOutlined />),
   getItem("Create Order", "order", <FormOutlined />),
   getItem("Orders History", "history", <HistoryOutlined />),
+  getItem("Complain", "cuscomplain", <ExclamationCircleOutlined />),
+  getItem("FAQs", "cusfaq", <QuestionCircleOutlined />),
 ];
 
 const CustomerService = () => {
@@ -41,13 +51,19 @@ const CustomerService = () => {
   };
 
   return (
-    <div>
-      <Menu
-        onClick={onClick}
-        selectedKeys={[current]}
-        mode="horizontal"
-        items={items}
-      />
+    <div className="menu">
+      <div className="submenu" style={{ display: "flex" }}>
+        <Link to="/">
+          <img src={logo} alt=""/>
+        </Link>
+        <Menu
+          onClick={onClick}
+          selectedKeys={[current]}
+          mode="horizontal"
+          items={items} 
+          style={{width: "100%"}}
+        />
+      </div>
       <Content
         style={{
           margin: "0 16px",
