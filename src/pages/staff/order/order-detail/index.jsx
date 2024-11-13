@@ -1,7 +1,13 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import "./index.css";
-import { CheckCircleOutlined, DoubleRightOutlined, LoadingOutlined, PhoneOutlined, SmileOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  DoubleRightOutlined,
+  LoadingOutlined,
+  PhoneOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
 import License from "../license";
 import { Button, Form, Input, Modal, Rate, Steps } from "antd";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,13 +20,13 @@ import api from "../../../../config/axios";
 
 function OrderDetail() {
   const { id } = useParams();
+  const user = useSelector((store) => store.user);
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
@@ -59,7 +65,6 @@ function OrderDetail() {
     setFBModalOpen(true);
   };
 
-  const user = useSelector((store) => store.user);
   const [description, setDescription] = useState("");
 
   const handleSubmitReject = async (values) => {
@@ -129,6 +134,7 @@ function OrderDetail() {
       toast.error(error);
     }
   };
+
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -162,7 +168,7 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
+                <span className="color">{user?.name}</span> - (+84)
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
@@ -270,7 +276,8 @@ function OrderDetail() {
         )}
         {status === "SUCCESS" && (
           <>
-            <Steps className="step"
+            <Steps
+              className="step"
               items={[
                 {
                   title: "Approved",

@@ -151,7 +151,7 @@ function ApproveOrder() {
             <div className="item">
               <div>
                 <p>
-                  <span className="color">{order?.account?.name}</span> - (+84)
+                  <span className="color">{user?.name}</span> - (+84)
                   {order.senderPhoneNumber}
                 </p>
                 <p>{order.senderAddress}</p>
