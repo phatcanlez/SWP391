@@ -23,7 +23,7 @@ function ViewOrderDetail() {
   const [current, setCurrent] = useState(-1);
   const [staffDetail, setStaffDetail] = useState(null);
   const user = useSelector((store) => store.user);
-  const [isPaid, setIsPaid] = useState(false);
+  const [isPaid, setIsPaid] = useState("");
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -31,7 +31,7 @@ function ViewOrderDetail() {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
-      setIsPaid(response.data.isPaid || false);
+      setIsPaid(response.data.status);
       if (response.data.status.length > 0) {
         const lastStatus =
           response.data.status[response.data.status.length - 1];
@@ -394,7 +394,7 @@ function ViewOrderDetail() {
         )}
       </div>
 
-      {status === "WAITING" && !isPaid && (
+      {status === "WAITING" && isPaid ==="UNPAY" && (
         <div style={{ marginTop: "20px", textAlign: "center" }}>
           <Button
             type="primary"
