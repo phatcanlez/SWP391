@@ -73,7 +73,7 @@ function LoginPage() {
 
       if (role === "MANAGER") navigate("/dashboard");
       if (role === "STAFF") navigate("/staff/order");
-      if (role === "CUSTOMER") navigate("/customer-service/account");
+      if (role === "CUSTOMER") navigate("/customer-service/history");
     } catch (err) {
       console.error(err);
       toast.error("Wrong username or password!");

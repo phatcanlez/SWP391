@@ -75,8 +75,10 @@ function FormDisabledDemo() {
 
         if (current === steps.length - 1) {
           // Kiểm tra dữ liệu trước khi submit
-          const fishData = JSON.parse(localStorage.getItem("fishFormData") || '{}');
-          
+          const fishData = JSON.parse(
+            localStorage.getItem("fishFormData") || "{}"
+          );
+
           // Kiểm tra dữ liệu cá
           if (!fishData.fishDetails || fishData.fishDetails.length === 0) {
             message.error("Please add at least one fish");
@@ -123,7 +125,7 @@ function FormDisabledDemo() {
     // Luôn cho phép quay lại step trước
     setCurrent(current - 1);
   };
-  
+
   {
     current > 0 && (
       <Button style={{ margin: "0 8px" }} onClick={prev} type="default">
@@ -168,12 +170,15 @@ function FormDisabledDemo() {
           <div>{steps[current].content}</div>
           <div style={{ marginTop: 16 }}>
             {current < steps.length - 1 && (
-              <Button type="primary" onClick={next}>
+              <Button
+                onClick={next}
+                style={{ backgroundColor: "#2c2c2c", color: "#ffffff" }}
+              >
                 Next
               </Button>
             )}
             {current === steps.length - 1 && (
-              <Button type="primary" onClick={next}>
+              <Button style={{ backgroundColor: "#2c2c2c", color: "#ffffff" }} onClick={next}>
                 Finish
               </Button>
             )}
