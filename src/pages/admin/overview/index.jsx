@@ -15,6 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import axios from "axios";
 
 function Overview() {
   const [loading, setLoading] = useState(false);
@@ -29,24 +30,31 @@ function Overview() {
       const responseOrder1 = await api.get("dashboard-total-order");
       const responseOrder2 = await api.get("dashboard-order-success");
       const responseOrder3 = await api.get("dashboard-order-fail");
-      const responseRevenue = await api.get("dashboard-payment-revenue");
+      // const responseRevenue = await api.get("dashboard-payment-revenue");
+      const responseRevenue = await axios.get(
+        "https://66e55be25cc7f9b6273d1829.mockapi.io/api/v1/Status"
+      );
 
       setData1(response.data);
-      setData2([
-        ...responseOrder1.data.totalOrderByMonth.map((order1) => ({
-          month: order1.month,
-          totalOrder: order1?.count || 0,
-          totalOrderSuccess:
-            responseOrder2.data.totalOrderSuccess.find(
-              (order2) => order2.month === order1.month
-            )?.count || 0,
-          totalOrderFail:
-            responseOrder3.data.totalOrderFail.find(
-              (order3) => order3.month === order1.month
-            )?.count || 0,
-        })),
-      ]);
-      setData3(responseRevenue.data.monthlyRevenue);
+      // setData2([
+      //   ...responseOrder1.data.totalOrderByMonth.map((order1) => ({
+      //     month: order1.month,
+      //     totalOrder: order1?.count || 0,
+      //     totalOrderSuccess:
+      //       responseOrder2.data.totalOrderSuccess.find(
+      //         (order2) => order2.month === order1.month
+      //       )?.count || 0,
+      //     totalOrderFail:
+      //       responseOrder3.data.totalOrderFail.find(
+      //         (order3) => order3.month === order1.month
+      //       )?.count || 0,
+      //   })),
+      // ]);
+      const testdata = await axios.get(
+        "https://66e55be25cc7f9b6273d1829.mockapi.io/api/v1/Movie"
+      );
+      setData2(testdata.data);
+      setData3(responseRevenue.data);
       setLoading(false);
     } catch (err) {
       toast.error(err.response);
@@ -134,11 +142,11 @@ function Overview() {
         </LineChart>
         <BarChart width={500} height={250} data={data3}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="pv" fill="#8884d8" />
+          <Bar dataKey="revenue" fill="#8884d8" />
         </BarChart>
       </div>
     </div>

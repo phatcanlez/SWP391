@@ -1,0 +1,164 @@
+.order-detail {
+    .border {
+        width: 0%;
+        border-color: rgb(222 222 222);
+    }
+
+
+    .bg-w {
+
+        p {
+            font-size: 18px;
+        }
+
+        h3 {
+            font-size: 30px;
+        }
+
+        h5 {
+            font-size: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        h6 {
+            color: #838383;
+            font-size: 16px;
+            font-weight: 550;
+            text-align: left;
+            margin-bottom: 20px;
+
+        }
+    }
+
+    .time-section {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-around;
+
+
+    }
+
+    .title {
+        margin: 20px 0px;
+        font-size: 22px !important;
+        font-weight: 600;
+        padding-left: 25px;
+    }
+
+    .send-section {
+
+        display: grid;
+        grid-template-columns: 1fr 0.5fr 1fr;
+        ;
+        /* 3 cột có kích thước bằng nhau */
+        /* Khoảng cách giữa các ô */
+        justify-items: center;
+
+        padding-bottom: 15px;
+
+
+
+        .item {
+            display: flex;
+            gap: 30px;
+        }
+
+        .color {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+    }
+
+    .detail {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .box {
+        margin: 20px 0px 40px 0px;
+        display: flex;
+        justify-content: space-around;
+
+        .box__item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+    }
+
+    .border-width {
+        border: solid rgb(222 222 222) 1px;
+        width: 100%;
+        height: 0%;
+        margin-bottom: 25px;
+    }
+
+    .s-method {
+        margin-bottom: 50px;
+
+        .item {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 cột có kích thước bằng nhau */
+            /* Khoảng cách giữa các ô */
+            justify-items: center;
+            gap: 60px;
+            padding-bottom: 15px;
+
+
+        }
+
+        .item-cnt {
+            p {
+                font-size: 15px;
+            }
+        }
+
+
+    }
+
+    .btn-wrap {
+        display: flex;
+        justify-content: space-evenly;
+        margin-top: 40px;
+        margin-bottom: 40px;
+
+        .btn {
+            color: white;
+            font-weight: 500;
+            width: 150px;
+            height: 50px;
+            font-size: 18px;
+
+
+        }
+
+        .btn-a {
+            background: #e25822;
+
+        }
+
+        .btn-r {
+            background: black !important;
+        }
+    }
+
+
+}
+
+.fb-btn {
+    background-color: #e25822;
+}
+
+.fail-btn {
+    background-color: #000000;
+}
+
+.ant-modal .ant-modal-title {
+    color: #e25822;
+}
