@@ -5,6 +5,7 @@ import { useForm } from "antd/es/form/Form";
 import { Alert, Form, Input, Modal } from "antd";
 import { HeartOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import "./index.css";
 
 function Complain() {
   const [orderReport, setOrderReport] = useState([]);
@@ -110,13 +111,13 @@ const ComplainDetail = ({ order, onReportClick }) => {
 
         <div className="order__item">
           <p style={{ color: "#727272" }}>Desciption: </p>
-          <p style={{ color: "#727272", fontSize: "16px" }}>
+          <p className="txt" style={{ color: "#727272", fontSize: "16px" }}>
             {order?.reportContent}
           </p>
         </div>
         <div className="order__item">
           <p style={{ color: "#727272" }}>Replied: </p>
-          <p style={{ color: "#727272", fontSize: "16px" }}>
+          <p className="txt" style={{ color: "#727272", fontSize: "16px" }}>
             {order?.empReply}
           </p>
         </div>
