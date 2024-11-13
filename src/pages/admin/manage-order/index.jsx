@@ -10,12 +10,10 @@ function AllOrder_AD() {
 }
 
 function FailOrder_AD() {
-  const user = useSelector((store) => store);
+  // const user = useSelector((store) => store);
   return (
     <div>
-      <AdminOrder
-        path={`/orders/status-emp?status=FAIL&empId=${user.user.id}`}
-      />
+      <AdminOrder path={`/orders/status?status=FAIL`} />
     </div>
   );
 }
@@ -29,12 +27,10 @@ function WaitingOrder_AD() {
 }
 
 function History_AD() {
-  const user = useSelector((store) => store);
+  // const user = useSelector((store) => store);
   return (
     <div>
-      <AdminOrder
-        path={`orders/status-emp?status=SUCCESS&empId=${user.user.id}`}
-      />
+      <AdminOrder path={`orders/status?status=SUCCESS`} />
     </div>
   );
 }

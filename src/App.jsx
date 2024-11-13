@@ -48,8 +48,14 @@ import AllOrder_AD, {
   WaitingOrder_AD,
 } from "./pages/admin/manage-order";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
+import { useEffect } from "react";
+import requestPermissions from "./config/notification";
 
 function App() {
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
     const user = useSelector((store) => store);

@@ -1,14 +1,4 @@
-import CRUDTemplate from "../../../components/crud-template";
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Pagination,
-  Select,
-  Space,
-  Table,
-} from "antd";
+import { Button, Form, Input, Modal, Pagination, Select, Table } from "antd";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

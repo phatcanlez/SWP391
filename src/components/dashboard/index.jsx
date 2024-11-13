@@ -19,12 +19,15 @@ function getItem(label, key, icon, children) {
     key,
     icon,
     children,
+    // label: `${
+    //   key === "sub1" || key === "sub2" ? (
+    //     label
+    //   ) : (
+    //     <Link to={"/dashboard/key"}> {label.text} </Link>
+    //   )
+    // }`,
     label: (
-      <Link
-        to={`/dashboard/${
-          key === "sub1" || key === "sub2" || key === "sub3" ? "" : key
-        }`}
-      >
+      <Link to={`/dashboard/${key === "sub1" || key === "sub2" ? "" : key}`}>
         {label}
       </Link>
     ),
@@ -70,11 +73,11 @@ function Dashboard() {
       getItem("History", "history"),
     ]),
     getItem("Manage User", "manage-user", <PieChartOutlined />),
-    getItem("Manage Service", "sub2", <MenuOutlined />, [
+    getItem("Manage Service", "sub1", <MenuOutlined />, [
       getItem("Extra service", "extra-service"),
       getItem("Delivery", "delivery"),
     ]),
-    getItem("Manage Price", "sub3", <MenuOutlined />, [
+    getItem("Manage Price", "sub2", <MenuOutlined />, [
       getItem("Price list weight", "price-list-weight"),
       getItem("Price list distance", "price-list-distance"),
       getItem("Box price", "box"),

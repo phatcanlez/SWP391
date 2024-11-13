@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-
-import "../overview/index.css";
 import { Card, Col, Row, Statistic, Tooltip } from "antd";
 
 import { toast } from "react-toastify";
@@ -30,31 +28,37 @@ function Overview() {
       const responseOrder1 = await api.get("dashboard-total-order");
       const responseOrder2 = await api.get("dashboard-order-success");
       const responseOrder3 = await api.get("dashboard-order-fail");
-      // const responseRevenue = await api.get("dashboard-payment-revenue");
-      const responseRevenue = await axios.get(
-        "https://66e55be25cc7f9b6273d1829.mockapi.io/api/v1/Status"
-      );
+      const responseRevenue = await api.get("dashboard-payment-revenue");
+      // const responseRevenue = await axios.get(
+      //   "https://66e55be25cc7f9b6273d1829.mockapi.io/api/v1/Status"
+      // );
 
       setData1(response.data);
-      // setData2([
-      //   ...responseOrder1.data.totalOrderByMonth.map((order1) => ({
-      //     month: order1.month,
-      //     totalOrder: order1?.count || 0,
-      //     totalOrderSuccess:
-      //       responseOrder2.data.totalOrderSuccess.find(
-      //         (order2) => order2.month === order1.month
-      //       )?.count || 0,
-      //     totalOrderFail:
-      //       responseOrder3.data.totalOrderFail.find(
-      //         (order3) => order3.month === order1.month
-      //       )?.count || 0,
-      //   })),
-      // ]);
-      const testdata = await axios.get(
-        "https://66e55be25cc7f9b6273d1829.mockapi.io/api/v1/Movie"
+      setData2([
+        ...responseOrder1.data.totalOrderByMonth.map((order1) => ({
+          month: order1.month,
+          totalOrder: order1?.count || 0,
+          totalOrderSuccess:
+            responseOrder2.data.totalOrderSuccess.find(
+              (order2) => order2.month === order1.month
+            )?.count || 0,
+          totalOrderFail:
+            responseOrder3.data.totalOrderFail.find(
+              (order3) => order3.month === order1.month
+            )?.count || 0,
+        })),
+      ]);
+      // const testdata = await axios.get(
+      //   "https://66e55be25cc7f9b6273d1829.mockapi.io/api/v1/Movie"
+      // );
+      // setData2(testdata.data);
+      setData3(
+        responseRevenue.data.monthlyRevenue.sort(
+          (a, b) =>
+            new Date(a.day.split("/")[1], a.day.split("/")[0] - 1) -
+            new Date(b.day.split("/")[1], b.day.split("/")[0] - 1)
+        )
       );
-      setData2(testdata.data);
-      setData3(responseRevenue.data);
       setLoading(false);
     } catch (err) {
       toast.error(err.response);
@@ -70,7 +74,7 @@ function Overview() {
     <div>
       <Row gutter={16}>
         <Col span={7}>
-          <Card bordered={false} className="custom-card" loading={loading}>
+          <Card bordered={false} styles={{ height: "150px" }} loading={loading}>
             <Statistic
               title="Total Account"
               value={data1?.totalAccount}
@@ -84,7 +88,7 @@ function Overview() {
         <Col span={5}>
           <Card
             bordered={false}
-            className="custom-card"
+            styles={{ height: "150px" }}
             style={{ alignContent: "center" }}
             loading={loading}
           >
@@ -94,7 +98,7 @@ function Overview() {
           </Card>
         </Col>
         <Col span={7}>
-          <Card bordered={false} className="custom-card" loading={loading}>
+          <Card bordered={false} styles={{ height: "150px" }} loading={loading}>
             <Statistic
               title="Total Feedback"
               value={data1?.totalFeedback}
@@ -108,7 +112,7 @@ function Overview() {
         <Col span={5}>
           <Card
             bordered={false}
-            className="custom-card"
+            styles={{ height: "150px" }}
             style={{ alignContent: "center" }}
             loading={loading}
           >
@@ -142,11 +146,11 @@ function Overview() {
         </LineChart>
         <BarChart width={500} height={250} data={data3}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
+          <XAxis dataKey="day" />
+          <YAxis tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="revenue" fill="#8884d8" />
+          <Bar dataKey="totalPrice" fill="#8884d8" />
         </BarChart>
       </div>
     </div>
