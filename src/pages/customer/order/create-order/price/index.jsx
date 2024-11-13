@@ -393,50 +393,47 @@ const Price = forwardRef((props, ref) => {
   return (
     <Card>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h4>Shipping Method</h4>
-        </div>
+        <Title level={4} style={{ marginBottom: 24, color: '#e25822' }}>Shipping Method</Title>
 
         <Spin spinning={loading}>
           <Radio.Group
             onChange={handleShippingMethodChange}
             value={selectedShippingMethod}
+            style={{ width: '100%' }}
           >
             <Space direction="vertical" style={{ width: "100%" }}>
               {shippingMethods.map((method) => (
-                <Card key={method.shipMethodId}>
+                <Card 
+                  key={method.shipMethodId}
+                  style={{ 
+                    width: '100%',
+                    cursor: 'pointer',
+                    border: selectedShippingMethod === method.shipMethodId ? '2px solid #2c2c2c' : '1px solid #d9d9d9'
+                  }}
+                  onClick={() => setSelectedShippingMethod(method.shipMethodId)}
+                >
                   <Radio value={method.shipMethodId}>
-                    <Space>
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center',
+                      width: '100%',
+                      gap: '16px'
+                    }}>
                       <CarOutlined
                         style={{
                           fontSize: "24px",
-                          color:
-                            method.shipMethodId === 1
-                              ? "#ff4d4f"
-                              : method.shipMethodId === 2
-                              ? "#1890ff"
-                              : "#52c41a",
+                          color: method.shipMethodId === selectedShippingMethod ? '#2c2c2c' : '#666'
                         }}
                       />
-                      <div>
-                        <span style={{ fontWeight: "bold" }}>
+                      <div style={{ flex: 1 }}>
+                        <Text strong style={{ fontSize: '16px', display: 'block' }}>
                           {method.name}
-                        </span>
-                        <br />
-                        <span style={{ color: "rgba(0, 0, 0, 0.45)" }}>
+                        </Text>
+                        <Text type="secondary" style={{ fontSize: '14px' }}>
                           {method.description}
-                        </span>
+                        </Text>
                       </div>
-                      <div style={{ marginLeft: "auto" }}>
-                        <Text strong>${method.price}</Text>
-                      </div>
-                    </Space>
+                    </div>
                   </Radio>
                 </Card>
               ))}
@@ -444,15 +441,7 @@ const Price = forwardRef((props, ref) => {
           </Radio.Group>
         </Spin>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h4>Extra Service</h4>
-        </div>
+        <Title level={4} style={{ margin: '24px 0 16px', color: '#e25822' }}>Extra Services</Title>
 
         <Spin spinning={loading}>
           <Space direction="vertical" style={{ width: "100%" }}>
@@ -483,7 +472,7 @@ const Price = forwardRef((props, ref) => {
         </Spin>
 
         <Card style={{ backgroundColor: "#f5f5f5", marginTop: 16 }}>
-          <Title level={4}>Price Summary</Title>
+          <Title level={4} style={{color: '#e25822'}}>Price Summary</Title>
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
@@ -511,7 +500,7 @@ const Price = forwardRef((props, ref) => {
                 paddingTop: 16,
               }}
             >
-              <Title level={4}>Total:</Title>
+              <Title level={4} style={{color: '#e25822'}}>Total:</Title>
               <Title level={4} type="danger">
                 ${(totalPrice || 0).toFixed(2)}
               </Title>
