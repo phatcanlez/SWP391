@@ -82,8 +82,8 @@ class App extends Component {
         ></div>{" "}
         {/* Map container */}
         <div>
-          <h3>Distance: {this.state.distance}</h3>
-          <h3>Duration: {this.state.duration}</h3>
+          <h3 style={{ fontSize: 20, color: '#e25822'}}>Distance: {this.state.distance}</h3>
+          <h3 style={{ fontSize: 20, color: '#e25822'}}>Duration: {this.state.duration}</h3>
         </div>
       </div>
     );
