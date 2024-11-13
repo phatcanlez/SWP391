@@ -1,0 +1,11 @@
+.submenu {
+  display: flex;
+  justify-content: start;
+  height: 60px;
+  img {
+    width: 90px;
+    height: 60px;
+    background-color: #ffffff;
+    padding: 0px 10px;
+  }
+}
