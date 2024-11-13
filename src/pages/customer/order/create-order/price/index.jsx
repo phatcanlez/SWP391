@@ -505,7 +505,6 @@ const Price = forwardRef((props, ref) => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
-                
                 {(
                   extraServices
                     .filter((service) =>
