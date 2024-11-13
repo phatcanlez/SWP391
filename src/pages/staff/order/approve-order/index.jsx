@@ -117,6 +117,7 @@ function ApproveOrder() {
       toast.error(error);
     }
   };
+  console.log(order);
   return (
     <div>
       <div className="order-detail">
@@ -244,6 +245,7 @@ function ApproveOrder() {
         </div>
 
         <h5 className="title">Delivery status</h5>
+        
         <div className="bg-w">
           {(status === "APPROVED" ||
             status === "PENDING" ||
