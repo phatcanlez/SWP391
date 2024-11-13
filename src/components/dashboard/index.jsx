@@ -71,6 +71,8 @@ function Dashboard() {
           )
         : null,
       getItem("History", "history"),
+      getItem("UnRefund", "un-refund"),
+      getItem("Refunded", "refunded"),
     ]),
     getItem("Manage User", "manage-user", <PieChartOutlined />),
     getItem("Manage Service", "sub1", <MenuOutlined />, [
@@ -92,15 +94,14 @@ function Dashboard() {
       <Layout>
         <Sider className="sider" style={{ background: "#f5f5f5" }}>
           <div className="sider__header">
-            <Link to="/">
-              <img src={logo} alt="" />
-            </Link>
+            <img src={logo} alt="" />
             <h4>KOIKICHI</h4>
           </div>
           <Menu mode="inline" items={items} />
         </Sider>
         <Layout>
-          <Content className="ctn"
+          <Content
+            className="ctn"
             style={{
               margin: "0 16px",
             }}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, Col, Row, Statistic, Tooltip } from "antd";
-
+import "./index.css";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
 import {
@@ -73,8 +73,8 @@ function Overview() {
   return (
     <div>
       <Row gutter={16}>
-        <Col span={7}>
-          <Card bordered={false} styles={{ height: "150px" }} loading={loading}>
+        <Col span={6}>
+          <Card bordered={false} className="card-style" loading={loading}>
             <Statistic
               title="Total Account"
               value={data1?.totalAccount}
@@ -88,17 +88,18 @@ function Overview() {
         <Col span={5}>
           <Card
             bordered={false}
-            styles={{ height: "150px" }}
+            className="card-style"
             style={{ alignContent: "center" }}
             loading={loading}
           >
+            <p style={{ color: "red" }}>Account Details</p>
             <p>Customer : {data1?.totalCustomer}</p>
             <p>Staff : {data1?.totalStaff}</p>
             <p>Manager : {data1?.totalManager}</p>
           </Card>
         </Col>
         <Col span={7}>
-          <Card bordered={false} styles={{ height: "150px" }} loading={loading}>
+          <Card bordered={false} className="card-style" loading={loading}>
             <Statistic
               title="Total Feedback"
               value={data1?.totalFeedback}
@@ -109,13 +110,14 @@ function Overview() {
             />
           </Card>
         </Col>
-        <Col span={5}>
+        <Col span={6}>
           <Card
             bordered={false}
-            styles={{ height: "150px" }}
+            className="card-style"
             style={{ alignContent: "center" }}
             loading={loading}
           >
+            <p style={{ color: "red" }}>Feedback Details</p>
             <p>Avarage Rating : {data1?.feedbackAvarageRating}</p>
             <p>Less Than 4 : {data1?.totalFeedbackLessThan4}</p>
             <p>Greater Than 4 : {data1?.totalFeedbackGreaterThan4}</p>

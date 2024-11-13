@@ -1,4 +1,4 @@
-import { Button, Table } from "antd";
+import { Button, Popconfirm, Table } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../config/axios";
@@ -22,7 +22,7 @@ function AdminOrder({ path, isPaging = false }) {
         ? `${path}?page=${page - 1}&size=${pageSize}`
         : path;
       const response = await api.get(finalPath);
-      console.log(response);
+      console.log(response.data);
       let finalData = null;
       if (isPaging) {
         finalData = response.data.content;
@@ -31,6 +31,18 @@ function AdminOrder({ path, isPaging = false }) {
         finalData = response.data;
       }
       setOrder(finalData); // Assuming your API returns orders in 'content'
+      setLoading(false);
+    } catch (e) {
+      console.log("Error", e);
+      setLoading(false);
+    }
+  };
+
+  const refund = async (value) => {
+    setLoading(true);
+    console.log(value);
+    try {
+      await api.put(`orders/refund?orderId=${value}`);
       setLoading(false);
     } catch (e) {
       console.log("Error", e);
@@ -76,11 +88,33 @@ function AdminOrder({ path, isPaging = false }) {
       title: "",
       dataIndex: "note",
       key: "note",
-      render: (record, value) => (
-        <Button onClick={() => navigate(`/dashboard/view/${value.orderID}`)}>
-          View
-        </Button>
-      ),
+      render: (record, value) =>
+        `${path}` === "orders/status?status=UNREFUND" ? (
+          <Popconfirm
+            title="Accept Refund"
+            description="Are you sure to accept this refund?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => refund(value.orderID)}
+            loading={loading}
+          >
+            <Button>Accept</Button>
+          </Popconfirm>
+        ) : (
+          // <Popconfirm
+          //   title="Accept Refund"
+          //   description="Are you sure to accept this refund?"
+          //   okText="Yes"
+          //   cancelText="No"
+          //   onConfirm={() => refund(value.orderID)}
+          //   loading={loading}
+          // >
+          //   <Button>View</Button>
+          // </Popconfirm>
+          <Button onClick={() => navigate(`/dashboard/view/${value.orderID}`)}>
+            View
+          </Button>
+        ),
     },
   ];
 

@@ -83,7 +83,7 @@ class App extends Component {
         {/* Map container */}
         <div>
           <h3>Distance: {this.state.distance}</h3>
-          <h3>Duration: {this.state.duration}</h3>
+          {/* <h3>Duration: {this.state.duration}</h3> */}
         </div>
       </div>
     );

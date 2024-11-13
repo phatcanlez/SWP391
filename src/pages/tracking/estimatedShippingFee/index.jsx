@@ -26,7 +26,7 @@ function EstimatedShippingFee() {
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [where, setWhere] = useState("");
-  
+
   // const [tempSelectionsFrom, setTempSelectionsFrom] = useState({
   //   cityName: "",
   //   districtName: "",
@@ -449,7 +449,7 @@ function EstimatedShippingFee() {
             <img src={airplane} />
             <div>Total shipping cost</div>
             <div style={{ color: "red", paddingTop: 50 }}>
-              {shippingCost === 0 ? "$-" : "~$ " + shippingCost}
+              {shippingCost === 0 ? "~ VND" : Math.ceil(shippingCost) + " VND"}
             </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
