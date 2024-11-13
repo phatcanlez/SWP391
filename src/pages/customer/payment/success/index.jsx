@@ -17,7 +17,6 @@ function SuccessPage() {
   const postOrderID = async () => {
     try {
       const response = await api.put(`payment-status?orderId=${orderID}`);
-       
     } catch (error) {
       toast.error(error);
     }
@@ -42,7 +41,7 @@ function SuccessPage() {
             type="primary"
             key="console"
             onClick={() => {
-              navigate("/customer-service/history");
+              navigate(`/customer-service/history`);
             }}
           >
             Go Order History
