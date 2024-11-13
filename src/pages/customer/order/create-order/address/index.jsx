@@ -49,6 +49,9 @@ const Address = forwardRef((props, ref) => {
 
   const appRef = useRef();
 
+  // Thêm state để lưu loại shipping
+  const [shippingType, setShippingType] = useState("domestic"); // 'domestic' hoặc 'oversea'
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -301,30 +304,19 @@ const Address = forwardRef((props, ref) => {
   const handleGetDistance = (newDistance) => {
     if (newDistance && newDistance > 0) {
       const roundedDistance = Math.round(newDistance * 100) / 100;
-      
-      // Cập nhật state và form ngay lập tức
-      setDistance(roundedDistance);
+
+      // Update form and localStorage with the distance
       form.setFieldsValue({ kilometer: roundedDistance });
-      
-      // Lưu vào localStorage ngay lập tức với tất cả dữ liệu hiện tại
-      const currentFormValues = form.getFieldsValue();
-      const updatedData = {
-        ...currentFormValues,
-        kilometer: roundedDistance,
-      };
+      localStorage.setItem("orderDistance", roundedDistance.toString());
 
-      localStorage.setItem("orderFormData", JSON.stringify(updatedData));
+      // Update existing orderFormData with new distance
+      const existingData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
+      localStorage.setItem("orderFormData", JSON.stringify({
+        ...existingData,
+        kilometer: roundedDistance
+      }));
 
-      // Log để kiểm tra
-      console.log("Distance saved immediately:", {
-        distance: roundedDistance,
-        formData: updatedData
-      });
-
-      // Thông báo cho component cha nếu cần
-      if (props.onDistanceChange) {
-        props.onDistanceChange(roundedDistance);
-      }
+      console.log("Distance saved:", roundedDistance);
     }
   };
 
@@ -332,7 +324,7 @@ const Address = forwardRef((props, ref) => {
     const savedData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
     if (savedData) {
       form.setFieldsValue(savedData);
-      
+
       if (savedData.kilometer) {
         setDistance(savedData.kilometer);
       }
@@ -342,7 +334,10 @@ const Address = forwardRef((props, ref) => {
       if (savedData.receiverAddress) {
         setTempSelectionsTo(savedData.receiverAddress);
       }
-      
+      if (savedData.shippingType) {
+        setShippingType(savedData.shippingType);
+      }
+
       console.log("Loaded saved data:", savedData);
     }
   }, []);
@@ -351,13 +346,16 @@ const Address = forwardRef((props, ref) => {
     const existingData = JSON.parse(
       localStorage.getItem("orderFormData") || "{}"
     );
-    
+
     const updatedData = {
       ...existingData,
       ...allValues,
       kilometer: allValues.kilometer || existingData.kilometer,
       senderAddress: allValues.senderAddress || existingData.senderAddress,
-      receiverAddress: allValues.receiverAddress || existingData.receiverAddress
+      receiverAddress:
+        allValues.receiverAddress || existingData.receiverAddress,
+      shippingType: allValues.shippingType || existingData.shippingType,
+      type: allValues.shippingType === 'oversea' ? 'OVERSEA' : 'DOMESTIC'
     };
 
     localStorage.setItem("orderFormData", JSON.stringify(updatedData));
@@ -409,17 +407,17 @@ const Address = forwardRef((props, ref) => {
             handleShowModal(e);
           }}
           value="From"
-          style={{ 
+          style={{
             width: "200px",
             backgroundColor: "#e25822",
             borderColor: "#e25822",
             height: "40px",
             borderRadius: "6px",
             boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
-            '&:hover': {
+            "&:hover": {
               backgroundColor: "#d14812",
               borderColor: "#d14812",
-            }
+            },
           }}
         >
           Select sender location
@@ -427,6 +425,60 @@ const Address = forwardRef((props, ref) => {
       </div>
 
       <div>Receiver Information</div>
+      <Form.Item
+        label="Shipping Type"
+        name="shippingType"
+        rules={[{ required: true, message: "Please select shipping type!" }]}
+        initialValue="domestic"
+      >
+        <Select
+          onChange={(value) => {
+            setShippingType(value);
+
+            // Reset receiver address khi chuyển đổi shipping type
+            form.setFieldsValue({
+              receiverAddress: "",
+            });
+
+            // Cập nhật localStorage với type
+            const existingData = JSON.parse(
+              localStorage.getItem("orderFormData") || "{}"
+            );
+
+            const updatedData = {
+              ...existingData,
+              shippingType: value,
+              receiverAddress: "", // Reset receiver address trong localStorage
+              type: value === 'oversea' ? 'OVERSEA' : 'DOMESTIC'
+            };
+
+            localStorage.setItem("orderFormData", JSON.stringify(updatedData));
+
+            // Reset các state liên quan nếu chuyển từ domestic sang oversea
+            if (value === "oversea") {
+              setTempSelectionsTo("");
+            }
+          }}
+          style={{
+            width: "100%",
+          }}
+          dropdownStyle={{
+            borderRadius: "6px",
+          }}
+          className="shipping-type-select"
+        >
+          <Select.Option value="domestic">
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <span style={{ marginLeft: 8 }}>Domestic</span>
+            </div>
+          </Select.Option>
+          <Select.Option value="oversea">
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <span style={{ marginLeft: 8 }}>Oversea</span>
+            </div>
+          </Select.Option>
+        </Select>
+      </Form.Item>
       <Form.Item
         label="Receiver's Name"
         name="receiverName"
@@ -452,39 +504,76 @@ const Address = forwardRef((props, ref) => {
           { required: true, message: "Please input receiver's address!" },
         ]}
       >
-        <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
+        {shippingType === "domestic" ? (
+          <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
+        ) : (
+          <Input.TextArea
+            placeholder="Enter overseas address"
+            autoSize={{ minRows: 2, maxRows: 6 }}
+            onBlur={(e) => {
+              const overseaAddress = e.target.value;
+              if (overseaAddress) {
+                // Cập nhật form và localStorage
+                form.setFieldsValue({ receiverAddress: overseaAddress });
+                setTempSelectionsTo(overseaAddress);
+
+                const existingData = JSON.parse(
+                  localStorage.getItem("orderFormData") || "{}"
+                );
+
+                localStorage.setItem(
+                  "orderFormData",
+                  JSON.stringify({
+                    ...existingData,
+                    receiverAddress: overseaAddress,
+                  })
+                );
+
+                // Tính toán distance với địa chỉ mới
+                if (tempSelectionsFrom && appRef.current) {
+                  appRef.current.setLocations(
+                    tempSelectionsFrom,
+                    overseaAddress
+                  );
+                }
+              }
+            }}
+          />
+        )}
       </Form.Item>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <Button
-          type="primary"
-          onClick={(e) => {
-            e.preventDefault();
-            handleShowModal(e);
-          }}
-          value="To"
-          style={{ 
-            width: "200px",
-            backgroundColor: "#e25822",
-            borderColor: "#e25822",
-            height: "40px",
-            borderRadius: "6px",
-            boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
-            '&:hover': {
-              backgroundColor: "#d14812",
-              borderColor: "#d14812",
-            }
+      {shippingType === "domestic" && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "20px",
           }}
         >
-          Select receiver location
-        </Button>
-      </div>
+          <Button
+            type="primary"
+            onClick={(e) => {
+              e.preventDefault();
+              handleShowModal(e);
+            }}
+            value="To"
+            style={{
+              width: "200px",
+              backgroundColor: "#e25822",
+              borderColor: "#e25822",
+              height: "40px",
+              borderRadius: "6px",
+              boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
+              "&:hover": {
+                backgroundColor: "#d14812",
+                borderColor: "#d14812",
+              },
+            }}
+          >
+            Select receiver location
+          </Button>
+        </div>
+      )}
 
       <Form.Item label="Note" name="note">
         <TextArea rows={1} />
@@ -508,10 +597,7 @@ const Address = forwardRef((props, ref) => {
       </div> */}
 
       <div className="estimatedshippingfee__map">
-        <App 
-          ref={appRef} 
-          getDistance={handleGetDistance}
-        />
+        <App ref={appRef} getDistance={handleGetDistance} />
       </div>
 
       <Modal
@@ -523,7 +609,7 @@ const Address = forwardRef((props, ref) => {
           style: {
             backgroundColor: "#e25822",
             borderColor: "#e25822",
-          }
+          },
         }}
       >
         <Form

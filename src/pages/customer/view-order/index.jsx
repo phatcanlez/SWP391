@@ -121,6 +121,9 @@ function ViewOrderDetail() {
       console.log(err);
     }
   };
+
+  const isOversea = () => order?.orderDetail?.type?.toUpperCase() === "OVERSEA";
+
   return (
     <div className="order-detail" style={{ padding: "50px" }}>
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -150,6 +153,24 @@ function ViewOrderDetail() {
 
       <h5 className="title">Send and receive information</h5>
       <div className="bg-w">
+        <div style={{ marginBottom: "20px" }}>
+          <h6 style={{ display: "inline-block", marginRight: "10px" }}>
+            Shipping Type:
+          </h6>
+          <span
+            className="color"
+            style={{
+              textTransform: "capitalize",
+              fontWeight: "bold",
+              backgroundColor: isOversea() ? "#ffeee8" : "#e8f5ff",
+              padding: "4px 12px",
+              borderRadius: "4px",
+            }}
+          >
+            {order?.orderDetail?.type?.toLowerCase() || "Domestic"}
+          </span>
+        </div>
+
         <div className="send-section">
           <div className="item">
             <div>
@@ -163,7 +184,12 @@ function ViewOrderDetail() {
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
           </div>
 
-          <DoubleRightOutlined style={{ fontSize: 18, color: "#e25822" }} />
+          <DoubleRightOutlined
+            style={{
+              fontSize: 18,
+              color: isOversea() ? "#ff6b35" : "#e25822",
+            }}
+          />
 
           <div className="item">
             <div>
@@ -171,15 +197,24 @@ function ViewOrderDetail() {
                 <span className="color">{order.reciverName} </span>- (+84)
                 {order.reciverPhoneNumber}
               </p>
-              <p>{order.reciverAdress}</p>
+              <p
+                style={{
+                  color: isOversea() ? "#ff6b35" : "inherit",
+                  fontStyle: isOversea() ? "italic" : "normal",
+                }}
+              >
+                {order.reciverAdress}
+                {isOversea() && " (Overseas Address)"}
+              </p>
             </div>
-
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
           </div>
         </div>
-        <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-          Distance: {order?.orderDetail?.kilometer} km
-        </h6>
+        {!isOversea() && (
+          <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
+            Distance: {order?.orderDetail?.kilometer} km
+          </h6>
+        )}
       </div>
 
       <h5 className="title">Order information detail</h5>
@@ -192,32 +227,60 @@ function ViewOrderDetail() {
             </h6>
             <h6>
               Total Weight:{" "}
-              <span className="color">{order?.orderDetail?.totalWeight}</span>
+              <span className="color">
+                {order?.orderDetail?.totalWeight} kg
+              </span>
             </h6>
+            <h6>
+              Distance:{" "}
+              <span
+                className="color"
+                style={{
+                  textTransform: "capitalize",
+                  backgroundColor: isOversea() ? "#ffeee8" : "#e8f5ff",
+                  padding: "2px 8px",
+                  borderRadius: "4px",
+                }}
+              >
+                {order?.orderDetail?.kilometer} km
+              </span>
+            </h6>
+            {!isOversea() && (
+              <h6>
+                Distance:{" "}
+                <span className="color">
+                  {order?.orderDetail?.kilometer} km
+                </span>
+              </h6>
+            )}
           </div>
           <License id={id} />
-          <h6 style={{ marginTop: "40px" }}>Box Quantity</h6>
-          <div className="box">
-            <div className="box__item">
-              <p>Small Box</p>
-              <p>{order?.orderDetail?.smallBox}</p>
-            </div>
-            <div className="border"></div>
-            <div className="box__item">
-              <p>Medium Box</p>
-              <p>{order?.orderDetail?.mediumBox}</p>
-            </div>
-            <div className="border"></div>
-            <div className="box__item">
-              <p>Large Box</p>
-              <p>{order?.orderDetail?.largeBox}</p>
-            </div>
-            <div className="border"></div>
-            <div className="box__item">
-              <p>Extra Large Box</p>
-              <p>{order?.orderDetail?.extraLargeBox}</p>
-            </div>
-          </div>
+          {!isOversea() && (
+            <>
+              <h6 style={{ marginTop: "40px" }}>Box Quantity</h6>
+              <div className="box">
+                <div className="box__item">
+                  <p>Small Box</p>
+                  <p>{order?.orderDetail?.smallBox}</p>
+                </div>
+                <div className="border"></div>
+                <div className="box__item">
+                  <p>Medium Box</p>
+                  <p>{order?.orderDetail?.mediumBox}</p>
+                </div>
+                <div className="border"></div>
+                <div className="box__item">
+                  <p>Large Box</p>
+                  <p>{order?.orderDetail?.largeBox}</p>
+                </div>
+                <div className="border"></div>
+                <div className="box__item">
+                  <p>Extra Large Box</p>
+                  <p>{order?.orderDetail?.extraLargeBox}</p>
+                </div>
+              </div>
+            </>
+          )}
           <div className="s-method">
             <h6>Service Method</h6>
             <div className="item">
