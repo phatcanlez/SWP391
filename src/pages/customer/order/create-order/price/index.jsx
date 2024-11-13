@@ -215,9 +215,14 @@ const Price = forwardRef((props, ref) => {
         return total + (service ? service.price : 0);
       }, 0);
 
+      // Get distance from localStorage
+      const distance = parseFloat(localStorage.getItem("orderDistance")) || 0;
+      console.log("Using distance for calculation:", distance);
+
       console.log("Price calculation:", {
         shippingFee,
         extraServicesTotal,
+        distance,
         total: shippingFee + extraServicesTotal,
       });
 
@@ -229,6 +234,7 @@ const Price = forwardRef((props, ref) => {
         selectedShippingMethod,
         totalPrice: finalTotal,
         estimatePrice: shippingFee,
+        distance: distance ? parseFloat(distance) : 0,
       };
       localStorage.setItem("priceFormData", JSON.stringify(priceData));
       localStorage.setItem("orderTotalPrice", finalTotal.toString());
@@ -295,9 +301,8 @@ const Price = forwardRef((props, ref) => {
       try {
         const fishData = JSON.parse(localStorage.getItem("fishFormData"));
         const addressData = JSON.parse(localStorage.getItem("orderFormData"));
-        const distance = parseFloat(localStorage.getItem("orderDistance"));
 
-        // Submit order first
+        // Submit order với type từ addressData
         const orderData = {
           reciverAdress: addressData.receiverAddress,
           senderAddress: addressData.senderAddress,
@@ -312,16 +317,16 @@ const Price = forwardRef((props, ref) => {
           mediumBox: parseInt(fishData.boxCounts?.medium || 0),
           largeBox: parseInt(fishData.boxCounts?.large || 0),
           extraLargeBox: parseInt(fishData.boxCounts?.extraLarge || 0),
-          kilometer: parseFloat(distance || 0),
+          kilometer: parseFloat(addressData.kilometer || 0),
           totalWeight: parseFloat(getTotalWeightFromStorage() || 0),
           quantity: parseInt(fishData.fishDetails?.length || 0),
-          type: "OVERSEA",
+          type: addressData.shippingType.toUpperCase() || "DOMESTIC",
           shipMethod: parseInt(selectedShippingMethod),
           extraService: selectedServices.map((id) => parseInt(id)),
           username: user.username,
         };
 
-        console.log("Submitting order:", orderData);
+        console.log("Submitting order with type:", orderData.type);
         const orderResponse = await api.post("orders", orderData);
         console.log("Order created successfully:", orderResponse.data);
 
@@ -345,7 +350,9 @@ const Price = forwardRef((props, ref) => {
               };
 
               console.log(
-                `Submitting license for fish ${index + 1}:`, licenseData);
+                `Submitting license for fish ${index + 1}:`,
+                licenseData
+              );
               try {
                 await api.post("licence", licenseData);
                 console.log(`License ${index + 1} submitted successfully`);
@@ -393,50 +400,60 @@ const Price = forwardRef((props, ref) => {
   return (
     <Card>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h4>Shipping Method</h4>
-        </div>
+        <Title level={4} style={{ marginBottom: 24, color: "#e25822" }}>
+          Shipping Method
+        </Title>
 
         <Spin spinning={loading}>
           <Radio.Group
             onChange={handleShippingMethodChange}
             value={selectedShippingMethod}
+            style={{ width: "100%" }}
           >
             <Space direction="vertical" style={{ width: "100%" }}>
               {shippingMethods.map((method) => (
-                <Card key={method.shipMethodId}>
+                <Card
+                  key={method.shipMethodId}
+                  style={{
+                    width: "100%",
+                    cursor: "pointer",
+                    border:
+                      selectedShippingMethod === method.shipMethodId
+                        ? "2px solid #2c2c2c"
+                        : "1px solid #d9d9d9",
+                  }}
+                  onClick={() => setSelectedShippingMethod(method.shipMethodId)}
+                >
                   <Radio value={method.shipMethodId}>
-                    <Space>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        gap: "16px",
+                      }}
+                    >
                       <CarOutlined
                         style={{
                           fontSize: "24px",
                           color:
-                            method.shipMethodId === 1
-                              ? "#ff4d4f"
-                              : method.shipMethodId === 2
-                              ? "#1890ff"
-                              : "#52c41a",
+                            method.shipMethodId === selectedShippingMethod
+                              ? "#2c2c2c"
+                              : "#666",
                         }}
                       />
-                      <div>
-                        <span style={{ fontWeight: "bold" }}>
+                      <div style={{ flex: 1 }}>
+                        <Text
+                          strong
+                          style={{ fontSize: "16px", display: "block" }}
+                        >
                           {method.name}
-                        </span>
-                        <br />
-                        <span style={{ color: "rgba(0, 0, 0, 0.45)" }}>
+                        </Text>
+                        <Text type="secondary" style={{ fontSize: "14px" }}>
                           {method.description}
-                        </span>
+                        </Text>
                       </div>
-                      <div style={{ marginLeft: "auto" }}>
-                        <Text strong>${method.price}</Text>
-                      </div>
-                    </Space>
+                    </div>
                   </Radio>
                 </Card>
               ))}
@@ -444,15 +461,9 @@ const Price = forwardRef((props, ref) => {
           </Radio.Group>
         </Spin>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h4>Extra Service</h4>
-        </div>
+        <Title level={4} style={{ margin: "24px 0 16px", color: "#e25822" }}>
+          Extra Services
+        </Title>
 
         <Spin spinning={loading}>
           <Space direction="vertical" style={{ width: "100%" }}>
@@ -476,23 +487,24 @@ const Price = forwardRef((props, ref) => {
                 >
                   {service.nameService}
                 </Checkbox>
-                <span>{service.price}$ </span>
+                <span>{service.price}</span>
               </div>
             ))}
           </Space>
         </Spin>
 
         <Card style={{ backgroundColor: "#f5f5f5", marginTop: 16 }}>
-          <Title level={4}>Price Summary</Title>
+          <Title level={4} style={{ color: "#e25822" }}>
+            Price Summary
+          </Title>
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
-              <Text strong>${(estimatePrice || 0).toFixed(2)}</Text>
+              <Text strong>{(estimatePrice || 0).toFixed(2)}</Text>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
-                $
                 {(
                   extraServices
                     .filter((service) =>
@@ -511,9 +523,11 @@ const Price = forwardRef((props, ref) => {
                 paddingTop: 16,
               }}
             >
-              <Title level={4}>Total:</Title>
+              <Title level={4} style={{ color: "#e25822" }}>
+                Total:
+              </Title>
               <Title level={4} type="danger">
-                ${(totalPrice || 0).toFixed(2)}
+                {(totalPrice || 0).toFixed(2)}
               </Title>
             </div>
           </Space>

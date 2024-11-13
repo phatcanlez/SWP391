@@ -7,7 +7,7 @@ import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
 
 import { Button, Steps } from "antd";
-
+import { useSelector } from "react-redux";
 
 function ViewOrderDetail() {
   const { id } = useParams();
@@ -19,7 +19,13 @@ function ViewOrderDetail() {
   const resultRef = useRef(null);
   const [data, setData] = useState([]);
   const [orderId, setOrderId] = useState("");
+  const [staffInfo, setStaffInfo] = useState("");
   const [current, setCurrent] = useState(-1);
+  const [staffDetail, setStaffDetail] = useState(null);
+  const user = useSelector((store) => store.user);
+
+  // const [isPaid, setIsPaid] = useState(false);
+
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -27,10 +33,24 @@ function ViewOrderDetail() {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
+
+      // setIsPaid(response.data.isPaid || false);
+
       if (response.data.status.length > 0) {
-        setStatus(
-          response.data.status[response.data.status.length - 1]?.statusInfo
-        );
+        const lastStatus =
+          response.data.status[response.data.status.length - 1];
+        setStatus(lastStatus.statusInfo);
+        setStaffInfo(lastStatus.empId);
+
+        if (lastStatus.empId) {
+          try {
+            const staffResponse = await api.get(`account/${lastStatus.empId}`);
+            setStaffDetail(staffResponse.data);
+            console.log("Staff detail:", staffResponse.data);
+          } catch (staffError) {
+            console.error("Error fetching staff detail:", staffError);
+          }
+        }
       }
     } catch (err) {
       toast.error(err.response.data);
@@ -38,6 +58,7 @@ function ViewOrderDetail() {
       setLoading(false);
     }
   };
+  console.log(order);
   const getCurrentStatus = (statusInfo) => {
     switch (statusInfo) {
       case "WAITING":
@@ -52,31 +73,30 @@ function ViewOrderDetail() {
         return -1;
     }
   };
-  const handleTracking = async (values) => {
-    console.log(values);
-    try {
-      const response = await api.get(`orders/${values.orderId}`);
-      setOrderId(values.orderId);
-      setData(response.data.status);
-      const lastStatus = response.data.status[response.data.status.length - 1];
-      if (lastStatus) {
-        setCurrent(getCurrentStatus(lastStatus.statusInfo));
-      }
-      setDisplay("");
-      toast.success("Successfull");
+  // const handleTracking = async (values) => {
+  //   console.log(values);
+  //   try {
+  //     const response = await api.get(`orders/${values.orderId}`);
+  //     setOrderId(values.orderId);
+  //     setData(response.data.status);
+  //     const lastStatus = response.data.status[response.data.status.length - 1];
+  //     if (lastStatus) {
+  //       setCurrent(getCurrentStatus(lastStatus.statusInfo));
+  //     }
+  //     setDisplay("");
+  //     toast.success("Successfull");
 
-      setTimeout(() => {
-        if (resultRef.current) {
-          resultRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
-    } catch (err) {
-      toast.error(err.response.data.Error);
-    }
-  };
+  //     setTimeout(() => {
+  //       if (resultRef.current) {
+  //         resultRef.current.scrollIntoView({ behavior: "smooth" });
+  //       }
+  //     }, 100);
+  //   } catch (err) {
+  //     toast.error(err.response.data.Error);
+  //   }
+  // };
   useEffect(() => {
     fetchOrderDetail(id);
-
   }, [id]);
 
   useEffect(() => {
@@ -88,7 +108,6 @@ function ViewOrderDetail() {
       }
     }
   }, [order]);
-
 
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
@@ -110,6 +129,9 @@ function ViewOrderDetail() {
       console.log(err);
     }
   };
+
+  const isOversea = () => order?.orderDetail?.type?.toUpperCase() === "OVERSEA";
+
   return (
     <div className="order-detail" style={{ padding: "50px" }}>
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -139,11 +161,29 @@ function ViewOrderDetail() {
 
       <h5 className="title">Send and receive information</h5>
       <div className="bg-w">
+        <div style={{ marginBottom: "20px" }}>
+          <h6 style={{ display: "inline-block", marginRight: "10px" }}>
+            Shipping Type:
+          </h6>
+          <span
+            className="color"
+            style={{
+              textTransform: "capitalize",
+              fontWeight: "bold",
+              backgroundColor: isOversea() ? "#ffeee8" : "#e8f5ff",
+              padding: "4px 12px",
+              borderRadius: "4px",
+            }}
+          >
+            {order?.orderDetail?.type?.toLowerCase() || "Domestic"}
+          </span>
+        </div>
+
         <div className="send-section">
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
+                <span className="color">{user?.name}</span> - (+84)
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
@@ -152,7 +192,12 @@ function ViewOrderDetail() {
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
           </div>
 
-          <DoubleRightOutlined style={{ fontSize: 18, color: "#e25822" }} />
+          <DoubleRightOutlined
+            style={{
+              fontSize: 18,
+              color: isOversea() ? "#ff6b35" : "#e25822",
+            }}
+          />
 
           <div className="item">
             <div>
@@ -160,15 +205,24 @@ function ViewOrderDetail() {
                 <span className="color">{order.reciverName} </span>- (+84)
                 {order.reciverPhoneNumber}
               </p>
-              <p>{order.reciverAdress}</p>
+              <p
+                style={{
+                  color: isOversea() ? "#ff6b35" : "inherit",
+                  fontStyle: isOversea() ? "italic" : "normal",
+                }}
+              >
+                {order.reciverAdress}
+                {isOversea() && " (Overseas Address)"}
+              </p>
             </div>
-
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
           </div>
         </div>
-        <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-          Distance: {order?.orderDetail?.kilometer}
-        </h6>
+        {!isOversea() && (
+          <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
+            Distance: {order?.orderDetail?.kilometer} km
+          </h6>
+        )}
       </div>
 
       <h5 className="title">Order information detail</h5>
@@ -181,32 +235,60 @@ function ViewOrderDetail() {
             </h6>
             <h6>
               Total Weight:{" "}
-              <span className="color">{order?.orderDetail?.totalWeight}</span>
+              <span className="color">
+                {order?.orderDetail?.totalWeight} kg
+              </span>
             </h6>
+            <h6>
+              Distance:{" "}
+              <span
+                className="color"
+                style={{
+                  textTransform: "capitalize",
+                  backgroundColor: isOversea() ? "#ffeee8" : "#e8f5ff",
+                  padding: "2px 8px",
+                  borderRadius: "4px",
+                }}
+              >
+                {order?.orderDetail?.kilometer} km
+              </span>
+            </h6>
+            {!isOversea() && (
+              <h6>
+                Distance:{" "}
+                <span className="color">
+                  {order?.orderDetail?.kilometer} km
+                </span>
+              </h6>
+            )}
           </div>
           <License id={id} />
-          <h6 style={{ marginTop: "40px" }}>Box Quantity</h6>
-          <div className="box">
-            <div className="box__item">
-              <p>Small Box</p>
-              <p>{order?.orderDetail?.smallBox}</p>
-            </div>
-            <div className="border"></div>
-            <div className="box__item">
-              <p>Medium Box</p>
-              <p>{order?.orderDetail?.mediumBox}</p>
-            </div>
-            <div className="border"></div>
-            <div className="box__item">
-              <p>Large Box</p>
-              <p>{order?.orderDetail?.largeBox}</p>
-            </div>
-            <div className="border"></div>
-            <div className="box__item">
-              <p>Extra Large Box</p>
-              <p>{order?.orderDetail?.extraLargeBox}</p>
-            </div>
-          </div>
+          {!isOversea() && (
+            <>
+              <h6 style={{ marginTop: "40px" }}>Box Quantity</h6>
+              <div className="box">
+                <div className="box__item">
+                  <p>Small Box</p>
+                  <p>{order?.orderDetail?.smallBox}</p>
+                </div>
+                <div className="border"></div>
+                <div className="box__item">
+                  <p>Medium Box</p>
+                  <p>{order?.orderDetail?.mediumBox}</p>
+                </div>
+                <div className="border"></div>
+                <div className="box__item">
+                  <p>Large Box</p>
+                  <p>{order?.orderDetail?.largeBox}</p>
+                </div>
+                <div className="border"></div>
+                <div className="box__item">
+                  <p>Extra Large Box</p>
+                  <p>{order?.orderDetail?.extraLargeBox}</p>
+                </div>
+              </div>
+            </>
+          )}
           <div className="s-method">
             <h6>Service Method</h6>
             <div className="item">
@@ -287,8 +369,51 @@ function ViewOrderDetail() {
             "--ant-primary-5": "#e25822",
           }}
         />
-
       </div>
+
+      <h5 className="title" style={{ marginBottom: "20px" }}>
+        Staff Info
+      </h5>
+      <div className="bg-w" style={{ marginTop: "20px", padding: "20px" }}>
+        {staffDetail ? (
+          <div className="staff-info">
+            <div className="item">
+              <p>
+                <span className="color">Staff Name:</span> {staffDetail.name}
+              </p>
+            </div>
+            <div className="item">
+              <p>
+                <span className="color">Phone:</span> {staffDetail.phoneNumber}
+              </p>
+            </div>
+            <div className="item">
+              <p>
+                <span className="color">Email:</span> {staffDetail.email}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p>No staff information available</p>
+        )}
+      </div>
+
+
+      {order?.payment?.status === "UNPAYED" && (
+
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <Button
+            type="primary"
+            onClick={handleBuy}
+            style={{
+              backgroundColor: "#e25822",
+              borderColor: "#e25822",
+            }}
+          >
+            Proceed to Payment
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

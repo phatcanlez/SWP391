@@ -54,6 +54,8 @@ import OrderSuccess from "./pages/staff/success-page";
 import SuccessPage from "./pages/customer/payment/success";
 import PaymentFail from "./pages/customer/payment/fail";
 import Complain from "./pages/staff/complain";
+import CustomerComplain from "./pages/customer/complain";
+import CustomerFaqs from "./pages/customer/faqs";
 import { useEffect } from "react";
 import requestPermissions from "./config/notification";
 
@@ -219,6 +221,14 @@ function App() {
         //   path: "payment/:id",
         //   element: <Payment />,
         // },
+        {
+          path: "cuscomplain",
+          element: <CustomerComplain />,
+        },
+        {
+          path: "cusfaq",
+          element: <CustomerFaqs />,
+        },
       ],
     },
 
