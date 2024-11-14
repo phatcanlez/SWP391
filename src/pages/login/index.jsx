@@ -72,9 +72,6 @@ function LoginPage() {
       const { role, token } = response.data;
       localStorage.setItem("token", token);
 
-      //create FCM token
-      // const fcmToken = await getToken(messaging, { vapidKey: "" });
-      // console.log("fcm token :" + fcmToken);
 
       if (role === "MANAGER") navigate("/dashboard/overview");
       if (role === "STAFF") navigate("/staff/order");
