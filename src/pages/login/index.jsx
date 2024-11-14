@@ -2,7 +2,7 @@ import React from "react";
 import AuthenTemplate from "../../components/authen-template";
 import { Button, Checkbox, Form, Input } from "antd";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { googleProvider } from "../../config/firebase";
+import { googleProvider, messaging } from "../../config/firebase";
 import "../login/login.css";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
@@ -13,6 +13,7 @@ import api from "../../config/axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/features/userSlice";
+import { getToken } from "firebase/messaging";
 
 function LoginPage() {
   const dispatch = useDispatch();
@@ -70,6 +71,7 @@ function LoginPage() {
       dispatch(login(response.data));
       const { role, token } = response.data;
       localStorage.setItem("token", token);
+
 
       if (role === "MANAGER") navigate("/dashboard/overview");
       if (role === "STAFF") navigate("/staff/order");

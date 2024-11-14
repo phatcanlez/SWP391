@@ -1,5 +1,4 @@
 import { Pagination, Table } from "antd";
-import CRUDTemplate from "../../../components/crud-template";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
@@ -30,6 +29,17 @@ function Report() {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      filters: [
+        {
+          text: "REPLIED",
+          value: "REPLIED",
+        },
+        {
+          text: "UNREPLIED",
+          value: "UNREPLIED",
+        },
+      ],
+      onFilter: (value, record) => record.status.indexOf(value) === 0,
     },
     {
       title: "Content",
@@ -46,12 +56,17 @@ function Report() {
       dataIndex: "empReply",
       key: "empReply",
     },
+    {
+      title: "orderId",
+      dataIndex: "orderId",
+      key: "orderId",
+    },
   ];
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`report?page=${page}&size=10`);
+      const response = await api.get(`report/page?page=${page}&size=10`);
       console.log(response.data);
       setData(response.data.content);
       setTotalReport(response.data.totalElements);
@@ -90,7 +105,7 @@ function Report() {
         total={totalReport}
         onChange={handlePageChange}
         showQuickJumper
-        showTotal={(total) => `Total ${total} feedback`}
+        showTotal={(total) => `Total ${total} reports`}
       />
     </div>
   );

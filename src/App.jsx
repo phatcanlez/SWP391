@@ -56,8 +56,14 @@ import PaymentFail from "./pages/customer/payment/fail";
 import Complain from "./pages/staff/complain";
 import CustomerComplain from "./pages/customer/complain";
 import CustomerFaqs from "./pages/customer/faqs";
+import { useEffect } from "react";
+import requestPermissions from "./config/notification";
 
 function App() {
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
     const user = useSelector((store) => store);

@@ -20,12 +20,14 @@ function OrderDetail_AD() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [img, setImg] = useState("");
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
+      setImg(response.data.image);
       setService(response.data.orderDetail.extraService);
       if (response.data.status.length > 0) {
         setStatus(
@@ -255,6 +257,7 @@ function OrderDetail_AD() {
       </div>
 
       <h5 className="title">Delivery status</h5>
+
       <div className="bg-w">
         {(status === "APPROVED" ||
           status === "PENDING" ||
@@ -268,6 +271,12 @@ function OrderDetail_AD() {
                 </button>
               </>
             )}
+            {status === "SUCCESS" ? (
+              <img src={img} style={{ margin: "0 auto", display: "block" }} />
+            ) : (
+              ""
+            )}
+
             {status === "SUCCESS" && (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button className="fb-btn btn-item" onClick={showFBModal}>
