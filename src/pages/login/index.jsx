@@ -71,7 +71,7 @@ function LoginPage() {
       const { role, token } = response.data;
       localStorage.setItem("token", token);
 
-      if (role === "MANAGER") navigate("/dashboard");
+      if (role === "MANAGER") navigate("/dashboard/overview");
       if (role === "STAFF") navigate("/staff/order");
       if (role === "CUSTOMER") navigate("/customer-service/history");
     } catch (err) {
