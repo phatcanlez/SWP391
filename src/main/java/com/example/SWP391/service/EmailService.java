@@ -47,6 +47,31 @@ public class EmailService {
         }
     }
 
+    public void sendEmailErrorRuntime(String emailDetail){
+        try {
+            Context context = new Context();
+            context.setVariable("name","phatcanlez@gmail.com");
+            context.setVariable("button","Error");
+            context.setVariable("link","Bug!!!!!!!!!!!");
+            context.setVariable("content",emailDetail);
+            context.setVariable("subject","Error Runtime at " + java.time.LocalDateTime.now());
+
+            String template = templateEngine.process("welcome-template", context);
+            //
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+            mimeMessageHelper.setFrom("Koikichi@gmail.com");
+            mimeMessageHelper.setTo("phatcanlez@gmail.com");
+            mimeMessageHelper.setSubject("Error Runtime");
+            mimeMessageHelper.setText(template, true);
+            javaMailSender.send(mimeMessage);
+        }catch (MessagingException e){
+            e.printStackTrace();
+        }
+    }
+
     public void sendEmailOrderIsWaitingTooLong(Orders orders){
         EmailDetail emailDetail = new EmailDetail();
         emailDetail.setReceiver(orders.getAccount());

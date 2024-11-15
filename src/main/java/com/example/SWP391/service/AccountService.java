@@ -22,21 +22,27 @@ public class AccountService {
     private OrderService orderService;
 
     public List<Account> getAllRestEmployees(){
-        List<Account> listEmp = accountRepository.findByRole(Role.STAFF);
-        if (listEmp.isEmpty()) {
-            return null;
-        }
-        //mảng ds nhân viên đang rảnh
-        List<Account> listRestEmp = new ArrayList<>();
-
-        for (Account account : listEmp) {
-            List<OrderResponse> listApproved = orderService.viewOrderByStatusAndEmpId(StatusInfo.APPROVED ,account.getId());
-            List<OrderResponse> listPending = orderService.viewOrderByStatusAndEmpId(StatusInfo.PENDING ,account.getId());
-            if (listApproved.isEmpty() && listPending.isEmpty()) {
-                listRestEmp.add(account);
+        try {
+            List<Account> listEmp = accountRepository.findByRole(Role.STAFF);
+            if (listEmp.isEmpty()) {
+                return null;
             }
+            //mảng ds nhân viên đang rảnh
+            List<Account> listRestEmp = new ArrayList<>();
+
+            for (Account account : listEmp) {
+                List<OrderResponse> listApproved = orderService.viewOrderByStatusAndEmpId(StatusInfo.APPROVED, account.getId());
+                Thread.sleep(1000);
+                List<OrderResponse> listPending = orderService.viewOrderByStatusAndEmpId(StatusInfo.PENDING, account.getId());
+                if (listApproved.isEmpty() && listPending.isEmpty()) {
+                    listRestEmp.add(account);
+                }
+            }
+            return listRestEmp;
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while getting all rest employees");
         }
-        return listRestEmp;
     }
 
     public List<Account> getAccountByRole(Role role) {

@@ -80,10 +80,21 @@ public class TrackingService {
                 }
             }
         } else {
-            distancePrice = listPrice.getLast().getPrice();
+            float lastPrice = listPrice.getLast().getPrice();
+            System.out.println(price);
+            if (kilometer > listPrice.getLast().getDistance() + 500) {
+                double pricePer50KilometerUpperLastPrice = (kilometer - (listPrice.getLast().getDistance() + 500)) / 50 * (0.1 * price);
+                double priceWithTax = lastPrice + pricePer50KilometerUpperLastPrice + 1000000 //khai báo thuế
+                        + 2000000 //kiểm dịch và chứng nhận y tế sức khỏe
+                        + 1000000; //phí hải quan
+
+                distancePrice = priceWithTax + (0.015 * priceWithTax); //phí chuyển đổi tiền tệ
+            }else {
+                distancePrice = lastPrice;
+            }
         }
 
-        return price + distancePrice + weightPrice;
+        return Math.round((price + weightPrice + distancePrice) / 1000.0) * 1000.0;
     }
 
     public List<Status> getTrackingByOrderID(String orderID) {

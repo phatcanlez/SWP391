@@ -28,36 +28,46 @@ public class DistanceService {
     private static final int BATCH_SIZE = 9; // MapQuest cho phép tối đa 25 locations trong 1 lần gọi
 
     public void processOrder(List<Account> accounts, Orders order) {
-        //mảng để chứa những nhân viên gần nhất với đơn hàng
-        List<DistanceAndEmp> distanceAndEmps = new ArrayList<>();
+        try {
+            //mảng để chứa những nhân viên gần nhất với đơn hàng
+            List<DistanceAndEmp> distanceAndEmps = new ArrayList<>();
 
-        //chia danh sách nhân viên thành các batch nhỏ để gọi API
-        List<List<Account>> batches = splitIntoBatches(accounts, BATCH_SIZE);
+            //chia danh sách nhân viên thành các batch nhỏ để gọi API
+            List<List<Account>> batches = splitIntoBatches(accounts, BATCH_SIZE);
 
-        //gọi APi với từng batch nhỏ
-        for (List<Account> batch : batches) {
-            apiService.processBatch(batch, distanceAndEmps, order.getSenderAddress());
-        }
+            //gọi APi với từng batch nhỏ
+            for (List<Account> batch : batches) {
+                apiService.processBatch(batch, distanceAndEmps, order.getSenderAddress());
+            }
 
-        // xử lí mảng danh sách những staff gần nhất với đơn hàng mà có thể giao vì chưa nhận đơn nào
-        if (distanceAndEmps.isEmpty()) {
-            //gửi mail báo đợi nhân viên
-            emailService.sendEmailNoEmp(order);
-            System.out.println("Không có nhân viên nào có thể giao đơn hàng này");
+            // xử lí mảng danh sách những staff gần nhất với đơn hàng mà có thể giao vì chưa nhận đơn nào
+            if (distanceAndEmps.isEmpty()) {
+                //gửi mail báo đợi nhân viên
+                StatusRequest statusRequest = new StatusRequest();
+                statusRequest.setOrder(order.getOrderID());
+                statusRequest.setStatusInfo(StatusInfo.WAITING.toString());
+                statusRequest.setEmpId("");
+                statusRequest.setDescription("Order is waiting for more than 2 days because there is no employee in your location available");
+                emailService.sendEmailNoEmp(order);
+                System.out.println("Không có nhân viên nào có thể giao đơn hàng này");
 
-        }else {
-            //sort lại mảng theo khoảng cách
-            distanceAndEmps.sort(Comparator.comparing(DistanceAndEmp::getDistance));
-            Account mostEmp = distanceAndEmps.getFirst().getEmp();
-            System.out.println("địa chỉ gửi của đơn hàng: " + order.getSenderAddress());
-            System.out.println("Nhân viên gần nhất và phù hợp nhất: " + mostEmp.getName());
+            } else {
+                //sort lại mảng theo khoảng cách
+                distanceAndEmps.sort(Comparator.comparing(DistanceAndEmp::getDistance));
+                Account mostEmp = distanceAndEmps.getFirst().getEmp();
+                System.out.println("địa chỉ gửi của đơn hàng: " + order.getSenderAddress());
+                System.out.println("Nhân viên gần nhất và phù hợp nhất: " + mostEmp.getName());
 
-            StatusRequest statusRequest = new StatusRequest();
-            statusRequest.setEmpId(mostEmp.getId());
-            statusRequest.setOrder(order.getOrderID());
-            statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-            statusRequest.setDescription("The order is approved");
-            statusService.createStatus(statusRequest);
+                StatusRequest statusRequest = new StatusRequest();
+                statusRequest.setEmpId(mostEmp.getId());
+                statusRequest.setOrder(order.getOrderID());
+                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
+                statusRequest.setDescription("The order is approved");
+                statusService.createStatus(statusRequest);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while processing order on DistanceService");
         }
     }
 
