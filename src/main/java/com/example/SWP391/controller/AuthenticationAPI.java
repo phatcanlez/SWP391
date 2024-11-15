@@ -4,6 +4,8 @@ import com.example.SWP391.entity.Account;
 import com.example.SWP391.model.DTO.authenticatonDTO.*;
 import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
 import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
+import com.example.SWP391.model.Enum.Role;
+import com.example.SWP391.service.AccountService;
 import com.example.SWP391.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -22,6 +24,9 @@ public class AuthenticationAPI {
 
     @Autowired
     AuthenticationService authenticationService;   //tương tự new package: AuthenticationService a = new AuthenticationService();
+
+    @Autowired
+    AccountService accountService;
 
     @PostMapping("/api/register")
     public ResponseEntity register(@RequestBody @Valid RegisterRequest registerRequest) {
@@ -88,6 +93,11 @@ public class AuthenticationAPI {
     public ResponseEntity resetPassword(@RequestBody ResetPasswordRequest request) {
         authenticationService.resetPassword(request);
         return ResponseEntity.ok("Password reset successfully");
+    }
+
+    @GetMapping("/api/account/role")
+    public ResponseEntity<List<Account>> getAccountByRole(@RequestParam Role role) {
+        return ResponseEntity.ok(accountService.getAccountByRole(role));
     }
 
 }
