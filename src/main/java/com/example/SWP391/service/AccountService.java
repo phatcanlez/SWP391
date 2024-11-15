@@ -1,6 +1,7 @@
 package com.example.SWP391.service;
 
 import com.example.SWP391.entity.Account;
+import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.model.Enum.StatusInfo;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -42,4 +44,9 @@ public class AccountService {
             throw new RuntimeException("Error while getting all rest employees");
         }
     }
+
+    public List<Account> getAccountByRole(Role role) {
+        return Optional.ofNullable(accountRepository.findByRole(role)).orElseThrow(() -> new NotFoundException("No account found"));
+    }
+
 }

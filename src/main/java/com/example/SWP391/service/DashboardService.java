@@ -61,9 +61,9 @@ public class DashboardService {
         stats.put("totalFeedbackGreaterThan4", feedbackGreaterThan4);
         stats.put("totalFeedbackLessThan4", feedbackLessThan4);
         stats.put("feedbackAvarageRating", feedbackAvarageRating);
-
         return stats;
     }
+
 
     public Map<String,Object> caculateMonthlyRevenue(){
         Map<String, Object> stats = new HashMap<>();
