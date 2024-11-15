@@ -1,12 +1,14 @@
-import { Button, Popconfirm, Table } from "antd";
+import { Button, Input, Popconfirm, Table } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../config/axios";
 import { FileSyncOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
 function AdminOrder({ path, isPaging = false }) {
   const [order, setOrder] = useState([]);
   const [loading, setLoading] = useState(false); // State to handle loading status
+  const [searchValue, setSearchValue] = useState("");
   const [totalOrders, setTotalOrders] = useState(0); // Total number of orders
   const [pagination, setPagination] = useState({
     current: 1, // Current page
@@ -28,6 +30,7 @@ function AdminOrder({ path, isPaging = false }) {
         finalData = response.data.content;
         setTotalOrders(response.data.totalElements); // Assuming API provides total elements
       } else {
+        setTotalOrders(response.data.length);
         finalData = response.data;
       }
       setOrder(finalData); // Assuming your API returns orders in 'content'
@@ -35,6 +38,34 @@ function AdminOrder({ path, isPaging = false }) {
     } catch (e) {
       console.log("Error", e);
       setLoading(false);
+    }
+  };
+
+  const handleSearchValueChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    // Perform action with inputValue
+    console.log(searchValue);
+    try {
+      if (!searchValue.trim()) {
+        toast.error("Input OrderId cannot be empty!"); // Show error message
+        return; // Prevent further action
+      } else {
+        if (path === "/orders/status?status=WAITING");
+        const response = await api.get("/orders/status?status=WAITING");
+        let result = response.data.find((o) => o.orderID === searchValue);
+        console.log(result);
+        if (result !== "") {
+          setOrder([result]);
+          toast.success("Successfull");
+        } else {
+          toast.error("Not Found");
+        }
+      }
+    } catch (err) {
+      toast.error(err.response.data);
     }
   };
 
@@ -125,6 +156,20 @@ function AdminOrder({ path, isPaging = false }) {
         <p>
           Have <span className="color">{totalOrders} orders</span> in this list
         </p>
+        <Input
+          style={{ width: "200px" }}
+          placeholder="Input OrderId"
+          value={searchValue}
+          onChange={handleSearchValueChange}
+        />
+        <Button onClick={handleSearch}>Search</Button>
+        <Button
+          onClick={() => {
+            fetchOrder(), setSearchValue("");
+          }}
+        >
+          ReFresh
+        </Button>
       </div>
       <Table
         dataSource={order}
