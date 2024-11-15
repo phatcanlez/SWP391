@@ -5,4 +5,6 @@ public enum StatusInfo {
     PENDING,
     WAITING,
     APPROVED,
+    REFUNDED,
+    UNREFUND
 }

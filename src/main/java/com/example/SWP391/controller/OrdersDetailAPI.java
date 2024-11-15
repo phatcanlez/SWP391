@@ -36,9 +36,9 @@ public class OrdersDetailAPI {
         }
 
 
-        @PutMapping("/api/orders-detail/{id}")
-        public ResponseEntity updateLicense(@RequestBody @Valid OrderDetailRequest orderDetail,@PathVariable String id) {
-            return ResponseEntity.ok(orderDetailService.updateOrderDetail(orderDetail, id));
+        @PutMapping("/api/orders-detail")
+        public ResponseEntity updateLicense(@RequestBody @Valid OrderDetailRequest orderDetail) {
+            return ResponseEntity.ok(orderDetailService.updateOrderDetail(orderDetail));
         }
 
 }

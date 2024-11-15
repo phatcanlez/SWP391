@@ -5,12 +5,10 @@ import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.*;
 import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
+import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
-import com.example.SWP391.repository.AccountRepository;
-import com.example.SWP391.repository.OrderRepository;
-import com.example.SWP391.repository.PaymentRepository;
-import com.example.SWP391.repository.StatusRepository;
+import com.example.SWP391.repository.*;
 import com.example.SWP391.util.DateConversionUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -31,6 +29,9 @@ public class OrderService {
     OrderRepository orderRepository;
 
     @Autowired
+    AuthenticationService authenticationService;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Autowired
@@ -46,10 +47,10 @@ public class OrderService {
     OrderDetailService orderDetailService;
 
     @Autowired
-    DistanceService distanceService;
+    OrderDetailRepository orderDetailRepository;
 
     @Autowired
-    AuthenticationService authenticationService;
+    StatusService statusService;
 
     public OrdersReponsePage getAllOrders(int page, int size) {
         Page<Orders> orders = orderRepository.findAll(PageRequest.of(page, size));
@@ -57,6 +58,8 @@ public class OrderService {
             OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
+            String type = String.valueOf(orderDetailService.viewOrderDetailById(order.getOrderID()).getType());
+            orderResponse.setType(type);
             return orderResponse;
         }).toList();
         OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
@@ -99,6 +102,7 @@ public class OrderService {
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
             orderResponse.setPayment(newOrder.getPayment().getStatus());
+            orderResponse.setType(order.getType());
             return orderResponse;
         } catch (NotFoundException e) {
 
@@ -157,10 +161,10 @@ public class OrderService {
 
     @Transactional
     public List<OrderResponse> viewOrderByStatusAndEmpId(StatusInfo status, String empId) {
+        List<Orders> list = new ArrayList<>();
         try {
-
             List<Status> statuses = statusRepository.findByStatusInfo(status);
-            List<Orders> list = new ArrayList<>();
+
             for (Status s : statuses) {
                 Orders orders = s.getOrders();
                 if (orders.getStatus().getLast().getStatusInfo() == status
@@ -171,17 +175,43 @@ public class OrderService {
             if (list.isEmpty()) {
                 return new ArrayList<>();
             }
-
-            return list.stream().map(order -> {
-                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
-                orderResponse.setStatus(order.getStatus().getLast());
-                orderResponse.setPayment(order.getPayment().getStatus());
-                return orderResponse;
-            }).toList();
         } catch (Exception e) {
             e.printStackTrace();
             throw new NotFoundException("Error");
         }
+        return list.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            return orderResponse;
+        }).toList();
+    }
+
+    public OrderListAndTotal viewOrderByStatusAndEmpIdAndTotal(StatusInfo status, String empId){
+        OrderListAndTotal orderListAndTotal = new OrderListAndTotal();
+        orderListAndTotal.setTotal(0);
+        orderListAndTotal.setListOrders(new ArrayList<>());
+        try{
+            List<OrderResponse> orderList = viewOrderByStatusAndEmpId(status,empId);
+            orderListAndTotal.setListOrders(orderList);
+            orderListAndTotal.setTotal(orderList.size());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new NotFoundException("Error");
+        }
+        return orderListAndTotal;
+    }
+
+    @Transactional
+    public TotalOrderOfEmp getTotalByEmpUsername(StatusInfo status, String username){
+        Account emp = accountRepository.findByUsername(username);
+        TotalOrderOfEmp result = new TotalOrderOfEmp();
+        try {
+            result.setTotal(viewOrderByStatusAndEmpIdAndTotal(status, emp.getId()).getTotal());
+        }catch (Exception e){
+            throw new NotFoundException("Error");
+        }
+        return result;
     }
 
     public List<OrderHistoryResponse> viewOrderByAccount(String username) {
@@ -240,7 +270,7 @@ public class OrderService {
             Date currentDate = new Date();
             for (Orders order : orders) {
                 int waitDate = DateConversionUtil.calculateTimeDifference(currentDate, order.getStatus().getFirst().getDate());
-                if (waitDate > 2) {
+                if (waitDate > 4) { // tg chờ lớn hơn 4 ngày
                     list.add(order);
                 }
             }
@@ -248,6 +278,25 @@ public class OrderService {
         } catch (Exception e) {
             throw new NotFoundException("Can't get order waiting too long because of error");
         }
+    }
+
+    public String updateRefund(String orderId){
+        Orders order = orderRepository.findByorderID(orderId);
+        if (order == null) {
+            throw new NotFoundException("Not found this order");
+        }
+        try {
+            StatusRequest statusRequest = new StatusRequest();
+            statusRequest.setOrder(orderId);
+            statusRequest.setStatusInfo(StatusInfo.REFUNDED.toString());
+            statusRequest.setDescription("Refund successful");
+            statusRequest.setEmpId(authenticationService.getCurrentAccount().getId());
+            statusService.createStatus(statusRequest);
+            orderRepository.save(order);
+        } catch (Exception e) {
+            throw new DuplicateException("Unexpected error!");
+        }
+        return "Update refund successfully";
     }
 
     public String updateAllOrder() {
@@ -262,6 +311,23 @@ public class OrderService {
             orderRepository.save(order);
         });
         return "Update all orders successfully";
+    }
+
+    public boolean deleteOrder(String id) {
+        OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(id);
+        Orders order = orderRepository.findByorderID(id);
+        if (order == null) {
+            throw new NotFoundException("Not found this order");
+        }
+        try {
+            if (orderDetail != null) {
+                orderDetailRepository.delete(orderDetail);
+            }
+            orderRepository.delete(order);
+            return true;
+        } catch (Exception e) {
+            throw new DuplicateException("Unexpected error!");
+        }
     }
 }
 
