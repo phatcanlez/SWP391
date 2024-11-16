@@ -34,9 +34,24 @@ public class ReportAPI {
         }
     }
 
-    @GetMapping("/api/report")
+    @GetMapping("/api/report/page")
     public ResponseEntity getAllReport(@RequestParam int page, @RequestParam int size) {
-        return ResponseEntity.ok(reportService.getAllReport(page, size));
+        return ResponseEntity.ok(reportService.getAllReportWithPage(page, size));
+    }
+
+    @GetMapping("/api/report")
+    public ResponseEntity getAllReport() {
+        return ResponseEntity.ok(reportService.getAllReport());
+    }
+
+    @GetMapping("/api/report/order/{id}")
+    public ResponseEntity getReportByOrderId(@PathVariable String id) {
+        return ResponseEntity.ok(reportService.viewReportByOrderId(id));
+    }
+
+    @GetMapping("/api/report/customer")
+    public ResponseEntity getReportByStatus(@RequestParam String customerId) {
+        return ResponseEntity.ok(reportService.getReportByCustomerId(customerId));
     }
 
     @GetMapping("/api/report/{id}")
@@ -44,8 +59,8 @@ public class ReportAPI {
         return ResponseEntity.ok(reportService.viewReportById(id));
     }
 
-    @PutMapping("/api/report/{id}")
-    public ResponseEntity updateReport(ReportUpdateRequest reportRequest,@PathVariable long Id) {
-        return ResponseEntity.ok(reportService.updateReport(reportRequest, Id));
+    @PutMapping("/api/report")
+    public ResponseEntity updateReport(@RequestBody ReportUpdateRequest reportRequest) {
+        return ResponseEntity.ok(reportService.updateReport(reportRequest));
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,13 +37,12 @@ public class FeedbackService {
 
     public FeedbackResponsePage getAllFeedbacks(int page, int size) {
         Page<Feedback> list = feedbackRepository.findAll(PageRequest.of(page, size));
-         list.stream().map(feedback -> {
+        Page<FeedbackResponse> listR = list.map(feedback -> {
             FeedbackResponse feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
             feedbackResponse.setOrderID(feedback.getOrders().getOrderID());
-            return feedbackResponse;
-        }).toList();
+            return feedbackResponse;});
          FeedbackResponsePage feedbackResponsePage = new FeedbackResponsePage();
-         feedbackResponsePage.setContent(list.getContent());
+         feedbackResponsePage.setContent(listR.getContent());
          feedbackResponsePage.setTotalPages(list.getTotalPages());
          feedbackResponsePage.setTotalElements(list.getTotalElements());
          feedbackResponsePage.setPageNumbers(list.getNumber());
@@ -52,19 +52,24 @@ public class FeedbackService {
 
     public FeedbackResponse createFeedback(FeedbackRequest feedback) {
         try {
-            Feedback newFeedback = new Feedback();
-            newFeedback.setRating(feedback.getRating());
-            newFeedback.setComment(feedback.getComment());
-            newFeedback.setTime(new Date(System.currentTimeMillis()));
-            newFeedback.setOrders(orderRepository.findByorderID(feedback.getOrderID()));
-            feedbackRepository.save(newFeedback);
-            FeedbackResponse feedbackResponse = modelMapper.map(newFeedback, FeedbackResponse.class);
-            feedbackResponse.setOrderID(newFeedback.getOrders().getOrderID());
+            Orders order = orderRepository.findByorderID(feedback.getOrderID());
+            if (order.getFeedbacks().isEmpty()) {
+                Feedback newFeedback = new Feedback();
+                newFeedback.setRating(feedback.getRating());
+                newFeedback.setComment(feedback.getComment());
+                newFeedback.setTime(new Date(System.currentTimeMillis()));
+                newFeedback.setOrders(orderRepository.findByorderID(feedback.getOrderID()));
+                feedbackRepository.save(newFeedback);
+                FeedbackResponse feedbackResponse = modelMapper.map(newFeedback, FeedbackResponse.class);
+                feedbackResponse.setOrderID(newFeedback.getOrders().getOrderID());
 
-            return feedbackResponse;
+                return feedbackResponse;
+            }else {
+                throw new Exception();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new DuplicateException("Error");
+            throw new DuplicateException("This order already has feedback");
         }
     }
 
@@ -81,18 +86,16 @@ public class FeedbackService {
         }
     }
 
-    public List<FeedbackResponse> viewFeedbackById(String orderId) {
+    public FeedbackResponse viewFeedbackById(String orderId) {
         Orders order = orderRepository.findByorderID(orderId);
         List<Feedback>  feedbacks = feedbackRepository.findFeedbackByOrders(order);
 
-        if (feedbacks == null) {
+        if (feedbacks.isEmpty()) {
             throw new DuplicateException("Not found this feedback");
         } else {
-            return feedbacks.stream().map(feedback -> {
-                FeedbackResponse feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
-                feedbackResponse.setOrderID(feedback.getOrders().getOrderID());
-                return feedbackResponse;
-            }).toList();
+            FeedbackResponse feedbackResponse = modelMapper.map(feedbacks.getLast(), FeedbackResponse.class);
+            feedbackResponse.setOrderID(feedbacks.getLast().getOrders().getOrderID());
+            return feedbackResponse;
         }
     }
 
@@ -112,6 +115,4 @@ public class FeedbackService {
             throw new DuplicateException("Invalid data");
         }
     }
-
-
 }

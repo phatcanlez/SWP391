@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class ReportResponsePage {
-    List<Report> content;
+    List<ReportResponse> content;
     int pageNumbers;
     long totalElements;
     int totalPages;

@@ -1,9 +1,6 @@
 package com.example.SWP391.util;
 
-import com.example.SWP391.entity.BoxPrice;
-import com.example.SWP391.entity.PriceListDistance;
-import com.example.SWP391.entity.PriceListWeight;
-import com.example.SWP391.entity.ShipMethod;
+import com.example.SWP391.entity.*;
 import com.example.SWP391.model.DTO.TrackingDTO.BoxAmountDTO;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +26,23 @@ public class TrackingUtil {
             }
 
         return smallBoxPrice + mediumBoxPrice + largeBoxPrice + extraLargeBoxPrice;
+    }
+
+    public static void sortOrderByShipMethod(List<Orders> orders) {
+        try {
+            orders.sort((o1, o2) -> {
+                long index1 = o1.getOrderDetail().getShipMethod().getShipMethodId();
+                long index2 = o2.getOrderDetail().getShipMethod().getShipMethodId();
+                return Long.compare(index1, index2);
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while sorting order by ship method");
+        }
+    }
+
+    public static boolean checkCountryIsVietnam(String address) {
+        String country = address.substring(address.lastIndexOf(",") + 1).trim();
+        return country.equalsIgnoreCase("Vietnam");
     }
 }
