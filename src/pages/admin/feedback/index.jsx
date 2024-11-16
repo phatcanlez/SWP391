@@ -1,8 +1,7 @@
 import { toast } from "react-toastify";
-import CRUDTemplate from "../../../components/crud-template";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
-import { Pagination, Table } from "antd";
+import { Pagination, Rate, Table } from "antd";
 
 function Feedback() {
   const [loading, setLoading] = useState(false);
@@ -30,6 +29,7 @@ function Feedback() {
       title: "Rating",
       dataIndex: "rating",
       key: "rating",
+      render: (fb, order) => <Rate disabled value={order?.rating} />,
     },
     {
       title: "Comment",

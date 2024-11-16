@@ -17,6 +17,12 @@ function ExtraService() {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (text) => {
+        // Format the price with spaces every three digits
+        return text
+          ? text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+          : "";
+      },
     },
   ];
 

@@ -56,8 +56,19 @@ import PaymentFail from "./pages/customer/payment/fail";
 import Complain from "./pages/staff/complain";
 import CustomerComplain from "./pages/customer/complain";
 import CustomerFaqs from "./pages/customer/faqs";
+import { useEffect } from "react";
+import requestPermissions from "./config/notification";
+
+import StaffList from "./pages/admin/staff-list";
+
+import ManageCustomers from "./pages/admin/manage-user/customer";
+
 
 function App() {
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
     const user = useSelector((store) => store);
@@ -157,6 +168,10 @@ function App() {
           element: <ManageUser />,
         },
         {
+          path: "manage-customer",
+          element: <ManageCustomers />,
+        },
+        {
           path: "extra-service",
           element: <ExtraService />,
         },
@@ -188,6 +203,11 @@ function App() {
           path: "profile",
           element: <AdminProfile />,
         },
+        {
+          path: "staff",
+          element: <StaffList />,
+        },
+       
       ],
     },
 

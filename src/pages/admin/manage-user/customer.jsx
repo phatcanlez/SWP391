@@ -1,39 +1,46 @@
-import { Button, Form, Input, Modal, Pagination, Select, Table } from "antd";
+import { Button, Form, Input, Modal, Popconfirm, Table } from "antd";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-const { Option } = Select;
 
-function ManageUser() {
+function ManageCustomers() {
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [data, setData] = useState([]);
+  const [searchResult, setSearchResult] = useState([]);
   const [form] = Form.useForm();
   const [showModal, setShowModal] = useState(false);
   const [formItems, setFormItems] = useState("");
   const [totalAccount, setTotalAccount] = useState();
-  const [page, setPage] = useState(0);
-  const [displayPages, setDisplayPages] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1, // Current page
+    pageSize: 10, // Number of items per page
+  });
+  const [isSearch, setIsSearch] = useState(false);
 
   const handleSearchValueChange = (e) => {
     setSearchValue(e.target.value);
+    let result = data.filter((account) =>
+      account.username.includes(e.target.value)
+    );
+    setIsSearch(true);
+    setSearchResult(result);
   };
 
-  const handleSearch = async () => {
-    // Perform action with inputValue
-    console.log(searchValue);
+  const handleStatusChange = async (value) => {
+    console.log(!value.status);
     try {
-      const response = await api.get(`account/${searchValue}`);
-      if (response.data !== "") {
-        setData([response.data]);
-        setDisplayPages("none");
-        console.log(response);
-        toast.success("Successfull");
-      } else {
-        toast.error("Not Found");
-      }
+      setLoading(true);
+      await api.patch(`account`, {
+        id: value.id,
+        status: !value.status,
+      });
+      toast.success("Successfull");
+      fetchData();
     } catch (err) {
       toast.error(err.response.data);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,24 +53,21 @@ function ManageUser() {
       render: () => <>{stt++}</>,
     },
     {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => <>{status === true ? "Active" : "InActive"}</>,
       filters: [
         {
-          text: "CUSTOMER",
-          value: "CUSTOMER",
+          text: "Active",
+          value: true,
         },
         {
-          text: "STAFF",
-          value: "STAFF",
-        },
-        {
-          text: "MANAGER",
-          value: "MANAGER",
+          text: "InActive",
+          value: false,
         },
       ],
-      onFilter: (value, record) => record.role.indexOf(value) === 0,
+      onFilter: (value, record) => record.status === value,
     },
     {
       title: "Name",
@@ -107,6 +111,22 @@ function ManageUser() {
           >
             Edit
           </Button>
+          <Popconfirm
+            title={
+              Item.status === true
+                ? "Are you sure you want to ban this Account?"
+                : "Are you sure you want to activate this Account?"
+            }
+            onConfirm={() => handleStatusChange(Item)} // Call the status change function on confirmation
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              style={{ backgroundColor: "red", marginLeft: 10, color: "#fff" }}
+            >
+              {Item.status === true ? "Ban" : "Active"}
+            </Button>
+          </Popconfirm>
         </>
       ),
     },
@@ -115,10 +135,10 @@ function ManageUser() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`account?page=${page}&size=10`);
+      const response = await api.get("account/role?role=CUSTOMER");
       console.log(response.data);
-      setData(response.data.content);
-      setTotalAccount(response.data.totalElements);
+      setData(response.data);
+      setTotalAccount(response.data.length);
       setLoading(false);
     } catch (err) {
       toast.error(err.response.data);
@@ -128,22 +148,16 @@ function ManageUser() {
 
   useEffect(() => {
     fetchData();
-    handleSearch();
-    if (page) {
-      //s
-    }
-  }, [page]);
+  }, []);
 
   const handleSubmit = async (values) => {
     console.log(values);
     try {
       setLoading(true);
       if (values.id) {
-        const response = await api.patch(`account`, values);
-        console.log(response);
+        await api.patch(`account`, values);
       } else {
-        const response = await api.post(`register`, values);
-        console.log(response);
+        await api.post(`register`, values);
       }
 
       toast.success("Successfull");
@@ -159,9 +173,6 @@ function ManageUser() {
 
   const formItemsRegister = (
     <>
-      <Form.Item name="id" hidden>
-        <Input />
-      </Form.Item>
       <Form.Item name="name" label="Name" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
@@ -236,17 +247,6 @@ function ManageUser() {
       >
         <Input />
       </Form.Item>
-      <Form.Item
-        label="Role"
-        name="role"
-        rules={[{ required: true, message: "Please Select Role" }]}
-      >
-        <Select showSearch style={{ width: 200 }} placeholder="Select Role">
-          <Option value="CUSTOMER">CUSTOMER</Option>
-          <Option value="STAFF">STAFF</Option>
-          <Option value="MANAGER">MANAGER</Option>
-        </Select>
-      </Form.Item>
     </>
   );
 
@@ -293,22 +293,11 @@ function ManageUser() {
       <Form.Item label="Address" name="address" rules={[{ required: true }]}>
         <Input />
       </Form.Item>
-      <Form.Item
-        label="Role"
-        name="role"
-        rules={[{ required: true, message: "Please Select Role" }]}
-      >
-        <Select showSearch style={{ width: 200 }} placeholder="Select Role">
-          <Option value="CUSTOMER">CUSTOMER</Option>
-          <Option value="STAFF">STAFF</Option>
-          <Option value="MANAGER">MANAGER</Option>
-        </Select>
-      </Form.Item>
     </>
   );
 
-  const handlePageChange = (page) => {
-    setPage(page - 1);
+  const handleTableChange = (pagination) => {
+    setPagination(pagination);
   };
 
   return (
@@ -326,38 +315,27 @@ function ManageUser() {
         <div style={{ display: "flex", gap: "20px", paddingLeft: "20px" }}>
           <Input
             style={{ width: "200px" }}
-            placeholder="Input id"
+            placeholder="Username"
             value={searchValue}
             onChange={handleSearchValueChange}
           />
-          <Button onClick={handleSearch}>Search</Button>
-          <Button
-            onClick={() => {
-              fetchData(), setDisplayPages(""), setSearchValue("");
-            }}
-          >
-            ReFresh
-          </Button>
         </div>
       </div>
 
       <Table
-        dataSource={data}
+        dataSource={isSearch === false ? data : searchResult}
         columns={columns}
-        pagination={false}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: totalAccount,
+          showSizeChanger: true,
+        }}
         scroll={{
           x: "max-content",
         }}
+        onChange={handleTableChange}
         loading={loading}
-      />
-
-      <Pagination
-        align="end"
-        total={totalAccount}
-        onChange={handlePageChange}
-        showQuickJumper
-        showTotal={(total) => `Total ${total} accounts`}
-        style={{ display: `${displayPages}` }}
       />
 
       <Modal
@@ -378,4 +356,4 @@ function ManageUser() {
   );
 }
 
-export default ManageUser;
+export default ManageCustomers;

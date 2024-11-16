@@ -20,7 +20,7 @@ const InProcess = () => {
   console.log(order);
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
-
+  const [current, setCurrent] = useState(-1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -56,6 +56,7 @@ const InProcess = () => {
   console.log(statuss);
   useEffect(() => {
     fetchOrderDetail();
+    fetchStatusForOversea();
   }, []);
 
   const handlePreview = async (file) => {
@@ -120,6 +121,32 @@ const InProcess = () => {
       toast.error(error.response.data);
     }
   };
+
+  const getCurrentStatus = (statusInfo) => {
+    switch (statusInfo) {
+      case "WAITING":
+        return 0;
+      case "APPROVED":
+        return 1;
+      case "PENDING":
+        return 2;
+      case "SUCCESS":
+        return 3;
+      default:
+        return -1;
+    }
+  };
+
+  const fetchStatusForOversea = () => {
+    if (viewOrder?.status?.length > 0) {
+      const lastStatus = viewOrder.status[viewOrder.status.length - 1];
+      if (lastStatus) {
+        setCurrent(getCurrentStatus(lastStatus.statusInfo));
+        setStatus(lastStatus.statusInfo);
+      }
+    }
+  };
+
   const steps = [
     {
       title: "Approved",
@@ -149,74 +176,104 @@ const InProcess = () => {
       icon: <SmileOutlined />,
     },
   ];
+  const description = 'This is a description.';
   return (
     <div>
-      <Steps className="step" items={steps} />
-
-      {statuss === "APPROVED" && (
+      {viewOrder?.orderDetail?.type === "DOMESTIC" && (
         <>
-          <button
-            className="nextStep-btn btn-item"
-            onClick={handlePendingOrder}
-            style={{ marginTop: 20 }}
-          >
-            Next Step
-          </button>
-          {/* <Button
-        type="primary"
-        onClick={()=>{dispatch(reset())}}
-        style={{ marginTop: 20 }}
-      >
-        RESET Step
-      </Button> */}
+          <Steps className="step" items={steps} />
+
+          {statuss === "APPROVED" && (
+            <>
+              <button
+                className="nextStep-btn btn-item"
+                onClick={handlePendingOrder}
+                style={{ marginTop: 20 }}
+              >
+                Next Step
+              </button>
+              {/* <Button
+  type="primary"
+  onClick={()=>{dispatch(reset())}}
+  style={{ marginTop: 20 }}
+>
+  RESET Step
+</Button> */}
+            </>
+          )}
+
+          {statuss === "PENDING" && (
+            <>
+              <div className="done">
+                <button
+                  className="done-btn btn-item"
+                  type="primary"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Order Successfully Delivered
+                </button>
+              </div>
+              <Modal
+                title="Confirmation Of Successful Delivery"
+                open={isModalOpen}
+                onOk={() => {
+                  form.submit();
+                }}
+                onCancel={handleCancel}
+              >
+                <Form onFinish={handleConfirm} form={form}>
+                  <Upload
+                    listType="picture"
+                    fileList={fileList}
+                    onPreview={handlePreview}
+                    onChange={handleChange}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload </Button>
+                  </Upload>
+                </Form>
+              </Modal>
+              {previewImage && (
+                <Image
+                  wrapperStyle={{
+                    display: "none",
+                  }}
+                  preview={{
+                    visible: previewOpen,
+                    onVisibleChange: (visible) => setPreviewOpen(visible),
+                    afterOpenChange: (visible) =>
+                      !visible && setPreviewImage(""),
+                  }}
+                  src={previewImage}
+                />
+              )}
+            </>
+          )}
         </>
       )}
-
-      {statuss === "PENDING" && (
+      {viewOrder?.orderDetail?.type === "OVERSEA" && (
         <>
-          <div className="done">
-            <button
-              className="done-btn btn-item"
-              type="primary"
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            >
-              Order Successfully Delivered
-            </button>
-          </div>
-          <Modal
-            title="Confirmation Of Successful Delivery"
-            open={isModalOpen}
-            onOk={() => {
-              form.submit();
-            }}
-            onCancel={handleCancel}
-          >
-            <Form onFinish={handleConfirm} form={form}>
-              <Upload
-                listType="picture"
-                fileList={fileList}
-                onPreview={handlePreview}
-                onChange={handleChange}
-              >
-                <Button icon={<UploadOutlined />}>Upload </Button>
-              </Upload>
-            </Form>
-          </Modal>
-          {previewImage && (
-            <Image
-              wrapperStyle={{
-                display: "none",
-              }}
-              preview={{
-                visible: previewOpen,
-                onVisibleChange: (visible) => setPreviewOpen(visible),
-                afterOpenChange: (visible) => !visible && setPreviewImage(""),
-              }}
-              src={previewImage}
+          <div className="bg-w" style={{ marginTop: "20px" }}>
+            <Steps
+              direction="vertical"
+              current={1}
+              items={[
+                {
+                  title: "Finished",
+                  description,
+                },
+                {
+                  title: "In Progress",
+                  description,
+                },
+                {
+                  title: "Waiting",
+                  description,
+                },
+              ]}
             />
-          )}
+          </div>
         </>
       )}
     </div>
