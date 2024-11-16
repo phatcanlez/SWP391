@@ -43,11 +43,7 @@ function LoginPage() {
           const { role, token } = response.data;
           localStorage.setItem("token", token);
           console.log(response);
-          if (role === "CUSTOMER") {
-            navigate("/");
-          } else if (role === "MANAGER") {
-            navigate("/dashboard");
-          }
+          navigate("/customer-service");
         } catch (err) {
           toast.error(err.response.data);
         }
@@ -62,6 +58,7 @@ function LoginPage() {
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
+        toast.error("Cannot login by google!");
       });
   };
 
@@ -76,9 +73,10 @@ function LoginPage() {
 
       if (role === "MANAGER") navigate("/dashboard");
       if (role === "STAFF") navigate("/staff/order");
-      if (role === "CUSTOMER") navigate("/customer-service");
+      if (role === "CUSTOMER") navigate("/customer-service/history");
     } catch (err) {
-      toast.error(err.response.data);
+      console.error(err);
+      toast.error("Wrong username or password!");
     }
   };
 
@@ -133,12 +131,12 @@ function LoginPage() {
               </span>
             </Button>
 
-            <Button className="btn">
+            {/* <Button className="btn">
               <span className="login__btn">
                 <img src={fb} alt="" />
                 Login with Facebook
               </span>
-            </Button>
+            </Button> */}
           </div>
         </Form>
       </AuthenTemplate>

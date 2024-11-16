@@ -1,0 +1,114 @@
+.estimatedshippingfee{
+    .estimatedshippingfee__title {
+        text-align: center;
+        color: rgba(226, 88, 34, 1);
+        font-size: 40px;
+        font-weight: 600;
+        line-height: 40px;
+        padding-top: 10vh;
+        padding-bottom: 10vh;
+    }
+    .estimatedshippingfee__products {
+        height: 1167px;
+        display: flex;
+        .estimatedshippingfee__products__left {
+            width: 50%;
+            padding-left: 3%;
+            .estimatedshippingfee__products__left__title {
+                font-size: 25px;
+                font-weight: 500;
+                padding-bottom: 3%;
+            }
+            Table {
+                text-align: center;
+                th {
+                    text-align: center;
+                    width: 30%;
+                }
+            }
+        }
+        .estimatedshippingfee__products__right{
+            width: 50%;
+            .estimatedshippingfee__products__right__rectangle {
+                margin-top: 5%;
+                margin-left: 5%;
+                border-radius: 40px;
+                background-color: #fff;
+                height: 320px;
+                width: 80%;
+                text-align: center;
+                align-content: center;
+                align-items: center;
+                font-size: 22px;
+                font-weight: 600;
+                padding-left: 40px;
+                padding-right: 40px;
+
+                img {
+                    height: 50px;
+                    width: 50px;
+                    margin-bottom: 3%;
+                }
+            }
+
+        }
+        
+    }
+    .estimatedshippingfee__destination {
+        background: rgba(255, 255, 255, 1);
+        height: 150px;
+        align-content: center;
+        display: flex;
+        padding-top: 5%;
+        ul {
+            padding-left: 10%;
+            padding-right: 10%;
+            li {
+                padding-top: 20px;
+                display: flex;
+                justify-content: space-between;
+                p {
+                    text-align: left;
+                }
+            }
+        }
+        .estimatedshippingfee__destination__title {
+            color: rgba(44, 44, 44, 1);
+            font-size: 40px;
+            font-weight: 500;
+            line-height: 40px;
+        }
+        .estimatedshippingfee__destination__from {
+            width: 50%;
+        }
+        .estimatedshippingfee__destination__to {
+            width: 50%;
+        }
+    }
+    .estimatedshippingfee__map {
+        height: 600px;
+        background-color: #fff;
+    }
+    .estimatedshippingfee__calculating {
+        height: 20vh;
+        margin-left: 10%;
+        padding-top: 10vh;
+        button {
+            cursor: pointer;
+            background: rgba(226, 88, 34, 1);
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 20px;
+            color: #fff;
+            width: 162px;
+            height: 49px;
+            top: 949px;
+            left: 173px;
+            gap: 0px;
+            opacity: 0px;
+        }
+    }
+}
