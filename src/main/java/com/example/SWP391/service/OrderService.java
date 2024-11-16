@@ -6,6 +6,7 @@ import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.*;
 import com.example.SWP391.model.DTO.OrderDetailDTO.OrderDetailRequest;
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
+import com.example.SWP391.model.Enum.OrderType;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.*;
@@ -21,9 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -54,6 +53,8 @@ public class OrderService {
 
     @Autowired
     StatusService statusService;
+    @Autowired
+    ChatService chatService;
 
     public OrdersReponsePage getAllOrders(int page, int size) {
         Page<Orders> orders = orderRepository.findAll(PageRequest.of(page, size));
@@ -78,11 +79,15 @@ public class OrderService {
         try {
             Orders newOrder = modelMapper.map(order, Orders.class);
             Account account = accountRepository.findByUsername(order.getUsername());
-
+            newOrder.setActDeliveryDate(null);
+            if (order.getType().equals(OrderType.OVERSEA.toString())){
+                newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(14)));
+            }else {
+                newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(7)));
+            }
             if (account == null) {
                 throw new NotFoundException("Account not found");
             }
-
             newOrder.setAccount(account);
             Status status = new Status();
             status.setStatusInfo(StatusInfo.WAITING);
@@ -106,9 +111,12 @@ public class OrderService {
             orderResponse.setStatus(newOrder.getStatus().getLast());
             orderResponse.setPayment(newOrder.getPayment().getStatus());
             orderResponse.setType(order.getType());
+
+
+
+
             return orderResponse;
         } catch (NotFoundException e) {
-
             throw new NotFoundException(" Account not found");
         }catch (Exception e) {
             log.error(e.getMessage());
@@ -116,12 +124,17 @@ public class OrderService {
         }
     }
 
-    public Orders viewOrderById(String id) {
+    public OrderRes viewOrderById(String id) {
         Orders order = orderRepository.findByorderID(id);
         if (order == null) {
             throw new NotFoundException("Not found this order");
+        }
+        OrderRes orderRes = modelMapper.map(order, OrderRes.class);
+        orderRes.setAccountId(order.getAccount().getId());
+        if (order == null) {
+            throw new NotFoundException("Not found this order");
         } else {
-            return order;
+            return orderRes;
         }
     }
 
@@ -264,6 +277,20 @@ public class OrderService {
         }
     }
 
+    public String updateFinishImage(OrderImageRequest orderImageRequest) {
+        Orders existingOrder = orderRepository.findByorderID(orderImageRequest.getOrderId());
+        if (existingOrder == null) {
+            throw new NotFoundException("Not found!");
+        }
+        try {
+            existingOrder.setFinishImage(orderImageRequest.getImage());
+            orderRepository.save(existingOrder);
+            return "Imae updated successfully";
+        } catch (Exception e) {
+            throw new DuplicateException("Update fail");
+        }
+    }
+
     @Transactional
     public List<Orders> getOrderWaitingToLong() {
         try {
@@ -330,6 +357,25 @@ public class OrderService {
         } catch (Exception e) {
             throw new DuplicateException("Unexpected error!");
         }
+    }
+
+    public OrderResponsible viewOrderResponsible(String orderId) {
+        Orders order = orderRepository.findByorderID(orderId);
+        List<Status> listStatus = order.getStatus();
+        Set<Account> listEmp = new HashSet<>();
+        for (Status status : listStatus) {
+            if (status.getEmpId() != null) {
+                Account emp = accountRepository.findById(status.getEmpId()).get();
+                listEmp.add(emp);
+            }
+        }
+        OrderResponsible orderResponsible = new OrderResponsible();
+        if (listEmp.isEmpty()) {
+            throw new NotFoundException("Not found employee responsible for this order");
+        }
+        orderResponsible.setListEmployee(listEmp);
+        orderResponsible.setTotalEmployee(listEmp.size());
+        return orderResponsible;
     }
 }
 

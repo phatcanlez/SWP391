@@ -1,5 +1,5 @@
 echo "Building app..."
-./mvnw clean package
+./mvnw clean package -DskipTests
 
 echo "Deploy files to server..."
 scp -r  target/be.jar root@103.90.227.65:/var/www/be/

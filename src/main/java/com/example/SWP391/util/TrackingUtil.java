@@ -40,4 +40,9 @@ public class TrackingUtil {
             throw new RuntimeException("Error while sorting order by ship method");
         }
     }
+
+    public static boolean checkCountryIsVietnam(String address) {
+        String country = address.substring(address.lastIndexOf(",") + 1).trim();
+        return country.equalsIgnoreCase("Vietnam");
+    }
 }

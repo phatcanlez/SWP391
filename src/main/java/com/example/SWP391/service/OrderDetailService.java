@@ -133,5 +133,10 @@ public class OrderDetailService {
             throw new DuplicateException(e.getMessage());
         }
     }
+
+    public boolean checkOrderType(String orderID, OrderType type) {
+        OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(orderID);
+        return orderDetail.getType().equals(type);
+    }
 }
 
