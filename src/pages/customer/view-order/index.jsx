@@ -26,7 +26,6 @@ function ViewOrderDetail() {
 
   // const [isPaid, setIsPaid] = useState(false);
 
-
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
@@ -239,20 +238,23 @@ function ViewOrderDetail() {
                 {order?.orderDetail?.totalWeight} kg
               </span>
             </h6>
-            <h6>
-              Distance:{" "}
-              <span
-                className="color"
-                style={{
-                  textTransform: "capitalize",
-                  backgroundColor: isOversea() ? "#ffeee8" : "#e8f5ff",
-                  padding: "2px 8px",
-                  borderRadius: "4px",
-                }}
-              >
-                {order?.orderDetail?.kilometer} km
-              </span>
-            </h6>
+            <h6></h6>
+            {isOversea() && (
+              <h6>
+                Distance:{" "}
+                <span
+                  className="color"
+                  style={{
+                    textTransform: "capitalize",
+                    backgroundColor: isOversea() ? "#ffeee8" : "#e8f5ff",
+                    padding: "2px 8px",
+                    borderRadius: "4px",
+                  }}
+                >
+                  {order?.orderDetail?.kilometer} km
+                </span>
+              </h6>
+            )}
             {!isOversea() && (
               <h6>
                 Distance:{" "}
@@ -398,9 +400,7 @@ function ViewOrderDetail() {
         )}
       </div>
 
-
       {order?.payment?.status === "UNPAYED" && (
-
         <div style={{ marginTop: "20px", textAlign: "center" }}>
           <Button
             type="primary"

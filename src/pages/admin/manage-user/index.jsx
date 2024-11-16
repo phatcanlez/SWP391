@@ -143,6 +143,7 @@ function ManageUser() {
         console.log(response);
       } else {
         const response = await api.post(`register`, values);
+        console.log(response);
       }
 
       toast.success("Successfull");

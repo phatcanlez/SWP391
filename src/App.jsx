@@ -58,6 +58,7 @@ import CustomerComplain from "./pages/customer/complain";
 import CustomerFaqs from "./pages/customer/faqs";
 import { useEffect } from "react";
 import requestPermissions from "./config/notification";
+import StaffList from "./pages/admin/staff-list";
 
 function App() {
   useEffect(() => {
@@ -194,6 +195,11 @@ function App() {
           path: "profile",
           element: <AdminProfile />,
         },
+        {
+          path: "staff",
+          element: <StaffList />,
+        },
+       
       ],
     },
 

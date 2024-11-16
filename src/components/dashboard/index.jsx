@@ -74,6 +74,7 @@ function Dashboard() {
       getItem("History", "history"),
     ]),
     getItem("Manage User", "manage-user", <PieChartOutlined />),
+    getItem("Manage Staff", "staff", <PieChartOutlined />),
     getItem("Manage Service", "sub1", <MenuOutlined />, [
       getItem("Extra service", "extra-service"),
       getItem("Delivery", "delivery"),
@@ -90,10 +91,16 @@ function Dashboard() {
   ];
   return (
     <div style={{ marginTop: "20px" }}>
-      <Layout>
+      <Layout
+        style={{
+          minHeight: "100vh",
+        }}
+      >
         <Sider className="sider" style={{ background: "#f5f5f5" }}>
           <div className="sider__header">
-            <img src={logo} alt="" />
+            <Link to="/">
+              <img src={logo} alt="" />
+            </Link>
             <h4>KOIKICHI</h4>
           </div>
           <Menu mode="inline" items={items} />
@@ -126,6 +133,7 @@ function Dashboard() {
         </Layout>
       </Layout>
       <Footer />
+      
     </div>
   );
 }
