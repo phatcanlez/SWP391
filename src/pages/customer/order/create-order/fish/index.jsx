@@ -43,6 +43,15 @@ const sizeOptions = [
   { sizeInCM: "73.1 - 83", sizeInInch: "28.8 - 32.6", points: 18 },
 ];
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+};
+
 function Fish() {
   const [fishCount, setFishCount] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
@@ -555,7 +564,9 @@ function Fish() {
                       <InputNumber
                         min={0}
                         style={{ width: "100%", borderRadius: "6px" }}
-                        placeholder="Price ($)"
+                        placeholder="Price (VND)"
+                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                        parser={value => value.replace(/\$\s?|(,*)/g, '')}
                       />
                     </Form.Item>
                   </Col>
@@ -737,7 +748,7 @@ function Fish() {
               <Statistic
                 title={<span style={{ color: "#666" }}>Total Price</span>}
                 value={totalPrice}
-                precision={2}
+                formatter={value => formatCurrency(value)}
                 valueStyle={{ color: "#000" }}
               />
             </Card>

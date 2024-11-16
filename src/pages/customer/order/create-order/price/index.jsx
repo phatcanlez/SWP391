@@ -7,6 +7,15 @@ import { useSelector } from "react-redux";
 
 const { Title, Text } = Typography;
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+};
+
 const Price = forwardRef((props, ref) => {
   const [extraServices, setExtraServices] = useState([]);
   const [shippingMethods, setShippingMethods] = useState([]);
@@ -474,6 +483,8 @@ const Price = forwardRef((props, ref) => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "8px 0",
+                  borderBottom: "1px solid #f0f0f0"
                 }}
               >
                 <Checkbox
@@ -485,9 +496,14 @@ const Price = forwardRef((props, ref) => {
                   }
                   checked={selectedServices.includes(service.extraServiceId)}
                 >
-                  {service.nameService}
+                  <span style={{ marginLeft: 8, color: '#666' }}>{service.nameService}</span>
                 </Checkbox>
-                <span>{service.price}</span>
+                <span style={{ 
+                  fontWeight: 500,
+                  color: '#e25822'
+                }}>
+                  {formatCurrency(service.price)}
+                </span>
               </div>
             ))}
           </Space>
@@ -500,18 +516,18 @@ const Price = forwardRef((props, ref) => {
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
-              <Text strong>{(estimatePrice || 0).toFixed(2)}</Text>
+              <Text strong>{formatCurrency(estimatePrice || 0)}</Text>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
-                {(
+                {formatCurrency(
                   extraServices
                     .filter((service) =>
                       selectedServices.includes(service.extraServiceId)
                     )
                     .reduce((sum, service) => sum + service.price, 0) || 0
-                ).toFixed(2)}
+                )}
               </Text>
             </div>
             <div
@@ -527,7 +543,7 @@ const Price = forwardRef((props, ref) => {
                 Total:
               </Title>
               <Title level={4} type="danger">
-                {(totalPrice || 0).toFixed(2)}
+                {formatCurrency(totalPrice || 0)}
               </Title>
             </div>
           </Space>
