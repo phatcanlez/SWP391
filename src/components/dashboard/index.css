@@ -1,38 +1,10 @@
 .menu{
-    background: #F5F5F5 !important; 
-    width: 200px;
-    min-height: 100vh;
+  background: #F5F5F5 !important; 
+  width: 200px;
+  min-height: 100vh;
 
-    .sider{
-        min-width: 200px;
-    }
-    
+  .sider{
+      min-width: 200px;
+  }
+  
 }
-import { PieChartOutlined, UserOutlined } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
-import Sider from "antd/es/layout/Sider";
-import logo from "../../img/logolayout.png";
-import "./index.css";
-function getItem(label, key, icon) {
-  return {
-    key,
-    icon,
-    label,
-  };
-}
-const items = [
-  getItem("Dashboard", "order", <PieChartOutlined />),
-  getItem("Manage Order", "order", <PieChartOutlined />),
- 
-  getItem("Manage Service", "/", <PieChartOutlined />),
-  getItem("Feedback", "/", <PieChartOutlined />),
-  getItem("FAQs", "/", <PieChartOutlined />),
-  getItem("Customer Care", "/", <PieChartOutlined />),
-];
-
-function Dashboard() {
-  return (
-    
-  );
-}
-export default Dashboard;

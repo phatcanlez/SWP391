@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import "../home/home.css";
@@ -18,40 +17,8 @@ import logo10 from "../../img/logo10.png";
 import logo11 from "../../img/logo11.png";
 import logo12 from "../../img/logo12.png";
 import logo13 from "../../img/logo13.png";
+import { Link } from "react-router-dom";
 function HomePage() {
-  const persistRoot = localStorage.getItem("persist:root");
-  let role = null;
-
-  if (persistRoot) {
-    const user = JSON.parse(persistRoot).user;
-    if (user) {
-      const userObj = JSON.parse(user);
-      role = userObj.role;
-    }
-  }
-
-  useEffect(() => {
-    console.log("role", role);
-    if (role === "CUSTOMER") {
-      var Tawk_API = Tawk_API || {},
-        Tawk_LoadStart = new Date();
-      (function () {
-        const s1 = document.createElement("script"),
-          s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = "https://embed.tawk.to/67375fd74304e3196ae33499/1ico4sp3d";
-        s1.charset = "UTF-8";
-        s1.setAttribute("crossorigin", "*");
-        s0.parentNode.insertBefore(s1, s0);
-      })();
-    } else {
-      const existingScript = document.getElementById("tawk-script");
-      if (existingScript) {
-        existingScript.remove();
-      }
-    }
-  }, [role]);
-
   return (
     <div>
       <Header />
@@ -72,7 +39,9 @@ function HomePage() {
                 Welcome to KOIKICHI - The leading expert in Koi fish
                 transportation!
               </h5>
-              <Button className="home__btn">LEARN MORE</Button>
+              <Link to="/about">
+                <Button className="home__btn">LEARN MORE</Button>
+              </Link>
             </div>
             <div className="cnt__img">
               <img src={home1} alt="" />
@@ -99,7 +68,9 @@ function HomePage() {
                 <br />
                 Import procedure assistance
               </h5>
-              <Button className="home__btn">LEARN MORE</Button>
+              <Link to="/service">
+                <Button className="home__btn">LEARN MORE</Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -111,14 +82,18 @@ function HomePage() {
             <h5>TRACKING</h5>
             <h4>Bill of Lading</h4>
             <h5>Tracking Bill of Lading</h5>
-            <Button className="home__btn">LEARN MORE</Button>
+            <Link to="/tracking">
+              <Button className="home__btn">LEARN MORE</Button>
+            </Link>
           </div>
           <div className="cnt2__border"></div>
           <div className="cnt2__wrapper">
             <h5>PRICING</h5>
             <h4>Shipping fee</h4>
             <h5>Shipping fee estimation</h5>
-            <Button className="home__btn">LEARN MORE</Button>
+            <Link to="/tracking">
+              <Button className="home__btn">LEARN MORE</Button>
+            </Link>
           </div>
         </section>
 
@@ -145,7 +120,6 @@ function HomePage() {
           </div>
         </section>
       </div>
-
       <Footer />
     </div>
   );
