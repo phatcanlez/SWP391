@@ -4,6 +4,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.ExtraService;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.OrderDTO.ResponseMessage;
 import com.example.SWP391.repository.BoxPriceRepository;
 import com.example.SWP391.repository.ExtraServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,4 +55,16 @@ public class ExtraServiceService {
     }
 
 
+    public ResponseMessage deleteExtraService(long id) {
+        ExtraService extraService = extraServiceRepository.findExtraServiceByExtraServiceId(id);
+        if(extraService == null){
+            throw new NotFoundException("Not found this extra service");
+        }
+        try{
+            extraServiceRepository.delete(extraService);
+            return new ResponseMessage("Delete successfully");
+        }catch (Exception e){
+            throw new DuplicateException("Delete fail");
+        }
+    }
 }
