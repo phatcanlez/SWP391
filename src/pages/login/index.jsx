@@ -43,7 +43,11 @@ function LoginPage() {
           const { role, token } = response.data;
           localStorage.setItem("token", token);
           console.log(response);
-          navigate("/customer-service");
+          if (role === "CUSTOMER") {
+            navigate("/");
+          } else if (role === "MANAGER") {
+            navigate("/dashboard");
+          }
         } catch (err) {
           toast.error(err.response.data);
         }

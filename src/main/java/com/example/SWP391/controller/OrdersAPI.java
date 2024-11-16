@@ -15,10 +15,10 @@ import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 
 @RestController
 @SecurityRequirement(name = "api")
@@ -58,7 +58,6 @@ public class OrdersAPI {
         @GetMapping("/api/orders/{id}")
         public ResponseEntity getLicenseById(@PathVariable String id) {
             return ResponseEntity.ok(orderService.viewOrderById(id));
-
         }
 
         @GetMapping("/api/orders/status")
@@ -84,21 +83,22 @@ public class OrdersAPI {
 
         @GetMapping("/api/orders/status-emp-total")
         public ResponseEntity getOrderByStatusAndEmpIdAndTotal(@RequestParam(name = "status") StatusInfo status, @RequestParam(name ="empId") String empId) {
-                System.out.println(status);
-                System.out.println(empId);
                 return ResponseEntity.ok(orderService.viewOrderByStatusAndEmpIdAndTotal(status, empId));
         }
 
         @GetMapping("/api/orders/total")
         public ResponseEntity getOrderTotalByUsername(@RequestParam(name = "status") StatusInfo status, @RequestParam(name ="empUsername") String username) {
-                System.out.println(status);
-                System.out.println(username);
                 return ResponseEntity.ok(orderService.getTotalByEmpUsername(status, username));
         }
 
         @GetMapping("/api/orders/account")
         public ResponseEntity getOrderByAccount(@RequestParam String username) {
                 return ResponseEntity.ok(orderService.viewOrderByAccount(username));
+        }
+
+        @GetMapping("/api/orders/responsible")
+        public ResponseEntity getOrderResponsible(@RequestParam String orderId) {
+                return ResponseEntity.ok(orderService.viewOrderResponsible(orderId));
         }
 
         @PutMapping("/api/orders/{id}")
@@ -109,6 +109,11 @@ public class OrdersAPI {
         @PutMapping("/api/orders/image")
         public ResponseEntity updateImage(@RequestBody OrderImageRequest orderImageRequest) {
                 return ResponseEntity.ok(orderService.updateImage(orderImageRequest));
+        }
+
+        @PutMapping("/api/orders/finish-image")
+        public ResponseEntity updateFinishImage(@RequestBody OrderImageRequest orderImageRequest) {
+                return ResponseEntity.ok(orderService.updateFinishImage(orderImageRequest));
         }
 
         @PutMapping("/api/orders/refund")
