@@ -242,7 +242,7 @@ public class OrderService {
                     orderResponse.setActDeliveryDate(order.getActDeliveryDate());
                 }
                 orderResponse.setFeedback(order.getFeedbacks() != null);
-                orderResponse.setPaid(order.getPayment().getStatus().equals(Paystatus.PAYED.toString()));
+                orderResponse.setPaid(order.getPayment().getStatus().equals(Paystatus.SUCCESS.toString()));
                 return orderResponse;
             }).toList();
         } catch (Exception e) {
@@ -361,18 +361,18 @@ public class OrderService {
 
     public OrderResponsible viewOrderResponsible(String orderId) {
         Orders order = orderRepository.findByorderID(orderId);
+        if (order == null) {
+            throw new NotFoundException("Not found this order");
+        }
         List<Status> listStatus = order.getStatus();
         Set<Account> listEmp = new HashSet<>();
         for (Status status : listStatus) {
-            if (status.getEmpId() != null) {
-                Account emp = accountRepository.findById(status.getEmpId()).get();
+            if (status.getEmpId() != null && !status.getEmpId().isEmpty() && !status.getEmpId().equals("")) {
+                Account emp = accountRepository.findAccountById(status.getEmpId());
                 listEmp.add(emp);
             }
         }
         OrderResponsible orderResponsible = new OrderResponsible();
-        if (listEmp.isEmpty()) {
-            throw new NotFoundException("Not found employee responsible for this order");
-        }
         orderResponsible.setListEmployee(listEmp);
         orderResponsible.setTotalEmployee(listEmp.size());
         return orderResponsible;

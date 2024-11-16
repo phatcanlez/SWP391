@@ -22,8 +22,6 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roomID;
 
-    private String name;
-
     Date lastUpdated = new Date();
 
     String lastMessage;
