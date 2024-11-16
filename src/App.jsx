@@ -220,7 +220,7 @@ function App() {
           element: <RoomChat />,
           children: [
             {
-              path: "chat/:id",
+              path: "/customer-service/chat/:id",
               element: <ChatDetail />,
             },
           ],
@@ -278,7 +278,7 @@ function App() {
           element: <RoomChat />,
           children: [
             {
-              path: "chat/:id",
+              path: "/staff/chat/:id",
               element: <ChatDetail />,
             },
           ],
@@ -333,8 +333,6 @@ function App() {
         },
       ],
     },
-    
-    
   ]);
   return <RouterProvider router={router} />;
 }

@@ -25,7 +25,7 @@ function ApproveOrder() {
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
-  const id = orderView?.orderID;
+  const id = orderView?.orderID || orderView[0]?.orderID;
   console.log(id);
 
   const checkApprove = async () => {
@@ -36,10 +36,10 @@ function ApproveOrder() {
       if (response.data.length > 0) {
         dispatch(approve(response.data));
         await fetchOrderDetail(orderView?.orderID);
-        if (order === null) {
-          dispatch(approve(response.data?.[0]));
-          await fetchOrderDetail(orderView?.orderID);
-        }
+        // if (order === null) {
+        //   dispatch(approve(response.data?.[0]));
+        //   await fetchOrderDetail(orderView?.orderID);
+        // }
       }
     } catch (error) {
       console.log(error);
@@ -127,14 +127,14 @@ function ApproveOrder() {
   };
   console.log(order);
 
-  const handleRoomChat = () => {
-    // try {
-    //   const response = await api.get(`feedback/${id}`);
-    //   console.log(response.data);
-    //   setFeedback(response.data);
-    // } catch (error) {
-    //   toast.error(error);
-    // }
+  const handleRoomChat = async (customerID) => {
+    try {
+      const room = await api.get(`/chat/room/${user?.id}/${customerID}`);
+      console.log(room.data);
+      navigate(`/staff/chat/${room.data?.roomID}`);
+    } catch (error) {
+      toast.error(error);
+    }
   };
   return (
     <div>
@@ -172,14 +172,14 @@ function ApproveOrder() {
               <div>
                 <p>
                   <span className="color">{user?.name}</span> - (+84)
-                  {order.senderPhoneNumber}
+                  {order?.senderPhoneNumber}
                 </p>
-                <p>{order.senderAddress}</p>
+                <p>{order?.senderAddress}</p>
               </div>
 
               <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
               <MessageOutlined
-                onClick={handleRoomChat}
+                onClick={() => handleRoomChat(order?.accountId)}
                 style={{ fontSize: 18, color: "#c3c3c3" }}
               />
             </div>
@@ -189,10 +189,10 @@ function ApproveOrder() {
             <div className="item">
               <div>
                 <p>
-                  <span className="color">{order.reciverName} </span>- (+84)
-                  {order.reciverPhoneNumber}
+                  <span className="color">{order?.reciverName} </span>- (+84)
+                  {order?.reciverPhoneNumber}
                 </p>
-                <p>{order.reciverAdress}</p>
+                <p>{order?.reciverAdress}</p>
               </div>
 
               <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />

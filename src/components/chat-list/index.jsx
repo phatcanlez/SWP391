@@ -7,6 +7,7 @@ import { useStateValue } from "../../Context/StateProvider";
 import { selectUser } from "../../redux/features/userSlice";
 import useRealtime from "../../hooks/useRealtime";
 import RoomMessage from "../roomMessage";
+import { el } from "date-fns/locale";
 function ChatList({ setFetchRoom }) {
   const { theme, setShowSearchFriends, active, setActive, realtime } =
     useStateValue();
@@ -39,6 +40,22 @@ function ChatList({ setFetchRoom }) {
   useEffect(() => {
     fetch();
   }, []);
+  function isValidUrl(text) {
+    try {
+      new URL(text);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  const renderLastMessage = (messages) => {
+    if (isValidUrl(messages)) {
+      return "Sent a photo";
+    } else {
+      return messages;
+    }
+  };
 
   return (
     <>
@@ -65,7 +82,7 @@ function ChatList({ setFetchRoom }) {
               setActive={setActive}
               avt={room.users.filter((item) => item.id != user.id)[0].avt}
               name={room.users.filter((item) => item.id != user.id)[0].name}
-              lastMessage={room.lastMessage}
+              lastMessage={renderLastMessage(room.lastMessage)}
             />
           ))}
         </div>

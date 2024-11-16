@@ -9,7 +9,9 @@ import { useSelector } from "react-redux";
 import Message from "../../message";
 import { selectUser } from "../../redux/features/userSlice";
 import useRealtime from "../../hooks/useRealtime";
-
+import "./index.scss";
+import { FiUpload } from "react-icons/fi";
+import uploadFile from "../../config/file";
 function RoomChatDetail() {
   const { theme, setShowChatList, setActive, setRealtime } = useStateValue();
   const messagesContainerRef = useRef();
@@ -25,7 +27,6 @@ function RoomChatDetail() {
     try {
       const res = await api.get(`/chat/detail/${idRef.current}`);
       console.log(res.data);
-      // console.log(res.data.users);
       setData(res.data);
     } catch (err) {
       console.log(err);
@@ -33,6 +34,7 @@ function RoomChatDetail() {
   };
 
   useRealtime(async (body) => {
+    console.log(body);
     if (body.body === "New message") {
       await fetch();
     } else {
@@ -76,6 +78,24 @@ function RoomChatDetail() {
       setRealtime(res);
       // fetchRoom();
       console.log(res.data);
+    }
+  };
+
+  const handleUploadFile = () => {
+    document.getElementById("file").click();
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]; // Get the selected file
+    if (file) {
+      console.log("Selected file:", file);
+      const url = await uploadFile(file);
+      await api.post(`/chat/send/${idRef.current}`, {
+        message: url,
+      });
+      fetch();
+    } else {
+      console.log("No file selected");
     }
   };
   return (
@@ -142,10 +162,13 @@ function RoomChatDetail() {
             style={{ display: "none" }}
             type="file"
             id="file"
-            onChange={(e) => {
-              setImg(e.target.files[0]);
-              handleSend(e.target.files[0]);
+            onChange={handleFileChange} // Attach here
+          />
+          <FiUpload
+            style={{
+              cursor: "pointer",
             }}
+            onClick={handleUploadFile} // Only trigger the file picker
           />
           {message.length === 0 || (
             <button onClick={sendMessage}>

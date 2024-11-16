@@ -22,9 +22,9 @@ function RoomMessage({
     setShowSearchFriends(false);
     setActive(room);
     setShowChatList(false);
-    user.role === "CREATOR"
-      ? navigate(`/creator-manage/room/${room}`)
-      : navigate(`/room-messages/${room}`);
+    user.role === "STAFF"
+      ? navigate(`/staff/chat/${room}`)
+      : navigate(`/customer-service/chat/${room}`);
   };
 
   return (
@@ -35,10 +35,7 @@ function RoomMessage({
       <img src={avt || "abc"} alt="" />
       <div className="roomMessage__detail">
         <h4>{name}</h4>
-        <span>
-          {icon}
-          {lastMessage}
-        </span>
+        <span>{lastMessage}</span>
       </div>
     </div>
   );

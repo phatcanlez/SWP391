@@ -27,6 +27,11 @@
           font-size: 12px;
         }
       }
+      &__img{
+        img{
+          width: 500px;
+        }
+      }
     }
     &.me {
       display: flex;
