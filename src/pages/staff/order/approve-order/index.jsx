@@ -9,7 +9,7 @@ import { format, parseISO } from "date-fns";
 import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
 import License from "../license";
 import InProcess from "../pending/pending";
-import { Button, Form, Input, Modal, Rate } from "antd";
+import { Alert, Button, Form, Input, Modal, Rate } from "antd";
 
 function ApproveOrder() {
   const dispatch = useDispatch();
@@ -32,6 +32,10 @@ function ApproveOrder() {
       if (response.data.length > 0) {
         dispatch(approve(response.data));
         await fetchOrderDetail(orderView?.orderID);
+        if (order === null) {
+          dispatch(approve(response.data?.[0]));
+          await fetchOrderDetail(orderView?.orderID);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -127,6 +131,7 @@ function ApproveOrder() {
           <h3 style={{ marginBottom: "50px" }}>
             <span className="color">Order ID: </span> {order.orderID}
           </h3>
+          <Alert message={order?.orderDetail?.type} />
 
           <div className="time-section">
             <p>
@@ -245,7 +250,7 @@ function ApproveOrder() {
         </div>
 
         <h5 className="title">Delivery status</h5>
-        
+
         <div className="bg-w">
           {(status === "APPROVED" ||
             status === "PENDING" ||
