@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   DoubleRightOutlined,
   LoadingOutlined,
+  MessageOutlined,
   PhoneOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
@@ -190,6 +191,7 @@ function OrderDetail() {
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
+           
           </div>
         </div>
         <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>

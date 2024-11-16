@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "antd/es/form/Form";
 import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
-import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
+import {
+  DoubleRightOutlined,
+  MessageOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
 import License from "../license";
 import InProcess from "../pending/pending";
 import { Alert, Button, Form, Input, Modal, Rate } from "antd";
@@ -122,6 +126,16 @@ function ApproveOrder() {
     }
   };
   console.log(order);
+
+  const handleRoomChat = () => {
+    // try {
+    //   const response = await api.get(`feedback/${id}`);
+    //   console.log(response.data);
+    //   setFeedback(response.data);
+    // } catch (error) {
+    //   toast.error(error);
+    // }
+  };
   return (
     <div>
       <div className="order-detail">
@@ -164,6 +178,10 @@ function ApproveOrder() {
               </div>
 
               <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
+              <MessageOutlined
+                onClick={handleRoomChat}
+                style={{ fontSize: 18, color: "#c3c3c3" }}
+              />
             </div>
 
             <DoubleRightOutlined style={{ fontSize: 18, color: "#e25822" }} />

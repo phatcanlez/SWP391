@@ -62,7 +62,8 @@ import requestPermissions from "./config/notification";
 import StaffList from "./pages/admin/staff-list";
 
 import ManageCustomers from "./pages/admin/manage-user/customer";
-
+import RoomChat from "./components/roomChat";
+import ChatDetail from "./components/chat-detail";
 
 function App() {
   useEffect(() => {
@@ -207,7 +208,6 @@ function App() {
           path: "staff",
           element: <StaffList />,
         },
-       
       ],
     },
 
@@ -215,6 +215,16 @@ function App() {
       path: "customer-service",
       element: <CustomerService />,
       children: [
+        {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
         {
           path: "account",
           element: <Account />,
@@ -263,6 +273,16 @@ function App() {
         </ProtectRouteAuth>
       ),
       children: [
+        {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
         {
           path: "order",
           element: <AllOrder />,
@@ -313,6 +333,8 @@ function App() {
         },
       ],
     },
+    
+    
   ]);
   return <RouterProvider router={router} />;
 }
