@@ -73,8 +73,11 @@ function Dashboard() {
         : null,
       getItem("History", "history"),
     ]),
-    getItem("Manage User", "manage-user", <PieChartOutlined />),
     getItem("Manage Staff", "staff", <PieChartOutlined />),
+
+    getItem("Manage User", "manage-user", <PieChartOutlined />, [
+      getItem("Manage Customer", "manage-customer"),
+    ]),
     getItem("Manage Service", "sub1", <MenuOutlined />, [
       getItem("Extra service", "extra-service"),
       getItem("Delivery", "delivery"),

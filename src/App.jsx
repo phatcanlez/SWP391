@@ -58,7 +58,11 @@ import CustomerComplain from "./pages/customer/complain";
 import CustomerFaqs from "./pages/customer/faqs";
 import { useEffect } from "react";
 import requestPermissions from "./config/notification";
+
 import StaffList from "./pages/admin/staff-list";
+
+import ManageCustomers from "./pages/admin/manage-user/customer";
+
 
 function App() {
   useEffect(() => {
@@ -162,6 +166,10 @@ function App() {
         {
           path: "manage-user",
           element: <ManageUser />,
+        },
+        {
+          path: "manage-customer",
+          element: <ManageCustomers />,
         },
         {
           path: "extra-service",
