@@ -10,14 +10,12 @@ import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../../../staff/order/pending/pending";
-import { approve } from "../../../../redux/features/orderSlice";
 
 function OrderDetail_AD() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [img, setImg] = useState("");
@@ -98,7 +96,6 @@ function OrderDetail_AD() {
           order: id,
           description: "The order is approved",
         });
-        dispatch(approve(setvalue));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");

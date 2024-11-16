@@ -15,9 +15,7 @@ import uploadFile from "../../../../config/file";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 
-const InProcess = () => {
-  const order = useSelector((store) => store.order);
-  console.log(order);
+const InProcess = ({id}) => {
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
   const [current, setCurrent] = useState(-1);
@@ -42,9 +40,10 @@ const InProcess = () => {
 
   const fetchOrderDetail = async () => {
     try {
-      const response = await api.get(`/orders/${order?.orderID}`);
+      console.log(id);
+      const response = await api.get(`/orders/${id}`);
+      console.log(response.data);
       const value = response.data;
-      console.log(value);
       setViewOrder(value);
       const status = value.status[value.status.length - 1]?.statusInfo;
       setStatus(status);
@@ -176,7 +175,7 @@ const InProcess = () => {
       icon: <SmileOutlined />,
     },
   ];
-  const description = 'This is a description.';
+  const description = "This is a description.";
   return (
     <div>
       {viewOrder?.orderDetail?.type === "DOMESTIC" && (

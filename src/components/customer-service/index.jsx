@@ -25,6 +25,7 @@ const items = [
   getItem("Create Order", "order", <FormOutlined />),
   getItem("Orders History", "history", <HistoryOutlined />),
   getItem("Complain", "cuscomplain", <ExclamationCircleOutlined />),
+  getItem("Message", "chat", <ExclamationCircleOutlined />),
   getItem("FAQs", "cusfaq", <QuestionCircleOutlined />),
 ];
 

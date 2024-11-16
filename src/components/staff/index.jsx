@@ -33,6 +33,7 @@ const Staff = () => {
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
     getItem("Feedback", "view-feedback", <CommentOutlined />),
     getItem("Complain", "view-complain", <FrownOutlined />),
+    getItem("Message", "chat", <UserOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
   ].filter(Boolean); // filter out null items
 

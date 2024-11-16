@@ -62,7 +62,9 @@ import requestPermissions from "./config/notification";
 import StaffList from "./pages/admin/staff-list";
 
 import ManageCustomers from "./pages/admin/manage-user/customer";
-
+import RoomChat from "./components/roomChat";
+import ChatDetail from "./components/chat-detail";
+import Free from "./pages/staff/free-page";
 
 function App() {
   useEffect(() => {
@@ -207,7 +209,6 @@ function App() {
           path: "staff",
           element: <StaffList />,
         },
-       
       ],
     },
 
@@ -215,6 +216,16 @@ function App() {
       path: "customer-service",
       element: <CustomerService />,
       children: [
+        {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "/customer-service/chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
         {
           path: "account",
           element: <Account />,
@@ -264,6 +275,16 @@ function App() {
       ),
       children: [
         {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "/staff/chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
+        {
           path: "order",
           element: <AllOrder />,
         },
@@ -310,6 +331,10 @@ function App() {
         {
           path: "success",
           element: <OrderSuccess />,
+        },
+        {
+          path: "empty",
+          element: <Free />,
         },
       ],
     },
