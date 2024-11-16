@@ -12,6 +12,7 @@ import useRealtime from "../../hooks/useRealtime";
 import "./index.scss";
 import { FiUpload } from "react-icons/fi";
 import uploadFile from "../../config/file";
+import ava from "../../img/ava.jpg";
 function RoomChatDetail() {
   const { theme, setShowChatList, setActive, setRealtime } = useStateValue();
   const messagesContainerRef = useRef();
@@ -111,8 +112,12 @@ function RoomChatDetail() {
           <IoIosArrowBack fontSize={"30px"} />
         </div>
 
-        <img
+        {/* <img
           src={data?.users?.filter((item) => item.id != user.id)[0].avt}
+          alt=""
+        /> */}
+        <img
+          src={ava}
           alt=""
         />
         <div className="header__info">
@@ -134,7 +139,7 @@ function RoomChatDetail() {
             key={item.user?.id}
             text={item?.message}
             me={item.user?.id === user?.id ? "me" : ""}
-            avt={item.user.avt}
+            avt={ava}
           />
         ))}
       </div>

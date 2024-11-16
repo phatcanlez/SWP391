@@ -5,6 +5,7 @@ import { useStateValue } from "../../Context/StateProvider";
 import FormSearchFriends from "../../component/formSearchFriends/FormSearchFriends";
 import { useMediaQuery } from "react-responsive";
 import { Outlet, useParams } from "react-router-dom";
+import ChatList from "../../components/chat-list";
 
 function RoomChat() {
   const { theme, showSearchFriends, showChatList } = useStateValue();

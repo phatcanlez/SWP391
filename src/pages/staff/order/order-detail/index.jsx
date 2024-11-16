@@ -16,7 +16,6 @@ import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
-import { approve } from "../../../../redux/features/orderSlice";
 import api from "../../../../config/axios";
 
 function OrderDetail() {
@@ -105,7 +104,6 @@ function OrderDetail() {
           description: "The order is approved",
         });
         console.log(setvalue);
-        dispatch(approve(setvalue.data));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");
@@ -137,7 +135,6 @@ function OrderDetail() {
     }
   };
   console.log(order);
-  const handleRoomChat = () => {};
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -192,10 +189,6 @@ function OrderDetail() {
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
-            <MessageOutlined
-              onClick={handleRoomChat}
-              style={{ fontSize: 18, color: "#c3c3c3" }}
-            />
           </div>
         </div>
         <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>

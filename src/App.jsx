@@ -64,6 +64,7 @@ import StaffList from "./pages/admin/staff-list";
 import ManageCustomers from "./pages/admin/manage-user/customer";
 import RoomChat from "./components/roomChat";
 import ChatDetail from "./components/chat-detail";
+import Free from "./pages/staff/free-page";
 
 function App() {
   useEffect(() => {
@@ -330,6 +331,10 @@ function App() {
         {
           path: "success",
           element: <OrderSuccess />,
+        },
+        {
+          path: "empty",
+          element: <Free />,
         },
       ],
     },

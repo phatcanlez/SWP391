@@ -8,6 +8,7 @@ import { selectUser } from "../../redux/features/userSlice";
 import useRealtime from "../../hooks/useRealtime";
 import RoomMessage from "../roomMessage";
 import { el } from "date-fns/locale";
+import ava from "../../img/ava.jpg";
 function ChatList({ setFetchRoom }) {
   const { theme, setShowSearchFriends, active, setActive, realtime } =
     useStateValue();
@@ -62,7 +63,7 @@ function ChatList({ setFetchRoom }) {
       <div className="chat-list">
         <div className="chat-list__information">
           <div className="chat-list__information__left">
-            <img src={user?.avt} alt="" />
+            <img src={ava} alt="" />
             <span>{user?.name}</span>
           </div>
           <div
