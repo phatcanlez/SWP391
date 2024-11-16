@@ -52,6 +52,7 @@ public class StatusService {
 
     @Autowired
     ChatService chatService;
+
     public StatusResponse createStatus(StatusRequest statusRequest) {
         try {
             Orders orders = orderRepository.findByorderID(statusRequest.getOrder());
@@ -65,37 +66,46 @@ public class StatusService {
                     throw new DuplicateException("You can't approved this order because you already have a approved order!!");
                 }
 
-                    List<String> userRooms = new ArrayList<>();
-                userRooms.add(orders.getAccount().getId());
-                userRooms.add(accountUtils.getCurrentUser().getId());
-                //create Room Chat
-                RoomRequest roomRequest = new RoomRequest();
-                roomRequest.setMembers(userRooms);
-                chatService.createNewRoom(roomRequest);
-//                if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
-//                    OrderResponsible orderResponsible = orderService.viewOrderResponsible(statusRequest.getOrder());
-//                    List<Account> listEmp = orderResponsible.getListEmployee().stream().toList();
-//                    int totelEmp = listEmp.size();
-//                    if (totelEmp == 1) {
-//                        String AddressEmp = listEmp.getFirst().getAddress();
-//                        Account curAccount = authenticationService.getCurrentAccount();
-//                        if (TrackingUtil.checkCountryIsVietnam(AddressEmp)) {
-//                            if (TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
-//                                throw new DuplicateException("You can't approved this order already have a approved by a Vietnamese staff!!");
-//                            } else {
-//                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-//                            }
-//                        } else {
-//                            if (!TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
-//                                throw new DuplicateException("You can't approved this order already have a approved by a Japanese staff!!");
-//                            } else {
-//                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-//                            }
-//                        }
-//                    } else {
-//                        statusRequest.setStatusInfo(StatusInfo.WATINGFOR2NDSTAFF.toString());
-//                    }
-//                }
+                if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
+                    OrderResponsible orderResponsible = orderService.viewOrderResponsible(statusRequest.getOrder());
+                    List<Account> listEmp = orderResponsible.getListEmployee().stream().toList();
+                    int totelEmp = listEmp.size();
+                    if (totelEmp == 1) {
+                        String AddressEmp = listEmp.getFirst().getAddress();
+                        Account curAccount = authenticationService.getCurrentAccount();
+                        if (TrackingUtil.checkCountryIsVietnam(AddressEmp)) {
+                            if (TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
+                                throw new DuplicateException("You can't approved this order already have a approved by a Vietnamese staff!!");
+                            } else {
+                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
+                                //create chatbox
+                                List<String> userRooms = new ArrayList<>();
+                                userRooms.add(orders.getAccount().getId());
+                                userRooms.add(accountUtils.getCurrentUser().getId());
+                                //create Room Chat
+                                RoomRequest roomRequest = new RoomRequest();
+                                roomRequest.setMembers(userRooms);
+                                chatService.createNewRoom(roomRequest);
+                            }
+                        } else {
+                            if (!TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
+                                throw new DuplicateException("You can't approved this order already have a approved by a Japanese staff!!");
+                            } else {
+                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
+                                //create chatbox
+                                List<String> userRooms = new ArrayList<>();
+                                userRooms.add(orders.getAccount().getId());
+                                userRooms.add(accountUtils.getCurrentUser().getId());
+                                //create Room Chat
+                                RoomRequest roomRequest = new RoomRequest();
+                                roomRequest.setMembers(userRooms);
+                                chatService.createNewRoom(roomRequest);
+                            }
+                        }
+                    } else {
+                        statusRequest.setStatusInfo(StatusInfo.WATINGFOR2NDSTAFF.toString());
+                    }
+                }
             } else if (statusRequest.getStatusInfo().equals(StatusInfo.PENDING.toString())) {
                 List<OrderResponse> ordersListIsPending = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
                 if (ordersListIsPending.size() > 0) {
@@ -105,10 +115,9 @@ public class StatusService {
 
             if (statusRequest.getStatusInfo().equals(StatusInfo.FAIL.toString())) {
                 Payment payment = orders.getPayment();
-                if (payment.getStatus().equals(Paystatus.PAYED.toString())) {
+                if (payment.getStatus().equals(Paystatus.SUCCESS.toString())) {
                     {
                         statusRequest.setStatusInfo(StatusInfo.REFUNDED.toString());
-                        System.out.println(statusRequest.getStatusInfo());
                     }
                 }
             }
@@ -127,9 +136,6 @@ public class StatusService {
 
             StatusResponse statusResponse = modelMapper.map(status, StatusResponse.class);
             statusResponse.setOrderID(orders.getOrderID());
-
-
-
 
             return statusResponse;
 

@@ -119,7 +119,6 @@ public class ChatService {
         if (room == null) {
             room = new Room();
             room.setUsers(accountDTOS);
-            room.setName("[" + user1.getName() + " and " + user2.getName() + "]");
             room = roomRepository.save(room);
         }
 
