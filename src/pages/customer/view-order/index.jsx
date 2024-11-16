@@ -9,6 +9,134 @@ import { format, parseISO } from "date-fns";
 import { Button, Steps } from "antd";
 import { useSelector } from "react-redux";
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
+const sizeOptions = [
+  { 
+    minSize: 1,
+    maxSize: 19.9,
+    sizeInCM: "1-19.9", 
+    sizeInInch: "7.86", 
+    points: 1.25,
+    description: "Extra Small"
+  },
+  { 
+    minSize: 20,
+    maxSize: 25,
+    sizeInCM: "20-25", 
+    sizeInInch: "7.87 - 9.84", 
+    points: 2,
+    description: "Small"
+  },
+  { 
+    minSize: 25.1,
+    maxSize: 30,
+    sizeInCM: "25.1-30", 
+    sizeInInch: "9.85 - 11.81", 
+    points: 2.5,
+    description: "Small-Medium"
+  },
+  { 
+    minSize: 30.1,
+    maxSize: 40,
+    sizeInCM: "30.1-40", 
+    sizeInInch: "11.82 - 15.75", 
+    points: 3,
+    description: "Medium"
+  },
+  { 
+    minSize: 40.1,
+    maxSize: 44,
+    sizeInCM: "40.1-44", 
+    sizeInInch: "15.76 - 17.32", 
+    points: 5,
+    description: "Medium-Large"
+  },
+  { 
+    minSize: 44.1,
+    maxSize: 50,
+    sizeInCM: "44.1-50", 
+    sizeInInch: "17.33 - 19.6", 
+    points: 7.5,
+    description: "Large"
+  },
+  { 
+    minSize: 50.1,
+    maxSize: 55,
+    sizeInCM: "50.1-55", 
+    sizeInInch: "19.7 - 21.6", 
+    points: 9,
+    description: "Extra Large"
+  },
+  { 
+    minSize: 55.1,
+    maxSize: 65,
+    sizeInCM: "55.1-65", 
+    sizeInInch: "21.7 - 25.5", 
+    points: 14,
+    description: "Jumbo"
+  },
+  {
+    minSize: 50,
+    maxSize: 60,
+    sizeInCM: "50-60 Hirenaga (Butterfly)",
+    sizeInInch: "19.7 - 23.4",
+    points: 12,
+    description: "Butterfly Large"
+  },
+  {
+    minSize: 60.1,
+    maxSize: 65,
+    sizeInCM: "60.1-65 Hirenaga (Butterfly)",
+    sizeInInch: "23.5 - 25.5",
+    points: 14,
+    description: "Butterfly Extra Large"
+  },
+  { 
+    minSize: 65.1,
+    maxSize: 73,
+    sizeInCM: "65.1-73",
+    sizeInInch: "25.6 - 28.7",
+    points: 16,
+    description: "Super Jumbo"
+  },
+  { 
+    minSize: 73.1,
+    maxSize: 83,
+    sizeInCM: "73.1-83",
+    sizeInInch: "28.8 - 32.6",
+    points: 18,
+    description: "Ultra Jumbo"
+  }
+];
+
+const getSizeDetails = (size) => {
+  if (!size) return null;
+  
+  try {
+    if (size.includes('Hirenaga')) {
+      return sizeOptions.find(option => option.sizeInCM.includes('Hirenaga'));
+    }
+
+    const firstNumber = parseFloat(size.match(/\d+\.?\d*/)?.[0]);
+    if (!firstNumber) return null;
+
+    return sizeOptions.find(option => 
+      firstNumber >= option.minSize && firstNumber <= option.maxSize
+    );
+  } catch (error) {
+    console.error('Error parsing size:', error);
+    return null;
+  }
+};
+
 function ViewOrderDetail() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
@@ -72,28 +200,28 @@ function ViewOrderDetail() {
         return -1;
     }
   };
-  // const handleTracking = async (values) => {
-  //   console.log(values);
-  //   try {
-  //     const response = await api.get(`orders/${values.orderId}`);
-  //     setOrderId(values.orderId);
-  //     setData(response.data.status);
-  //     const lastStatus = response.data.status[response.data.status.length - 1];
-  //     if (lastStatus) {
-  //       setCurrent(getCurrentStatus(lastStatus.statusInfo));
-  //     }
-  //     setDisplay("");
-  //     toast.success("Successfull");
+  const handleTracking = async (values) => {
+    console.log(values);
+    try {
+      const response = await api.get(`orders/${values.orderId}`);
+      setOrderId(values.orderId);
+      setData(response.data.status);
+      const lastStatus = response.data.status[response.data.status.length - 1];
+      if (lastStatus) {
+        setCurrent(getCurrentStatus(lastStatus.statusInfo));
+      }
+      setDisplay("");
+      toast.success("Successfull");
 
-  //     setTimeout(() => {
-  //       if (resultRef.current) {
-  //         resultRef.current.scrollIntoView({ behavior: "smooth" });
-  //       }
-  //     }, 100);
-  //   } catch (err) {
-  //     toast.error(err.response.data.Error);
-  //   }
-  // };
+      setTimeout(() => {
+        if (resultRef.current) {
+          resultRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } catch (err) {
+      toast.error(err.response.data.Error);
+    }
+  };
   useEffect(() => {
     fetchOrderDetail(id);
   }, [id]);
@@ -265,32 +393,31 @@ function ViewOrderDetail() {
             )}
           </div>
           <License id={id} />
-          {!isOversea() && (
-            <>
-              <h6 style={{ marginTop: "40px" }}>Box Quantity</h6>
-              <div className="box">
-                <div className="box__item">
-                  <p>Small Box</p>
-                  <p>{order?.orderDetail?.smallBox}</p>
-                </div>
-                <div className="border"></div>
-                <div className="box__item">
-                  <p>Medium Box</p>
-                  <p>{order?.orderDetail?.mediumBox}</p>
-                </div>
-                <div className="border"></div>
-                <div className="box__item">
-                  <p>Large Box</p>
-                  <p>{order?.orderDetail?.largeBox}</p>
-                </div>
-                <div className="border"></div>
-                <div className="box__item">
-                  <p>Extra Large Box</p>
-                  <p>{order?.orderDetail?.extraLargeBox}</p>
-                </div>
+          <>
+            <h6 style={{ marginTop: "40px" }}>Box Quantity</h6>
+            <div className="box">
+              <div className="box__item">
+                <p>Small Box</p>
+                <p>{order?.orderDetail?.smallBox}</p>
               </div>
-            </>
-          )}
+              <div className="border"></div>
+              <div className="box__item">
+                <p>Medium Box</p>
+                <p>{order?.orderDetail?.mediumBox}</p>
+              </div>
+              <div className="border"></div>
+              <div className="box__item">
+                <p>Large Box</p>
+                <p>{order?.orderDetail?.largeBox}</p>
+              </div>
+              <div className="border"></div>
+              <div className="box__item">
+                <p>Extra Large Box</p>
+                <p>{order?.orderDetail?.extraLargeBox}</p>
+              </div>
+            </div>
+          </>
+
           <div className="s-method">
             <h6>Service Method</h6>
             <div className="item">
@@ -304,7 +431,7 @@ function ViewOrderDetail() {
                 <div key={service.id} className="item item-cnt">
                   <p className="color">{index + 1}</p>
                   <p>{service.nameService}</p>
-                  <p>{service.price}</p>
+                  <p>{formatCurrency(service.price)}</p>
                 </div>
               ))}
             </div>
@@ -313,7 +440,7 @@ function ViewOrderDetail() {
           <p>
             Total fish price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
-              {order.orderPrice}
+              {formatCurrency(order.orderPrice)}
             </span>
           </p>
         </div>
