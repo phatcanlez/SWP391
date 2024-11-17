@@ -1,4 +1,4 @@
-import { Button, Modal, Table } from "antd";
+import { Button, Input, Modal, Table } from "antd";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -8,7 +8,9 @@ function StaffList() {
   const [staff, setStaff] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
-
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   let stt = 1;
   const columns = [
     {
@@ -65,7 +67,33 @@ function StaffList() {
         </>
       ),
     },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => <>{status === true ? "Active" : "InActive"}</>,
+      filters: [
+        {
+          text: "Active",
+          value: true,
+        },
+        {
+          text: "InActive",
+          value: false,
+        },
+      ],
+      onFilter: (value, record) => record.status === value,
+    },
   ];
+
+  const handleSearchValueChange = (e) => {
+    setSearchValue(e.target.value);
+    let result = staff.filter((account) =>
+      account.username.includes(e.target.value)
+    );
+    setIsSearch(true);
+    setSearchResult(result);
+  };
 
   const fetchStaffData = async () => {
     setLoading(true);
@@ -94,10 +122,18 @@ function StaffList() {
 
   return (
     <div>
+      <div style={{ display: "flex", gap: "20px", paddingLeft: "20px" }}>
+        <Input
+          style={{ width: "200px" }}
+          placeholder="Username"
+          value={searchValue}
+          onChange={handleSearchValueChange}
+        />
+      </div>
       <Table
-        dataSource={staff}
+        dataSource={isSearch === false ? staff : searchResult}
         columns={columns}
-        pagination={false}
+        pagination={true}
         loading={loading}
       />
 
