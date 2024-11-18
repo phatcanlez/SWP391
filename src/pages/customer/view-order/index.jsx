@@ -19,69 +19,69 @@ const formatCurrency = (value) => {
 };
 
 const sizeOptions = [
-  { 
+  {
     minSize: 1,
     maxSize: 19.9,
-    sizeInCM: "1-19.9", 
-    sizeInInch: "7.86", 
+    sizeInCM: "1-19.9",
+    sizeInInch: "7.86",
     points: 1.25,
-    description: "Extra Small"
+    description: "Extra Small",
   },
-  { 
+  {
     minSize: 20,
     maxSize: 25,
-    sizeInCM: "20-25", 
-    sizeInInch: "7.87 - 9.84", 
+    sizeInCM: "20-25",
+    sizeInInch: "7.87 - 9.84",
     points: 2,
-    description: "Small"
+    description: "Small",
   },
-  { 
+  {
     minSize: 25.1,
     maxSize: 30,
-    sizeInCM: "25.1-30", 
-    sizeInInch: "9.85 - 11.81", 
+    sizeInCM: "25.1-30",
+    sizeInInch: "9.85 - 11.81",
     points: 2.5,
-    description: "Small-Medium"
+    description: "Small-Medium",
   },
-  { 
+  {
     minSize: 30.1,
     maxSize: 40,
-    sizeInCM: "30.1-40", 
-    sizeInInch: "11.82 - 15.75", 
+    sizeInCM: "30.1-40",
+    sizeInInch: "11.82 - 15.75",
     points: 3,
-    description: "Medium"
+    description: "Medium",
   },
-  { 
+  {
     minSize: 40.1,
     maxSize: 44,
-    sizeInCM: "40.1-44", 
-    sizeInInch: "15.76 - 17.32", 
+    sizeInCM: "40.1-44",
+    sizeInInch: "15.76 - 17.32",
     points: 5,
-    description: "Medium-Large"
+    description: "Medium-Large",
   },
-  { 
+  {
     minSize: 44.1,
     maxSize: 50,
-    sizeInCM: "44.1-50", 
-    sizeInInch: "17.33 - 19.6", 
+    sizeInCM: "44.1-50",
+    sizeInInch: "17.33 - 19.6",
     points: 7.5,
-    description: "Large"
+    description: "Large",
   },
-  { 
+  {
     minSize: 50.1,
     maxSize: 55,
-    sizeInCM: "50.1-55", 
-    sizeInInch: "19.7 - 21.6", 
+    sizeInCM: "50.1-55",
+    sizeInInch: "19.7 - 21.6",
     points: 9,
-    description: "Extra Large"
+    description: "Extra Large",
   },
-  { 
+  {
     minSize: 55.1,
     maxSize: 65,
-    sizeInCM: "55.1-65", 
-    sizeInInch: "21.7 - 25.5", 
+    sizeInCM: "55.1-65",
+    sizeInInch: "21.7 - 25.5",
     points: 14,
-    description: "Jumbo"
+    description: "Jumbo",
   },
   {
     minSize: 50,
@@ -89,7 +89,7 @@ const sizeOptions = [
     sizeInCM: "50-60 Hirenaga (Butterfly)",
     sizeInInch: "19.7 - 23.4",
     points: 12,
-    description: "Butterfly Large"
+    description: "Butterfly Large",
   },
   {
     minSize: 60.1,
@@ -97,42 +97,42 @@ const sizeOptions = [
     sizeInCM: "60.1-65 Hirenaga (Butterfly)",
     sizeInInch: "23.5 - 25.5",
     points: 14,
-    description: "Butterfly Extra Large"
+    description: "Butterfly Extra Large",
   },
-  { 
+  {
     minSize: 65.1,
     maxSize: 73,
     sizeInCM: "65.1-73",
     sizeInInch: "25.6 - 28.7",
     points: 16,
-    description: "Super Jumbo"
+    description: "Super Jumbo",
   },
-  { 
+  {
     minSize: 73.1,
     maxSize: 83,
     sizeInCM: "73.1-83",
     sizeInInch: "28.8 - 32.6",
     points: 18,
-    description: "Ultra Jumbo"
-  }
+    description: "Ultra Jumbo",
+  },
 ];
 
 const getSizeDetails = (size) => {
   if (!size) return null;
-  
+
   try {
-    if (size.includes('Hirenaga')) {
-      return sizeOptions.find(option => option.sizeInCM.includes('Hirenaga'));
+    if (size.includes("Hirenaga")) {
+      return sizeOptions.find((option) => option.sizeInCM.includes("Hirenaga"));
     }
 
     const firstNumber = parseFloat(size.match(/\d+\.?\d*/)?.[0]);
     if (!firstNumber) return null;
 
-    return sizeOptions.find(option => 
-      firstNumber >= option.minSize && firstNumber <= option.maxSize
+    return sizeOptions.find(
+      (option) => firstNumber >= option.minSize && firstNumber <= option.maxSize
     );
   } catch (error) {
-    console.error('Error parsing size:', error);
+    console.error("Error parsing size:", error);
     return null;
   }
 };
@@ -313,7 +313,15 @@ function ViewOrderDetail() {
                 <span className="color">{user?.name}</span> - (+84)
                 {order.senderPhoneNumber}
               </p>
-              <p>{order.senderAddress}</p>
+              <p
+                style={{
+                  color: isOversea() ? "#ff6b35" : "inherit",
+                  fontStyle: isOversea() ? "italic" : "normal",
+                }}
+              >
+                {order.senderAddress}
+                {isOversea() && " (Overseas Address)"}
+              </p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
@@ -332,24 +340,11 @@ function ViewOrderDetail() {
                 <span className="color">{order.reciverName} </span>- (+84)
                 {order.reciverPhoneNumber}
               </p>
-              <p
-                style={{
-                  color: isOversea() ? "#ff6b35" : "inherit",
-                  fontStyle: isOversea() ? "italic" : "normal",
-                }}
-              >
-                {order.reciverAdress}
-                {isOversea() && " (Overseas Address)"}
-              </p>
+              <p>{order.reciverAdress}</p>
             </div>
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
           </div>
         </div>
-        {!isOversea() && (
-          <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-            Distance: {order?.orderDetail?.kilometer} km
-          </h6>
-        )}
       </div>
 
       <h5 className="title">Order information detail</h5>
