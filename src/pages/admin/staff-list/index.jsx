@@ -79,6 +79,23 @@ function StaffList() {
       key: "address",
     },
     {
+      title: "Staff Details",
+      dataIndex: "id",
+      key: "id",
+      render: (id, Item) => (
+        <>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleOpenModal(Item.id);
+            }}
+          >
+            View
+          </Button>
+        </>
+      ),
+    },
+    {
       title: "Action",
       dataIndex: "id",
       key: "id",
@@ -91,7 +108,7 @@ function StaffList() {
               handleOpenModal(Item.id);
             }}
           >
-            View
+            Edit
           </Button>
           <Popconfirm
             title={
