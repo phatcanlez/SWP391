@@ -46,7 +46,7 @@ import AllOrder_AD, {
   FailOrder_AD,
   History_AD,
   WaitingOrder_AD,
-} from "./pages/admin/manage-order";
+} from "./pages/admin/manage-order/main";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
 import ApproveOrder from "./pages/staff/order/approve-order";
 import Reject from "./pages/staff/reject-page";
@@ -62,7 +62,10 @@ import requestPermissions from "./config/notification";
 import StaffList from "./pages/admin/staff-list";
 
 import ManageCustomers from "./pages/admin/manage-user/customer";
-
+import RoomChat from "./components/roomChat";
+import ChatDetail from "./components/chat-detail";
+import Free from "./pages/staff/free-page";
+import Test01 from "./pages/admin/manage-order/test";
 
 function App() {
   useEffect(() => {
@@ -126,6 +129,11 @@ function App() {
     {
       path: "FAQ",
       element: <FAQHome />,
+    },
+
+    {
+      path: "test01",
+      element: <Test01 />,
     },
     {
       path: "dashboard",
@@ -207,7 +215,6 @@ function App() {
           path: "staff",
           element: <StaffList />,
         },
-       
       ],
     },
 
@@ -215,6 +222,16 @@ function App() {
       path: "customer-service",
       element: <CustomerService />,
       children: [
+        {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "/customer-service/chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
         {
           path: "account",
           element: <Account />,
@@ -264,6 +281,16 @@ function App() {
       ),
       children: [
         {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "/staff/chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
+        {
           path: "order",
           element: <AllOrder />,
         },
@@ -310,6 +337,10 @@ function App() {
         {
           path: "success",
           element: <OrderSuccess />,
+        },
+        {
+          path: "empty",
+          element: <Free />,
         },
       ],
     },

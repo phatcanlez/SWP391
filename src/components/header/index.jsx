@@ -10,8 +10,8 @@ function Header() {
   const dispatch = useDispatch();
 
   return (
-    <header className="header"> 
-      <div className="header__logo"> 
+    <header className="header">
+      <div className="header__logo">
         {user ? (
           <>
             {user?.role === "STAFF" && (

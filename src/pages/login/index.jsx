@@ -41,8 +41,10 @@ function LoginPage() {
           });
           toast.success("Successful");
           dispatch(login(response.data));
-          const { role, token } = response.data;
+          console.log(response.data);
+          const { id, role, token } = response.data;
           localStorage.setItem("token", token);
+          localStorage.setItem("accountId", id);
           console.log(response);
           navigate("/customer-service");
         } catch (err) {
@@ -69,10 +71,9 @@ function LoginPage() {
       toast.success("Successful");
       console.log(response);
       dispatch(login(response.data));
-      const { role, token } = response.data;
+      const { id, role, token } = response.data;
       localStorage.setItem("token", token);
-
-
+      localStorage.setItem("accountId", id);
       if (role === "MANAGER") navigate("/dashboard/overview");
       if (role === "STAFF") navigate("/staff/order");
       if (role === "CUSTOMER") navigate("/customer-service/history");

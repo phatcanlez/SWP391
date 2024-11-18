@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   DoubleRightOutlined,
   LoadingOutlined,
+  MessageOutlined,
   PhoneOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
@@ -15,7 +16,6 @@ import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
-import { approve } from "../../../../redux/features/orderSlice";
 import api from "../../../../config/axios";
 
 function OrderDetail() {
@@ -104,7 +104,6 @@ function OrderDetail() {
           description: "The order is approved",
         });
         console.log(setvalue);
-        dispatch(approve(setvalue.data));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");
@@ -169,7 +168,7 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{user?.name}</span> - (+84)
+                <span className="color">{order?.senderName}</span> - (+84)
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
