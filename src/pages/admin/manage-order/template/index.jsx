@@ -9,6 +9,8 @@ function AdminOrder({ path, isPaging = false }) {
   const [order, setOrder] = useState([]);
   const [loading, setLoading] = useState(false); // State to handle loading status
   const [searchValue, setSearchValue] = useState("");
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchResult, setSearchResult] = useState([]);
   const [totalOrders, setTotalOrders] = useState(0); // Total number of orders
   const [pagination, setPagination] = useState({
     current: 1, // Current page
@@ -53,12 +55,19 @@ function AdminOrder({ path, isPaging = false }) {
         toast.error("Input OrderId cannot be empty!"); // Show error message
         return; // Prevent further action
       } else {
-        if (path === "/orders/status?status=WAITING");
-        const response = await api.get("/orders/status?status=WAITING");
-        let result = response.data.find((o) => o.orderID === searchValue);
-        console.log(result);
+        // if (path === "/orders/status?status=WAITING")
+        let result = [];
+        if (path !== "/orders") {
+          const response = await api.get(path);
+          result = response.data.find((o) => o.orderID === searchValue);
+          console.log(result);
+        } else {
+          result = order.find((o) => o.orderID === searchValue);
+        }
         if (result !== "") {
-          setOrder([result]);
+          setIsSearch(true);
+          setSearchResult([result]);
+          console.log(searchResult);
           toast.success("Successfull");
         } else {
           toast.error("Not Found");
@@ -165,14 +174,14 @@ function AdminOrder({ path, isPaging = false }) {
         <Button onClick={handleSearch}>Search</Button>
         <Button
           onClick={() => {
-            fetchOrder(), setSearchValue("");
+            fetchOrder(), setSearchValue(""), setIsSearch(false);
           }}
         >
           ReFresh
         </Button>
       </div>
       <Table
-        dataSource={order}
+        dataSource={isSearch !== true ? order : searchResult}
         columns={columns}
         rowKey="orderID"
         loading={loading}
