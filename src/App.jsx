@@ -65,7 +65,7 @@ import ManageCustomers from "./pages/admin/manage-user/customer";
 import RoomChat from "./components/roomChat";
 import ChatDetail from "./components/chat-detail";
 import Free from "./pages/staff/free-page";
-import Test01 from "./pages/admin/manage-order/test";
+import { Refunded_AD, UnRefund_AD } from "./pages/admin/manage-order";
 
 function App() {
   useEffect(() => {
@@ -130,11 +130,6 @@ function App() {
       path: "FAQ",
       element: <FAQHome />,
     },
-
-    {
-      path: "test01",
-      element: <Test01 />,
-    },
     {
       path: "dashboard",
       element: (
@@ -166,6 +161,14 @@ function App() {
         {
           path: "history",
           element: <History_AD />,
+        },
+        {
+          path: "un-refund",
+          element: <UnRefund_AD />,
+        },
+        {
+          path: "refunded",
+          element: <Refunded_AD />,
         },
         {
           path: "report",

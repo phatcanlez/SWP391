@@ -72,6 +72,8 @@ function Dashboard() {
           )
         : null,
       getItem("History", "history"),
+      getItem("UnRefund", "un-refund"),
+      getItem("Refunded", "refunded"),
     ]),
     getItem("Manage Staff", "staff", <PieChartOutlined />),
 
