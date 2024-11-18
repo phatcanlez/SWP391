@@ -161,10 +161,10 @@ function OrderDetail_AD() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
-                {order.senderPhoneNumber}
+                <span className="color">{order?.senderName}</span> - (+84)
+                {order?.senderPhoneNumber}
               </p>
-              <p>{order.senderAddress}</p>
+              <p>{order?.senderAddress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
@@ -175,10 +175,10 @@ function OrderDetail_AD() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order.reciverName} </span>- (+84)
-                {order.reciverPhoneNumber}
+                <span className="color">{order?.reciverName} </span>- (+84)
+                {order?.reciverPhoneNumber}
               </p>
-              <p>{order.reciverAdress}</p>
+              <p>{order?.reciverAdress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
