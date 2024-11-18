@@ -168,7 +168,7 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{user?.name}</span> - (+84)
+                <span className="color">{order?.senderName}</span> - (+84)
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
