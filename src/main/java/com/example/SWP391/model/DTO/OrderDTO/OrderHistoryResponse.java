@@ -18,4 +18,6 @@ public class OrderHistoryResponse {
     String reciverAdress;
     double totalPrice;
     String status;
+    boolean isPaid;
+    boolean isFeedback;
 }

@@ -29,10 +29,20 @@ public class TrackingUtil {
     }
 
     public static void sortOrderByShipMethod(List<Orders> orders) {
-        orders.sort((o1, o2) -> {
-            long index1 = o1.getOrderDetail().getShipMethod().getShipMethodId();
-            long index2 = o2.getOrderDetail().getShipMethod().getShipMethodId();
-            return Long.compare(index1, index2);
-        });
+        try {
+            orders.sort((o1, o2) -> {
+                long index1 = o1.getOrderDetail().getShipMethod().getShipMethodId();
+                long index2 = o2.getOrderDetail().getShipMethod().getShipMethodId();
+                return Long.compare(index1, index2);
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while sorting order by ship method");
+        }
+    }
+
+    public static boolean checkCountryIsVietnam(String address) {
+        String country = address.substring(address.lastIndexOf(",") + 1).trim();
+        return country.equalsIgnoreCase("Vietnam");
     }
 }

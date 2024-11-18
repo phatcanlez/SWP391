@@ -26,6 +26,8 @@ public class BoxPrice {
     @Column(unique = true)
     String boxSize;
 
+    String boxType;
+
     @Min(value = 0,message = "Price must positive number")
     float price;
 

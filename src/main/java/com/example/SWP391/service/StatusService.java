@@ -1,21 +1,30 @@
 package com.example.SWP391.service;
 
+import com.example.SWP391.entity.Account;
 import com.example.SWP391.entity.Orders;
+import com.example.SWP391.entity.Payment;
 import com.example.SWP391.entity.Status;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
+import com.example.SWP391.model.DTO.OrderDTO.OrderResponsible;
+import com.example.SWP391.model.DTO.chatDTO.RoomRequest;
 import com.example.SWP391.model.DTO.statusDTO.StatusRequest;
 import com.example.SWP391.model.DTO.statusDTO.StatusResponse;
+import com.example.SWP391.model.Enum.OrderType;
+import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.StatusRepository;
+import com.example.SWP391.util.AccountUtils;
 import com.example.SWP391.util.DateConversionUtil;
+import com.example.SWP391.util.TrackingUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,31 +37,91 @@ public class StatusService {
     OrderRepository orderRepository;
 
     @Autowired
+    OrderDetailService orderDetailService;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Autowired
     OrderService orderService;
 
-    public StatusResponse createStatus(StatusRequest statusRequest){
-        try{
+    @Autowired
+    AuthenticationService authenticationService;
+    @Autowired
+    AccountUtils accountUtils;
+
+    @Autowired
+    ChatService chatService;
+
+    public StatusResponse createStatus(StatusRequest statusRequest) {
+        try {
             Orders orders = orderRepository.findByorderID(statusRequest.getOrder());
-            if (orders == null){
+            if (orders == null) {
                 throw new NotFoundException("Not found this order");
             }
 
-            if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())){
+            if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())) {
                 List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
-                if (ordersList.size() > 0){
+                if (ordersList.size() > 0) {
                     throw new DuplicateException("You can't approved this order because you already have a approved order!!");
                 }
-            } else if (statusRequest.getStatusInfo().equals(StatusInfo.PENDING.toString())){
-                List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
-                if (ordersList.size() > 0){
+
+                if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
+                    OrderResponsible orderResponsible = orderService.viewOrderResponsible(statusRequest.getOrder());
+                    List<Account> listEmp = orderResponsible.getListEmployee().stream().toList();
+                    int totelEmp = listEmp.size();
+                    if (totelEmp == 1) {
+                        String AddressEmp = listEmp.getFirst().getAddress();
+                        Account curAccount = authenticationService.getCurrentAccount();
+                        if (TrackingUtil.checkCountryIsVietnam(AddressEmp)) {
+                            if (TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
+                                throw new DuplicateException("You can't approved this order already have a approved by a Vietnamese staff!!");
+                            } else {
+                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
+                                //create chatbox
+                                List<String> userRooms = new ArrayList<>();
+                                userRooms.add(orders.getAccount().getId());
+                                userRooms.add(accountUtils.getCurrentUser().getId());
+                                //create Room Chat
+                                RoomRequest roomRequest = new RoomRequest();
+                                roomRequest.setMembers(userRooms);
+                                chatService.createNewRoom(roomRequest);
+                            }
+                        } else {
+                            if (!TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
+                                throw new DuplicateException("You can't approved this order already have a approved by a Japanese staff!!");
+                            } else {
+                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
+                                //create chatbox
+                                List<String> userRooms = new ArrayList<>();
+                                userRooms.add(orders.getAccount().getId());
+                                userRooms.add(accountUtils.getCurrentUser().getId());
+                                //create Room Chat
+                                RoomRequest roomRequest = new RoomRequest();
+                                roomRequest.setMembers(userRooms);
+                                chatService.createNewRoom(roomRequest);
+                            }
+                        }
+                    } else {
+                        statusRequest.setStatusInfo(StatusInfo.WATINGFOR2NDSTAFF.toString());
+                    }
+                }
+            } else if (statusRequest.getStatusInfo().equals(StatusInfo.PENDING.toString())) {
+                List<OrderResponse> ordersListIsPending = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
+                if (ordersListIsPending.size() > 0) {
                     throw new DuplicateException("You can't pending this order because you already have a pending order!!");
                 }
             }
 
-            if (statusRequest.getStatusInfo().equals(StatusInfo.SUCCESS.toString())){
+            if (statusRequest.getStatusInfo().equals(StatusInfo.FAIL.toString())) {
+                Payment payment = orders.getPayment();
+                if (payment.getStatus().equals(Paystatus.SUCCESS.toString())) {
+                    {
+                        statusRequest.setStatusInfo(StatusInfo.REFUNDED.toString());
+                    }
+                }
+            }
+            if (statusRequest.getStatusInfo().equals(StatusInfo.SUCCESS.toString())) {
                 orders.setActDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now()));
                 orderRepository.save(orders);
             }
@@ -67,20 +136,22 @@ public class StatusService {
 
             StatusResponse statusResponse = modelMapper.map(status, StatusResponse.class);
             statusResponse.setOrderID(orders.getOrderID());
+
             return statusResponse;
-        }catch (NotFoundException e){
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            throw new NotFoundException(e.getMessage());
+        } catch (DuplicateException e) {
             e.printStackTrace();
             throw new DuplicateException(e.getMessage());
-        }catch (DuplicateException e){
-            e.printStackTrace();
-            throw new DuplicateException(e.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new DuplicateException("This status is error!!");
         }
     }
 
-    public List<StatusResponse> getAllStatus(){
+    public List<StatusResponse> getAllStatus() {
         List<Status> list = statusRepository.findAll();
         return list.stream().map(status -> {
             StatusResponse statusResponse = modelMapper.map(status, StatusResponse.class);
@@ -89,28 +160,27 @@ public class StatusService {
         }).toList();
     }
 
-    public StatusResponse viewStatusById(long id){
+    public StatusResponse viewStatusById(long id) {
         Status status = statusRepository.findById(id);
-        if(status == null){
+        if (status == null) {
             throw new DuplicateException("Not found this status");
-        }
-        else{
+        } else {
             return modelMapper.map(status, StatusResponse.class);
         }
     }
 
-    public StatusResponse updateStatus(StatusRequest statusRequest, long Id){
+    public StatusResponse updateStatus(StatusRequest statusRequest, long Id) {
         Status oldStatus = statusRepository.findById(Id);
-        if(oldStatus == null){
+        if (oldStatus == null) {
             throw new NotFoundException("Not found!");
         }
-        try{
+        try {
             oldStatus.setStatusInfo(StatusInfo.valueOf(statusRequest.getStatusInfo()));
             statusRepository.save(oldStatus);
             StatusResponse statusResponse = modelMapper.map(oldStatus, StatusResponse.class);
             statusResponse.setOrderID(oldStatus.getOrders().getOrderID());
             return statusResponse;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new DuplicateException("Update fail");
         }
     }

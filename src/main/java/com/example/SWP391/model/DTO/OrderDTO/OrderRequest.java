@@ -1,5 +1,6 @@
 package com.example.SWP391.model.DTO.OrderDTO;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -40,7 +41,7 @@ public class OrderRequest {
     @Min(value = 0, message = "Total price must be positive number")
     double totalPrice;
 
-    @NotBlank
+    @NotBlank(message = "Username is required")
     String Username;
 
     @Min(value = 0, message = "box must be positive number")
@@ -68,6 +69,7 @@ public class OrderRequest {
     String type;
 
     @Min(value = 0, message = "shipMethodId must be positive number")
+    @Max(value = 3, message = "shipMethodId must be less than 3")
     long shipMethod;
 
     Set<Long> extraService;

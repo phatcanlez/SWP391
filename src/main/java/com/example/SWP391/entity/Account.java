@@ -1,6 +1,7 @@
 package com.example.SWP391.entity;
 
 import com.example.SWP391.model.Enum.Role;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -12,9 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 
 @Getter
@@ -58,6 +57,21 @@ public class Account implements UserDetails {
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
     @JsonIgnore
     List<Orders> orders = new ArrayList<>();
+
+    @ManyToMany
+    @JsonIgnore
+    @JsonBackReference
+    @JoinTable(
+            name = "room_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "room_id"))
+    private Set<Room> rooms = new HashSet<>();
+
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Message> messages = new HashSet<>();
 
 
     @Override

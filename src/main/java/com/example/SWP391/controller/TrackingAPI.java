@@ -17,27 +17,27 @@ public class TrackingAPI {
     @Autowired
     private TrackingService trackingService;
 
-    @GetMapping("/tracking/{shipMethodID}")
+    @GetMapping("/api/tracking/{shipMethodID}")
     public ResponseEntity getTrackingList(@PathVariable long shipMethodID) {
         return ResponseEntity.ok(trackingService.getTrackingList(shipMethodID));
     }
 
-    @GetMapping("/tracking/weight/{shipMethodID}")
+    @GetMapping("/api/tracking/weight/{shipMethodID}")
     public ResponseEntity getTrackingWeightList(@PathVariable long shipMethodID) {
         return ResponseEntity.ok(trackingService.getPriceWeightListByShipMethod(shipMethodID));
     }
 
-    @PostMapping("/tracking/estimate")
+    @PostMapping("/api/tracking/estimate")
     public ResponseEntity estimateTrackingByBox(@RequestBody EstimateTrackingRequestByBox estimateTrackingRequestByBox) {
         return ResponseEntity.ok(trackingService.estimateTrackingByBox(estimateTrackingRequestByBox));
     }
 
-    @GetMapping("/tracking/history/{orderID}")
+    @GetMapping("/api/tracking/history/{orderID}")
     public ResponseEntity getTrackingByOrderID(@PathVariable String orderID) {
         return ResponseEntity.ok(trackingService.getTrackingByOrderID(orderID));
     }
 
-    @PostMapping("/tracking/RouteMatrix")
+    @PostMapping("/api/tracking/RouteMatrix")
     public ResponseEntity getRouteMatrix(@RequestBody List<String> addresses) {
         return ResponseEntity.ok(trackingService.getRouteMatrix(addresses));
     }

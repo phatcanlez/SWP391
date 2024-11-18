@@ -8,4 +8,7 @@ public class ReportUpdateRequest {
 
     @NotBlank(message = "Employee Reply is required")
     String empReply;
+
+    @NotBlank(message = "OrderId is required")
+    String orderId;
 }

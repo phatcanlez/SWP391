@@ -20,10 +20,10 @@ public class OrdersDetailAPI {
         @Autowired
         private OrderDetailService orderDetailService;
 
-        @PostMapping("/api/orders-detail")
-        public ResponseEntity createOrderDetail(@Valid @RequestBody OrderDetailRequest orderDetail) {
-            return ResponseEntity.ok(orderDetailService.createOrderDetail(orderDetail));
-        }
+//        @PostMapping("/api/orders-detail")
+//        public ResponseEntity createOrderDetail(@Valid @RequestBody OrderDetailRequest orderDetail) {
+//            return ResponseEntity.ok(orderDetailService.createOrderDetail(orderDetail));
+//        }
 
         @GetMapping("/api/orders-detail")
         public ResponseEntity getAllOrdersDetail() {
@@ -36,9 +36,9 @@ public class OrdersDetailAPI {
         }
 
 
-        @PutMapping("/api/orders-detail/{id}")
-        public ResponseEntity updateLicense(@RequestBody @Valid OrderDetailRequest orderDetail,@PathVariable String id) {
-            return ResponseEntity.ok(orderDetailService.updateOrderDetail(orderDetail, id));
+        @PutMapping("/api/orders-detail")
+        public ResponseEntity updateLicense(@RequestBody @Valid OrderDetailRequest orderDetail) {
+            return ResponseEntity.ok(orderDetailService.updateOrderDetail(orderDetail));
         }
 
 }

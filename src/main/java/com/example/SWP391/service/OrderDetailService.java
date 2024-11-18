@@ -78,8 +78,8 @@ public class OrderDetailService {
         }
     }
 
-        public OrderDetail viewOrderDetailById(String id) {
-            OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(id);
+        public OrderDetail viewOrderDetailById(String ordId) {
+            OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(ordId);
             if (orderDetail == null) {
                 throw new NotFoundException("Not found this order");
             } else {
@@ -88,8 +88,8 @@ public class OrderDetailService {
         }
 
 
-    public OrderDetail updateOrderDetail(OrderDetailRequest orderDetail, String id) {
-        OrderDetail existingOrder = orderDetailRepository.findOrderDetailByOrdersOrderID(id);
+    public OrderDetail updateOrderDetail(OrderDetailRequest orderDetail) {
+        OrderDetail existingOrder = orderDetailRepository.findOrderDetailByOrdersOrderID(orderDetail.getOrderID());
         if (existingOrder == null) {
             throw new NotFoundException("Not found!");
         }
@@ -129,8 +129,14 @@ public class OrderDetailService {
 
             return orderDetailRepository.save(existingOrder);
         } catch (Exception e) {
-            throw new DuplicateException("Unexpected error!");
+            e.printStackTrace();
+            throw new DuplicateException(e.getMessage());
         }
+    }
+
+    public boolean checkOrderType(String orderID, OrderType type) {
+        OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(orderID);
+        return orderDetail.getType().equals(type);
     }
 }
 
