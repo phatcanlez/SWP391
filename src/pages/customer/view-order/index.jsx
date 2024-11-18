@@ -258,6 +258,25 @@ function ViewOrderDetail() {
   };
 
   const isOversea = () => order?.orderDetail?.type?.toUpperCase() === "OVERSEA";
+  const handleCancel = async () => {
+    try {
+      const requestBody = {
+        description: "Customer cancelled the order",
+        empId: "customer",
+        statusInfo: "FAIL",
+        order: order.orderID,
+      };
+
+      const response = await api.post("/status", requestBody);
+
+      if (response.status === 200) {
+        toast.success("Order cancelled successfully");
+        fetchOrderDetail(order.orderID); // Refresh order details
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to cancel order");
+    }
+  };
 
   return (
     <div className="order-detail" style={{ padding: "50px" }}>
@@ -521,21 +540,37 @@ function ViewOrderDetail() {
           <p>No staff information available</p>
         )}
       </div>
-
-      {order?.payment?.status === "UNPAYED" && (
-        <div style={{ marginTop: "20px", textAlign: "center" }}>
-          <Button
-            type="primary"
-            onClick={handleBuy}
-            style={{
-              backgroundColor: "#e25822",
-              borderColor: "#e25822",
-            }}
-          >
-            Proceed to Payment
-          </Button>
-        </div>
-      )}
+      {order?.payment?.status === "UNPAYED" &&
+        order?.status[order?.status?.length - 1].statusInfo != "FAIL" && (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <Button
+              type="primary"
+              onClick={handleBuy}
+              style={{
+                backgroundColor: "#e25822",
+                borderColor: "#e25822",
+              }}
+            >
+              Proceed to Payment
+            </Button>
+          </div>
+        )}
+      {order?.status?.[0]?.statusInfo === "WAITING" &&
+        order?.status[order?.status?.length - 1].statusInfo != "FAIL" && (
+          <div style={{ marginTop: "20px", textAlign: "center" }}>
+            <Button
+              type="primary"
+              onClick={handleCancel}
+              style={{
+                backgroundColor: "#2c2c2c",
+                borderColor: "#2c2c2c",
+                marginLeft: "10px",
+              }}
+            >
+              Cancel Order
+            </Button>
+          </div>
+        )}
     </div>
   );
 }
