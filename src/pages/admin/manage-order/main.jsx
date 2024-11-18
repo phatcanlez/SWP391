@@ -1,19 +1,17 @@
-import { useSelector } from "react-redux";
-import AdminOrder from "./template";
+import Test01 from "./test";
 
 function AllOrder_AD() {
   return (
     <div>
-      <AdminOrder path={"/orders"} isPaging />
+      <Test01 path={"/orders"} field="All" />
     </div>
   );
 }
 
 function FailOrder_AD() {
-  // const user = useSelector((store) => store);
   return (
     <div>
-      <AdminOrder path={`/orders/status?status=FAIL`} />
+      <Test01 path={`/orders/status?status=FAIL`} field="Status" />
     </div>
   );
 }
@@ -21,7 +19,7 @@ function FailOrder_AD() {
 function WaitingOrder_AD() {
   return (
     <div>
-      <AdminOrder path={"orders/status?status=WAITING"} />
+      <Test01 path={"orders/status?status=WAITING"} field="Status" />
     </div>
   );
 }
@@ -30,7 +28,7 @@ function History_AD() {
   // const user = useSelector((store) => store);
   return (
     <div>
-      <AdminOrder path={`orders/status?status=SUCCESS`} />
+      <Test01 path={`orders/status?status=SUCCESS`} field="Status" />
     </div>
   );
 }

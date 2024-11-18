@@ -46,7 +46,7 @@ import AllOrder_AD, {
   FailOrder_AD,
   History_AD,
   WaitingOrder_AD,
-} from "./pages/admin/manage-order";
+} from "./pages/admin/manage-order/main";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
 import ApproveOrder from "./pages/staff/order/approve-order";
 import Reject from "./pages/staff/reject-page";
@@ -65,6 +65,7 @@ import ManageCustomers from "./pages/admin/manage-user/customer";
 import RoomChat from "./components/roomChat";
 import ChatDetail from "./components/chat-detail";
 import Free from "./pages/staff/free-page";
+import Test01 from "./pages/admin/manage-order/test";
 
 function App() {
   useEffect(() => {
@@ -128,6 +129,11 @@ function App() {
     {
       path: "FAQ",
       element: <FAQHome />,
+    },
+
+    {
+      path: "test01",
+      element: <Test01 />,
     },
     {
       path: "dashboard",

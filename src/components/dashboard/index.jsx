@@ -75,9 +75,8 @@ function Dashboard() {
     ]),
     getItem("Manage Staff", "staff", <PieChartOutlined />),
 
-    getItem("Manage User", "manage-user", <PieChartOutlined />, [
-      getItem("Manage Customer", "manage-customer"),
-    ]),
+    // getItem("Manage User", "manage-user", <PieChartOutlined />),
+    getItem("Manage Customer", "manage-customer", <PieChartOutlined />),
     getItem("Manage Service", "sub1", <MenuOutlined />, [
       getItem("Extra service", "extra-service"),
       getItem("Delivery", "delivery"),
@@ -136,7 +135,6 @@ function Dashboard() {
         </Layout>
       </Layout>
       <Footer />
-      
     </div>
   );
 }
