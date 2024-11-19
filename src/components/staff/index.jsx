@@ -5,14 +5,19 @@ import logo from "../../img/logolayout.png";
 import "../staff/index.css";
 import {
   ClockCircleOutlined,
-  CommentOutlined,
+  CloseOutlined,
+  ExclamationOutlined,
   FrownOutlined,
-  MenuOutlined,
+  GlobalOutlined,
+  MessageOutlined,
   PushpinOutlined,
   QuestionCircleOutlined,
+  StarOutlined,
+  UsergroupAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import Footer from "../footer";
+import { useSelector } from "react-redux";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -22,20 +27,37 @@ function getItem(label, key, icon, children) {
   };
 }
 
-const Staff = () => {
+function Staff() {
+  const user = useSelector((store) => store.user);
+
   const items = [
-    getItem("All Orders", "order", <MenuOutlined />, [
-      getItem("Waiting", "waiting-order"),
-      getItem("Rejected", "rejected-order"),
+    getItem("Oversea", "", <GlobalOutlined />, [
+      getItem("Waiting", "waiting-oversea"),
+      getItem("A staff approved", "waiting-2nd-staff"),
     ]),
+
+    user?.country === "vietnam"
+      ? getItem(
+          "Domestic - Waiting",
+          "waiting-domestic",
+          <ExclamationOutlined />
+        )
+      : null,
+
+    getItem(
+      "Waiting another staff",
+      "wait-for-staff",
+      <UsergroupAddOutlined />
+    ),
     getItem("Approved", "approved", <PushpinOutlined />),
+    getItem("Fail", "rejected-order", <CloseOutlined />),
     getItem("History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
-    getItem("Feedback", "view-feedback", <CommentOutlined />),
+    getItem("Feedback", "view-feedback", <StarOutlined />),
     getItem("Complain", "view-complain", <FrownOutlined />),
-    getItem("Message", "chat", <UserOutlined />),
+    getItem("Message", "chat", <MessageOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
-  ].filter(Boolean); // filter out null items
+  ].filter(Boolean);
 
   return (
     <div style={{ marginTop: "20px" }}>
@@ -74,5 +96,5 @@ const Staff = () => {
       <Footer />
     </div>
   );
-};
+}
 export default Staff;
