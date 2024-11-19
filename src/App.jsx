@@ -71,6 +71,7 @@ import ManageCustomers from "./pages/admin/manage-user/customer";
 import RoomChat from "./components/roomChat";
 import ChatDetail from "./components/chat-detail";
 import Free from "./pages/staff/free-page";
+import WaitingAnotherStaff from "./pages/staff/order/waiting-another-staff";
 
 function App() {
   // useEffect(() => {
