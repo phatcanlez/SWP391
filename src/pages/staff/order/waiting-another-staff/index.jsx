@@ -1,60 +1,39 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import api from "../../../../config/axios";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "antd/es/form/Form";
 import { toast } from "react-toastify";
-import { format, parseISO } from "date-fns";
+import { useEffect, useState } from "react";
 import {
   DoubleRightOutlined,
   LoadingOutlined,
   MessageOutlined,
   PhoneOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import License from "../license";
+import {
+  Alert,
+  Button,
+  Form,
+  Image,
+  Input,
+  message,
+  Modal,
+  Upload,
+} from "antd";
+import { useSelector } from "react-redux";
+import { useForm } from "antd/es/form/Form";
+import { useNavigate, useParams } from "react-router-dom";
+import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
-import { Alert, Button, Form, Input, Modal, Rate } from "antd";
+import api from "../../../../config/axios";
+import uploadFile from "../../../../config/file";
 
-function ApproveOrder() {
+function WaitingAnotherStaff() {
+  const { id } = useParams();
   const user = useSelector((store) => store.user);
-  const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("WAITING");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [id, setId] = useState("");
-
-  const checkApprove = async () => {
-    try {
-      const approve = await api.get(
-        `/orders/status-emp?status=APPROVED&empId=${user.id}`
-      );
-      
-      console.log(approve.data);
-      setOrder(approve.data);
-      if (approve.data.length == 0) {
-        const pending = await api.get(
-          `/orders/status-emp?status=PENDING&empId=${user.id}`
-        );
-        console.log(pending.data);
-        if (pending.data.length > 0) {
-          const oid = pending.data?.orderID || pending.data[0]?.orderID;
-          console.log(oid);
-          setId(oid);
-        } else {
-          navigate("/staff/empty");
-        }
-      } else {
-        const oid = approve.data?.orderID || approve.data[0]?.orderID;
-        console.log(oid);
-        setId(oid);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      if (id) await fetchOrderDetail(id);
-    }
-  };
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
@@ -63,57 +42,32 @@ function ApproveOrder() {
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
       console.log(response.data.orderDetail.extraService);
-      const value = response.data;
-      const status = value.status[value.status?.length - 1]?.statusInfo;
-      setStatus(status);
-      console.log(status);
-      handleViewFeedBack();
+      if (response.data.status.length > 0) {
+        setStatus(
+          response.data.status[response.data.status.length - 1]?.statusInfo
+        );
+      }
     } catch (err) {
       toast.error(err);
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
-    checkApprove();
+    fetchOrderDetail(id);
   }, [id, status]);
-
-  console.log(status);
+  /////////////////////////////
 
   const [form] = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [fbModalOpen, setFBModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-    setFBModalOpen(false);
-  };
-  const showFBModal = () => {
-    setFBModalOpen(true);
   };
 
   const [description, setDescription] = useState("");
-
-  const handleSubmitReject = async (values) => {
-    try {
-      const emid = user.id;
-      values.statusInfo = "FAIL";
-      values.empId = emid;
-      values.description = description;
-      values.order = id;
-      await api.post("/status", values);
-      setIsModalOpen(false);
-      toast.success("REJECTED");
-      navigate("/staff/reject");
-    } catch (error) {
-      toast.error(error.response.data);
-    } finally {
-      fetchOrderDetail(id);
-    }
-  };
 
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
@@ -125,17 +79,65 @@ function ApproveOrder() {
     }
   };
 
-  const [feedback, setFeedback] = useState([]);
-  const handleViewFeedBack = async () => {
-    try {
-      const response = await api.get(`feedback/${id}`);
-      console.log(response.data);
-      setFeedback(response.data);
-    } catch (error) {
-      toast.error(error);
+  console.log(order);
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState([]);
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const handleConfirm = async () => {
+    if (fileList.length === 0) {
+      message.error("Please upload your picture");
+    }
+    if (fileList.length > 0) {
+      const file = fileList[0];
+      console.log(file);
+      try {
+        const url = await uploadFile(file.originFileObj);
+        console.log(url);
+        const value = {
+          orderId: `${order?.orderID}`,
+          image: url,
+        };
+        const response = await api.put(`orders/image`, value);
+        console.log(response);
+        handleSuccessOrder();
+      } catch (error) {
+        toast.error(error);
+      }
     }
   };
-  console.log(order);
+
+  const handleSuccessOrder = async () => {
+    try {
+      const setvalue = {
+        statusInfo: "FAIL",
+        empId: user.id,
+        order: order?.orderID,
+        description: "Your order has failed",
+      };
+      await api.post("/status", setvalue);
+      toast.success("This order has been rejected!");
+      fetchOrderDetail();
+      navigate("/staff/reject");
+    } catch (error) {
+      toast.error(error.response.data);
+    }
+  };
 
   const handleRoomChat = async (customerID) => {
     try {
@@ -159,7 +161,7 @@ function ApproveOrder() {
 
           <div className="bg-w">
             <h3 style={{ marginBottom: "50px" }}>
-              <span className="color">Order ID: </span> {order.orderID}
+              <span className="color">Order ID: </span> {order?.orderID}
             </h3>
             <Alert message={order?.orderDetail?.type} />
 
@@ -288,27 +290,12 @@ function ApproveOrder() {
           <h5 className="title">Delivery status</h5>
 
           <div className="bg-w">
-            {(status === "APPROVED" ||
-              status === "PENDING" ||
-              status === "SUCCESS") && (
-              <>
-                <InProcess id={order?.orderID} />
-                {(status === "APPROVED" || status === "PENDING") && (
-                  <>
-                    <button className="btn-item fail-btn" onClick={showModal}>
-                      Delivery Failure
-                    </button>
-                  </>
-                )}
-                {status === "SUCCESS" && (
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <button className="fb-btn btn-item" onClick={showFBModal}>
-                      View Feedback
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
+            <InProcess id={order?.orderID} />
+
+            <button className="btn-item fail-btn" onClick={showModal}>
+              Delivery Failure
+            </button>
+
             {status === "FAIL" && (
               <div style={{ textAlign: "center", fontSize: "20px" }}>
                 This order has been rejected!
@@ -319,44 +306,45 @@ function ApproveOrder() {
           {/* <span>Price: {order.price}</span>            */}
 
           <Modal
-            title="Failed Report "
+            title="Failed Report"
             open={isModalOpen}
-            onOk={() => form.submit()}
+            onOk={() => {
+              form.submit();
+            }}
             onCancel={handleCancel}
           >
-            <Form form={form} onFinish={handleSubmitReject}>
-              <Form.Item name="description">
-                <Input
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </Form.Item>
-              {/* Hiển thị description */}
+            <Form onFinish={handleConfirm} form={form}>
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <Upload
+                listType="picture"
+                fileList={fileList}
+                onPreview={handlePreview}
+                onChange={handleChange}
+              >
+                <Button icon={<UploadOutlined />}>Upload </Button>
+              </Upload>
             </Form>
           </Modal>
-
-          <Modal
-            title="FeedBack "
-            open={fbModalOpen}
-            onCancel={handleCancel}
-            footer={<Button onClick={handleCancel}>Cancel</Button>}
-          >
-            {feedback === null ? (
-              <p>Customer has not feedback any thing</p>
-            ) : (
-              <>
-                <p>Time:</p> {feedback?.time}
-                <p>Rating: </p>
-                <Rate disabled value={feedback?.rating} />
-                <p>Comment: </p>
-                {feedback?.comment}
-              </>
-            )}
-          </Modal>
+          {previewImage && (
+            <Image
+              wrapperStyle={{
+                display: "none",
+              }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
         </div>
       )}
     </div>
   );
 }
 
-export default ApproveOrder;
+export default WaitingAnotherStaff;

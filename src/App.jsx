@@ -27,7 +27,11 @@ import Delivery from "./pages/admin/manage-service/delivery";
 import AllOrder, {
   FailOrder,
   History,
+  Waiting2ndStaff,
+  WaitingDomestic,
+  WaitingFor2ndStaff,
   WaitingOrder,
+  WaitingOversea,
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
 import AdminProfile from "./pages/admin/profile";
@@ -59,7 +63,7 @@ import Complain from "./pages/staff/complain";
 import CustomerComplain from "./pages/customer/complain";
 import CustomerFaqs from "./pages/customer/faqs";
 import { useEffect } from "react";
-import requestPermissions from "./config/notification";
+// import requestPermissions from "./config/notification";
 
 import StaffList from "./pages/admin/staff-list";
 
@@ -69,9 +73,9 @@ import ChatDetail from "./components/chat-detail";
 import Free from "./pages/staff/free-page";
 
 function App() {
-  useEffect(() => {
-    requestPermissions();
-  }, []);
+  // useEffect(() => {
+  //   requestPermissions();
+  // }, []);
 
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
@@ -345,6 +349,30 @@ function App() {
         {
           path: "empty",
           element: <Free />,
+        },
+        {
+          path: "waiting-oversea",
+          element: <WaitingOversea />,
+        },
+        {
+          path: "waiting-2nd-staff",
+          element: <Waiting2ndStaff />,
+        },
+        {
+          path: "waiting-domestic",
+          element: <WaitingDomestic />,
+        },
+        {
+          path: "wait-for-another-staff",
+          element: <WaitingAnotherStaff />,
+        },
+        {
+          path: "wait-for-staff",
+          element: <WaitingFor2ndStaff />,
+        },
+        {
+          path: "view/waiting-for-second-staff/:id",
+          element: <WaitingAnotherStaff />,
         },
       ],
     },

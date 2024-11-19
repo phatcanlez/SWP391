@@ -5,13 +5,12 @@ import {
   CheckCircleOutlined,
   DoubleRightOutlined,
   LoadingOutlined,
-  MessageOutlined,
   PhoneOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
 import License from "../license";
-import { Button, Form, Input, Modal, Rate, Steps } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { Alert, Button, Form, Input, Modal, Rate, Steps } from "antd";
+import { useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
@@ -24,7 +23,6 @@ function OrderDetail() {
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -103,7 +101,12 @@ function OrderDetail() {
       const processingOrder = await api.get(
         `/orders/status-emp?status=PENDING&empId=${user.id}`
       );
-      if (response.data.length === 0 && processingOrder.data.length === 0) {
+      const waiting = await api.get(
+        `/orders/status-emp?status=WATINGFOR2NDSTAFF&empId=${user.id}`
+      );
+      console.log(waiting.data);
+
+      if (response.data?.length === 0 && processingOrder.data?.length === 0 && (waiting.data?.length === 0)) {
         console.log(user.id);
         const emid = user.id;
         const setvalue = await api.post("/status", {
@@ -152,7 +155,7 @@ function OrderDetail() {
         <h3 style={{ marginBottom: "50px" }}>
           <span className="color">Order ID: </span> {order.orderID}
         </h3>
-
+        <Alert message={order?.orderDetail?.type} />
         <div className="time-section">
           <p>
             Created Delivery Date:
@@ -345,10 +348,17 @@ function OrderDetail() {
               </Button>
             </>
           )}
+          {status === "WATINGFOR2NDSTAFF" && (
+            <>
+              <Button className="btn btn-a" onClick={handleAddApprove}>
+                APPROVE
+              </Button>
+            </>
+          )}
         </div>
       )}
 
-      {/* <span>Price: {order.price}</span>            */}
+      {/* <span>Price: {order.price}</span>*/}
 
       <Modal
         title="Failed Report "

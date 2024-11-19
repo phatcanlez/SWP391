@@ -218,7 +218,9 @@ const Address = forwardRef((props, ref) => {
 
     // Get current form values
     const currentFormValues = form.getFieldsValue();
-    const existingData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
+    const existingData = JSON.parse(
+      localStorage.getItem("orderFormData") || "{}"
+    );
 
     if (where === "From") {
       // Update form
@@ -230,7 +232,7 @@ const Address = forwardRef((props, ref) => {
         ...existingData,
         ...currentFormValues,
         senderAddress: selectedAddress,
-        type: shippingType === "oversea" ? "OVERSEA" : "DOMESTIC"
+        type: shippingType === "oversea" ? "OVERSEA" : "DOMESTIC",
       };
       localStorage.setItem("orderFormData", JSON.stringify(updatedData));
     }
@@ -245,15 +247,17 @@ const Address = forwardRef((props, ref) => {
         ...existingData,
         ...currentFormValues,
         receiverAddress: selectedAddress,
-        type: shippingType === "oversea" ? "OVERSEA" : "DOMESTIC"
+        type: shippingType === "oversea" ? "OVERSEA" : "DOMESTIC",
       };
       localStorage.setItem("orderFormData", JSON.stringify(updatedData));
     }
 
     // Update map if both addresses are available
-    const updatedSenderAddr = where === "From" ? selectedAddress : tempSelectionsFrom;
-    const updatedReceiverAddr = where === "To" ? selectedAddress : tempSelectionsTo;
-    
+    const updatedSenderAddr =
+      where === "From" ? selectedAddress : tempSelectionsFrom;
+    const updatedReceiverAddr =
+      where === "To" ? selectedAddress : tempSelectionsTo;
+
     if (updatedSenderAddr && updatedReceiverAddr) {
       appRef.current.setLocations(updatedSenderAddr, updatedReceiverAddr);
     }
@@ -343,7 +347,9 @@ const Address = forwardRef((props, ref) => {
   }, []);
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    const existingData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
+    const existingData = JSON.parse(
+      localStorage.getItem("orderFormData") || "{}"
+    );
 
     // For oversea shipping sender address
     if (shippingType === "oversea" && changedValues.senderAddress) {
@@ -355,16 +361,20 @@ const Address = forwardRef((props, ref) => {
       ...allValues,
       kilometer: allValues.kilometer || existingData.kilometer,
       senderAddress: allValues.senderAddress || existingData.senderAddress,
-      receiverAddress: allValues.receiverAddress || existingData.receiverAddress,
+      receiverAddress:
+        allValues.receiverAddress || existingData.receiverAddress,
       shippingType: allValues.shippingType || existingData.shippingType,
-      type: allValues.shippingType === "oversea" ? "OVERSEA" : "DOMESTIC"
+      type: allValues.shippingType === "oversea" ? "OVERSEA" : "DOMESTIC",
     };
 
     localStorage.setItem("orderFormData", JSON.stringify(updatedData));
 
     // Update map if both addresses are available
     if (updatedData.senderAddress && updatedData.receiverAddress) {
-      appRef.current.setLocations(updatedData.senderAddress, updatedData.receiverAddress);
+      appRef.current.setLocations(
+        updatedData.senderAddress,
+        updatedData.receiverAddress
+      );
     }
   };
 
@@ -449,15 +459,13 @@ const Address = forwardRef((props, ref) => {
       <Form.Item
         label="Address"
         name="senderAddress"
-        rules={[
-          { required: true, message: "Please input sender's address!" },
-        ]}
+        rules={[{ required: true, message: "Please input sender's address!" }]}
       >
         {shippingType === "domestic" ? (
           <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
         ) : (
           <Input.TextArea
-            placeholder="Enter overseas address"
+            placeholder="Enter JAPAN address"
             autoSize={{ minRows: 2, maxRows: 6 }}
             onBlur={(e) => {
               const overseaAddress = e.target.value;
@@ -505,7 +513,7 @@ const Address = forwardRef((props, ref) => {
               e.preventDefault();
               handleShowModal(e);
             }}
-            value="To"
+            value="From"
             style={{
               width: "200px",
               backgroundColor: "#e25822",
@@ -547,7 +555,9 @@ const Address = forwardRef((props, ref) => {
       <Form.Item
         label="Address"
         name="receiverAddress"
-        rules={[{ required: true, message: "Please input receiver's address!" }]}
+        rules={[
+          { required: true, message: "Please input receiver's address!" },
+        ]}
       >
         <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
       </Form.Item>
