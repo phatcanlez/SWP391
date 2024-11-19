@@ -1,4 +1,4 @@
-import { Button, Input, Modal, Popconfirm, Table } from "antd";
+import { Button, Form, Input, Modal, Popconfirm, Table } from "antd";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -11,6 +11,8 @@ function StaffList() {
   const [isSearch, setIsSearch] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [items, setItems] = useState("");
+  const [form] = Form.useForm();
 
   const handleStatusChange = async (value) => {
     console.log(!value.status);
@@ -87,7 +89,7 @@ function StaffList() {
           <Button
             type="primary"
             onClick={() => {
-              handleOpenModal(Item.id);
+              handleOpenModal(Item.id), setItems("details");
             }}
           >
             View
@@ -105,7 +107,9 @@ function StaffList() {
           <Button
             type="primary"
             onClick={() => {
-              handleOpenModal(Item.id);
+              setShowModal(true);
+              form.setFieldsValue(Item);
+              setItems("edit");
             }}
           >
             Edit
@@ -187,6 +191,78 @@ function StaffList() {
     setSelectedStaff([]);
   };
 
+  const staffDetails = (
+    <>
+      <p>Working on Order : {selectedStaff.responsibility}</p>
+      <p>Total Completed Orders : {selectedStaff.total}</p>
+    </>
+  );
+
+  const editStaff = (
+    <>
+      <Form.Item name="id" hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Email"
+        name="email"
+        rules={[
+          { required: true, message: "Please input your email!" },
+          {
+            type: "email",
+            message: "Please enter a valid email!",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Phone number"
+        name="phoneNumber"
+        rules={[
+          {
+            required: true,
+            pattern: /^(?:\d*)$/,
+
+            message: "Invalid phone number",
+          },
+          {
+            required: true,
+            pattern: /^[\d]{10,11}$/,
+            message: "Invalid phone number",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item label="Address" name="address" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+    </>
+  );
+
+  const handleSubmit = async (values) => {
+    console.log(values);
+    try {
+      setLoading(true);
+      console.log(values);
+      if (values.id) {
+        await api.patch(`account`, values);
+      }
+      toast.success("Successfull");
+      fetchStaffData();
+      form.resetFields();
+      setShowModal(false);
+    } catch (err) {
+      toast.error(err.response.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: "flex", gap: "20px", paddingLeft: "20px" }}>
@@ -211,10 +287,17 @@ function StaffList() {
         title="Staff Detail"
         open={showModal}
         onCancel={handelCancel}
-        onOk={() => setShowModal(false)}
+        onOk={
+          items === "details" ? () => setShowModal(false) : () => form.submit()
+        }
       >
-        <p>Working on Order : {selectedStaff.responsibility}</p>
-        <p>Total Completed Orders : {selectedStaff.total}</p>
+        {items === "details" ? (
+          staffDetails
+        ) : (
+          <Form form={form} labelCol={{ span: 24 }} onFinish={handleSubmit}>
+            {editStaff}
+          </Form>
+        )}
       </Modal>
     </div>
   );

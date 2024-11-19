@@ -46,6 +46,8 @@ import AllOrder_AD, {
   FailOrder_AD,
   History_AD,
   WaitingOrder_AD,
+  Refunded_AD,
+  UnRefund_AD,
 } from "./pages/admin/manage-order/main";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
 import ApproveOrder from "./pages/staff/order/approve-order";
@@ -65,7 +67,6 @@ import ManageCustomers from "./pages/admin/manage-user/customer";
 import RoomChat from "./components/roomChat";
 import ChatDetail from "./components/chat-detail";
 import Free from "./pages/staff/free-page";
-import { Refunded_AD, UnRefund_AD } from "./pages/admin/manage-order";
 
 function App() {
   useEffect(() => {
