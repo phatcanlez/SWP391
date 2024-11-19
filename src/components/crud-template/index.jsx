@@ -26,18 +26,21 @@ function CRUDTemplate({ columns, formItems, path, field }) {
           >
             Edit
           </Button>
-
-          {/* <Popconfirm
-            title="Delete"
-            description="Do you want to delete"
-            onConfirm={() => {
-              handleDelete(id);
-            }}
-          >
-            <Button type="primary" danger>
-              Delete
-            </Button>
-          </Popconfirm> */}
+          {field === "extraservice" ? (
+            <Popconfirm
+              title="Delete"
+              description="Do you want to delete"
+              onConfirm={() => {
+                handleDelete(Item.extraServiceId);
+              }}
+            >
+              <Button type="primary" danger style={{ marginLeft: 15 }}>
+                Delete
+              </Button>
+            </Popconfirm>
+          ) : (
+            ""
+          )}
         </>
       ),
     },
@@ -96,6 +99,7 @@ function CRUDTemplate({ columns, formItems, path, field }) {
   //delete
   const handleDelete = async (id) => {
     try {
+      console.log(id);
       await api.delete(`${path}/${id}`);
       toast.success("Successful");
       fetchData();
