@@ -69,7 +69,7 @@ function WaitingFor2ndStaff() {
   const user = useSelector((store) => store);
   return (
     <div>
-      <StaffOrder isWaiting path={`orders/waiting-for-2nd-staff?empId=${user.user.id}` } />
+      <StaffOrder isWaiting  path={`orders/waiting-for-2nd-staff?empId=${user.user.id}` } />
     </div>
   );
 }

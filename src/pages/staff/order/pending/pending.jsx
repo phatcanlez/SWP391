@@ -100,7 +100,7 @@ const InProcess = ({ id }) => {
         description: "Your order is currently in transit to you form Japan.",
       };
       await api.post("/status", setvalue);
-      toast.success("The order is changed to PENDINGJAPAN");
+      toast.success("The order status is changed to PENDINGJAPAN");
       fetchOrderDetail();
     } catch (error) {
       toast.error(error.response.data);
@@ -116,7 +116,7 @@ const InProcess = ({ id }) => {
         description: "Your order is arrived in Vietnam.",
       };
       await api.post("/status", setvalue);
-      toast.success("PENDING");
+      toast.success("The order status is changed to ARRIVEDVIETNAM");
       fetchOrderDetail();
     } catch (error) {
       toast.error(error.response.data);
@@ -132,7 +132,7 @@ const InProcess = ({ id }) => {
         description: "Your order is currently in transit to you form Japan.",
       };
       await api.post("/status", setvalue);
-      toast.success("PENDING");
+      toast.success("The order status is changed to PENDINGVIETNAM");
       fetchOrderDetail();
     } catch (error) {
       toast.error(error.response.data);

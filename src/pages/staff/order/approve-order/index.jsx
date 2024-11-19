@@ -10,10 +10,22 @@ import {
   LoadingOutlined,
   MessageOutlined,
   PhoneOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import License from "../license";
 import InProcess from "../pending/pending";
-import { Alert, Button, Form, Input, message, Modal, Rate } from "antd";
+import {
+  Alert,
+  Button,
+  Form,
+  Image,
+  Input,
+  message,
+  Modal,
+  Rate,
+  Upload,
+} from "antd";
+import uploadFile from "../../../../config/file";
 
 function ApproveOrder() {
   const user = useSelector((store) => store.user);
@@ -23,6 +35,17 @@ function ApproveOrder() {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
   const [id, setId] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const [fileList, setFileList] = useState([]);
+
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
   const fetchOrdersByStatus = async (status) => {
     try {
@@ -51,12 +74,10 @@ function ApproveOrder() {
 
       const status = orderData.status[orderData.status?.length - 1]?.statusInfo;
       setStatus(status);
-      console.log(status);
 
       handleViewFeedBack();
     } catch (error) {
       console.error("Error fetching order details:", error);
-      message.error("Failed to fetch order details.");
     } finally {
       setLoading(false);
     }
@@ -65,6 +86,7 @@ function ApproveOrder() {
   const checkApprove = async () => {
     try {
       const approvedOrders = await fetchOrdersByStatus("APPROVED");
+      console.log(approvedOrders);
       if (approvedOrders.length > 0) {
         const orderId = getOrderId(approvedOrders);
         setId(orderId);
@@ -81,6 +103,7 @@ function ApproveOrder() {
       }
 
       const pendingJapanOrders = await fetchOrdersByStatus("PENDINGJAPAN");
+      console.log(pendingJapanOrders);
       if (pendingJapanOrders.length > 0) {
         const orderId = getOrderId(pendingJapanOrders);
         setId(orderId);
@@ -112,7 +135,7 @@ function ApproveOrder() {
 
   useEffect(() => {
     checkApprove();
-  }, [id, status]);
+  }, []);
 
   console.log(status);
 
@@ -132,24 +155,45 @@ function ApproveOrder() {
 
   const [description, setDescription] = useState("");
 
-  const handleSubmitReject = async (values) => {
+  const handleSubmitReject = async () => {
     try {
-      const emid = user.id;
-      values.statusInfo = "FAIL";
-      values.empId = emid;
-      values.description = description;
-      values.order = id;
-      await api.post("/status", values);
-      setIsModalOpen(false);
-      toast.success("REJECTED");
+      const setvalue = {
+        statusInfo: "FAIL",
+        empId: user.id,
+        order: order.orderID,
+        description: description,
+      };
+      await api.post("/status", setvalue);
+      toast.success("The order has failed");
+      fetchOrderDetail();
       navigate("/staff/reject");
     } catch (error) {
       toast.error(error.response.data);
-    } finally {
-      fetchOrderDetail(id);
     }
   };
 
+  const handleConfirm = async () => {
+    if (fileList.length === 0) {
+      message.error("Please upload your picture");
+    }
+    if (fileList.length > 0) {
+      const file = fileList[0];
+      console.log(file);
+      try {
+        const url = await uploadFile(file.originFileObj);
+        console.log(url);
+        const value = {
+          orderId: `${order?.orderID}`,
+          image: url,
+        };
+        const response = await api.put(`orders/image`, value);
+        console.log(response);
+        handleSubmitReject();
+      } catch (error) {
+        toast.error(error);
+      }
+    }
+  };
   const formatDate = (isoString) => {
     if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
     try {
@@ -158,6 +202,14 @@ function ApproveOrder() {
       console.error("Định dạng ngày không hợp lệ:", error);
       return "Ngày không hợp lệ"; // Xử lý lỗi khi parse thất bại
     }
+  };
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
   };
 
   const [feedback, setFeedback] = useState([]);
@@ -182,6 +234,15 @@ function ApproveOrder() {
       toast.error(error);
     }
   };
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
   return (
     <div>
       {loading ? (
@@ -197,7 +258,6 @@ function ApproveOrder() {
               <span className="color">Order ID: </span> {order.orderID}
             </h3>
             <Alert message={order?.orderDetail?.type} />
-            vb
             <div className="time-section">
               <p>
                 Created Delivery Date:
@@ -222,7 +282,7 @@ function ApproveOrder() {
               <div className="item">
                 <div>
                   <p>
-                    <span className="color">{order?.senderName}</span> - (+84)
+                    <span className="color">{order?.senderName}</span> -
                     {order?.senderPhoneNumber}
                   </p>
                   <p>{order?.senderAddress}</p>
@@ -240,7 +300,7 @@ function ApproveOrder() {
               <div className="item">
                 <div>
                   <p>
-                    <span className="color">{order?.reciverName} </span>- (+84)
+                    <span className="color">{order?.reciverName} </span> -
                     {order?.reciverPhoneNumber}
                   </p>
                   <p>{order?.reciverAdress}</p>
@@ -305,7 +365,7 @@ function ApproveOrder() {
                     <div key={service.id} className="item item-cnt">
                       <p className="color">{index + 1}</p>
                       <p>{service.nameService}</p>
-                      <p>{service.price}</p>
+                      <p>{formatCurrency(service.price)}</p>
                     </div>
                   ))}
                 </div>
@@ -314,7 +374,7 @@ function ApproveOrder() {
               <p>
                 Total price:{" "}
                 <span className="color" style={{ fontWeight: "600" }}>
-                  {order.orderPrice}
+                  {formatCurrency(order.orderPrice)}
                 </span>
               </p>
             </div>
@@ -323,26 +383,23 @@ function ApproveOrder() {
           <h5 className="title">Delivery status</h5>
 
           <div className="bg-w">
-            {(status === "APPROVED" ||
-              status === "PENDING" ||
-              status === "SUCCESS") && (
+            <InProcess id={order?.orderID} />
+            {(((status === "PENDINGJAPAN" || status === "APPROVED") &&
+              user?.country === "japan") ||
+              ((status === "ARRIVEDVIETNAM" || status === "PENDINGVIETNAM") &&
+                user?.country === "vietnam")) && (
               <>
-                <InProcess id={order?.orderID} />
-                {(status != "SUCCESS" || status != "FAIL") && (
-                  <>
-                    <button className="btn-item fail-btn" onClick={showModal}>
-                      Delivery Failure
-                    </button>
-                  </>
-                )}
-                {status === "SUCCESS" && (
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <button className="fb-btn btn-item" onClick={showFBModal}>
-                      View Feedback
-                    </button>
-                  </div>
-                )}
+                <button className="btn-item fail-btn" onClick={showModal}>
+                  Delivery Failure
+                </button>
               </>
+            )}
+            {status === "SUCCESS" && (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button className="fb-btn btn-item" onClick={showFBModal}>
+                  View Feedback
+                </button>
+              </div>
             )}
             {status === "FAIL" && (
               <div style={{ textAlign: "center", fontSize: "20px" }}>
@@ -359,17 +416,23 @@ function ApproveOrder() {
             onOk={() => form.submit()}
             onCancel={handleCancel}
           >
-            <Form form={form} onFinish={handleSubmitReject}>
+            <Form onFinish={handleConfirm} form={form}>
               <Form.Item name="description">
                 <Input
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
               </Form.Item>
-              {/* Hiển thị description */}
+              <Upload
+                listType="picture"
+                fileList={fileList}
+                onPreview={handlePreview}
+                onChange={handleChange}
+              >
+                <Button icon={<UploadOutlined />}>Upload </Button>
+              </Upload>
             </Form>
           </Modal>
-
           <Modal
             title="FeedBack "
             open={fbModalOpen}
@@ -388,6 +451,19 @@ function ApproveOrder() {
               </>
             )}
           </Modal>
+          {previewImage && (
+            <Image
+              wrapperStyle={{
+                display: "none",
+              }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
         </div>
       )}
     </div>

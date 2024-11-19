@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   DoubleRightOutlined,
   LoadingOutlined,
+  MessageOutlined,
   PhoneOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
@@ -104,9 +105,25 @@ function OrderDetail() {
       const waiting = await api.get(
         `/orders/status-emp?status=WATINGFOR2NDSTAFF&empId=${user.id}`
       );
+      const japan = await api.get(
+        `/orders/status-emp?status=PENDINGJAPAN&empId=${user.id}`
+      );
+      const vietnam = await api.get(
+        `/orders/status-emp?status=PENDINGVIETNAM&empId=${user.id}`
+      );
+      const arrive = await api.get(
+        `/orders/status-emp?status=ARRIVEDVIETNAM&empId=${user.id}`
+      );
       console.log(waiting.data);
 
-      if (response.data?.length === 0 && processingOrder.data?.length === 0 && (waiting.data?.length === 0)) {
+      if (
+        response.data?.length === 0 &&
+        processingOrder.data?.length === 0 &&
+        waiting.data?.length === 0 &&
+        japan.data?.length === 0 &&
+        vietnam.data?.length === 0 &&
+        arrive.data?.length === 0
+      ) {
         console.log(user.id);
         const emid = user.id;
         const setvalue = await api.post("/status", {
@@ -118,7 +135,7 @@ function OrderDetail() {
         console.log(setvalue);
         toast.success("APPROVED");
       } else {
-        toast.error("You have an order in processing");
+        toast.error("Please check if you have any order in process");
       }
     } catch (error) {
       toast.error(error.response.data);
@@ -147,6 +164,17 @@ function OrderDetail() {
     }
   };
   console.log(order);
+
+  const handleRoomChat = async (customerID) => {
+    try {
+      const room = await api.get(`/chat/room/${user?.id}/${customerID}`);
+
+      console.log(room.data);
+      navigate(`/staff/chat/${room.data?.roomID}`);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -180,13 +208,19 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.senderName}</span> - (+84)
+                <span className="color">{order?.senderName}</span> -
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
+            {status === "WATINGFOR2NDSTAFF" && (
+              <MessageOutlined
+                onClick={() => handleRoomChat(order?.accountId)}
+                style={{ fontSize: 18, color: "#c3c3c3" }}
+              />
+            )}
           </div>
 
           <DoubleRightOutlined style={{ fontSize: 18, color: "#e25822" }} />
@@ -194,7 +228,7 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order.reciverName} </span>- (+84)
+                <span className="color">{order.reciverName} </span> -
                 {order.reciverPhoneNumber}
               </p>
               <p>{order.reciverAdress}</p>
@@ -275,23 +309,19 @@ function OrderDetail() {
       <h5 className="title">Delivery status</h5>
 
       <div className="bg-w">
-        <div className="">
-          <p>Payment status: </p>
-          <p>{order?.payment?.status}</p>
+        <div style={{ marginBottom: "20px" }}>
+          <p>Payment status: {order?.payment?.status}</p>
+          
         </div>
+        <InProcess />
         {(status === "APPROVED" || status === "PENDING") && (
           <>
-            <InProcess />
-            {(status === "APPROVED" || status === "PENDING") && (
-              <>
-                <button className="btn-item fail-btn" onClick={showModal}>
-                  Delivery Failure
-                </button>
-              </>
-            )}
+            <button className="btn-item fail-btn" onClick={showModal}>
+              Delivery Failure
+            </button>
           </>
         )}
-        {status === "SUCCESS" && (
+        {status === "SUCCESS" && order?.orderDetail?.type === "DOMESTIC" && (
           <>
             <Steps
               className="step"
@@ -318,14 +348,57 @@ function OrderDetail() {
                 },
               ]}
             />
-            {status === "SUCCESS" && (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button className="fb-btn btn-item" onClick={showFBModal}>
-                  View Feedback
-                </button>
-              </div>
-            )}
           </>
+        )}
+        {status === "SUCCESS" && order?.orderDetail?.type === "OVERSEA" && (
+          <>
+            <Steps
+              progressDot
+              current={6}
+              direction="vertical"
+              items={[
+                {
+                  title: "Waiting for Approval",
+                  description: "Order is pending initial staff approval.",
+                },
+                {
+                  title: "Waiting for Second Staff",
+                  description:
+                    "Order has been approved by first staff member, awaiting second approval.",
+                },
+                {
+                  title: "Order Approved",
+                  description: "Order has been approved by both staff members.",
+                },
+                {
+                  title: "Processing in Japan",
+                  description:
+                    "Order is being processed at our Japan facility.",
+                },
+                {
+                  title: "Arrived in Vietnam",
+                  description:
+                    "Order has arrived and is being processed in Vietnam.",
+                },
+                {
+                  title: "Processing in Vietnam",
+                  description: "The order is being processed in Vietnam.",
+                },
+                {
+                  title: "Order Complete",
+                  description:
+                    "Order has been successfully processed and completed.",
+                },
+              ]}
+            />
+          </>
+        )}
+        {status === "SUCCESS" && (
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="fb-btn btn-item" onClick={showFBModal}>
+              View Feedback
+            </button>
+          </div>
         )}
         {status === "FAIL" && (
           <div style={{ textAlign: "center", fontSize: "20px" }}>
