@@ -100,7 +100,7 @@ const InProcess = ({ id }) => {
         description: "Your order is currently in transit to you form Japan.",
       };
       await api.post("/status", setvalue);
-      toast.success("PENDING");
+      toast.success("The order is changed to PENDINGJAPAN");
       fetchOrderDetail();
     } catch (error) {
       toast.error(error.response.data);
@@ -343,7 +343,7 @@ const InProcess = ({ id }) => {
               },
             ]}
           />
-          {statuss === "APPROVED" && (
+          {statuss === "APPROVED" && user?.country === "japan" && (
             <>
               <button
                 className="nextStep-btn btn-item"

@@ -276,7 +276,7 @@ function OrderDetail() {
 
       <div className="bg-w">
         <div className="">
-          <p>Payment's status: </p>
+          <p>Payment status: </p>
           <p>{order?.payment?.status}</p>
         </div>
         {(status === "APPROVED" || status === "PENDING") && (
