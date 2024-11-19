@@ -29,14 +29,14 @@ public class StatusAPI {
         } catch (Exception e) {
             ResponseMessage responseMessage = new ResponseMessage();
             responseMessage.setMessage(e.getMessage());
-            return ResponseEntity.ok(responseMessage);
+            return ResponseEntity.status(400).body(responseMessage);
         }
     }
 
-    @GetMapping("/api/status")
-    public ResponseEntity getAllStatus() {
-        return ResponseEntity.ok(statusService.getAllStatus());
-    }
+//    @GetMapping("/api/status")
+//    public ResponseEntity getAllStatus() {
+//        return ResponseEntity.ok(statusService.getAllStatus());
+//    }
 
     @GetMapping("/api/status/{id}")
     public ResponseEntity getLicenseById(@PathVariable long id) {

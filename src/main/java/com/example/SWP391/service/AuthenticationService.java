@@ -11,6 +11,7 @@ import com.example.SWP391.model.DTO.forgotPassword.ForgotPasswordRequest;
 import com.example.SWP391.model.DTO.forgotPassword.ResetPasswordRequest;
 import com.example.SWP391.model.Enum.Role;
 import com.example.SWP391.repository.AccountRepository;
+import com.example.SWP391.util.TrackingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -95,6 +96,7 @@ public class AuthenticationService implements UserDetailsService {
             Account account = (Account) authentication.getPrincipal(); //lấy thông tin ng dùng và cast về account
             AccountResponse accountResponse = modelMapper.map(account, AccountResponse.class);
             accountResponse.setToken(tokenService.generateToken(account));
+            accountResponse.setCountry(TrackingUtil.getCountry(account.getAddress()));
             return accountResponse;
         } catch (Exception e) {
 
@@ -146,6 +148,7 @@ public class AuthenticationService implements UserDetailsService {
             account = (Account) authentication.getPrincipal(); //lấy thông tin ng dùng và cast về account
             AccountResponse accountResponse = modelMapper.map(account, AccountResponse.class);
             accountResponse.setToken(tokenService.generateToken(account));
+            accountResponse.setCountry(TrackingUtil.getCountry(account.getAddress()));
             return accountResponse;
 
         } catch (Exception e) {

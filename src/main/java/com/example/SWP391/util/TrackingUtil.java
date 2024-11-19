@@ -2,6 +2,8 @@ package com.example.SWP391.util;
 
 import com.example.SWP391.entity.*;
 import com.example.SWP391.model.DTO.TrackingDTO.BoxAmountDTO;
+import com.example.SWP391.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,5 +46,9 @@ public class TrackingUtil {
     public static boolean checkCountryIsVietnam(String address) {
         String country = address.substring(address.lastIndexOf(",") + 1).trim();
         return country.equalsIgnoreCase("Vietnam");
+    }
+
+    public static String getCountry(String address) {
+        return address.substring(address.lastIndexOf(",") + 1).trim().toLowerCase();
     }
 }

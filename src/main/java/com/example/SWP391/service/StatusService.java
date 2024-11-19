@@ -1,9 +1,6 @@
 package com.example.SWP391.service;
 
-import com.example.SWP391.entity.Account;
-import com.example.SWP391.entity.Orders;
-import com.example.SWP391.entity.Payment;
-import com.example.SWP391.entity.Status;
+import com.example.SWP391.entity.*;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
@@ -14,6 +11,8 @@ import com.example.SWP391.model.DTO.statusDTO.StatusResponse;
 import com.example.SWP391.model.Enum.OrderType;
 import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
+//import com.example.SWP391.repository.OrderOverseaRepository;
+import com.example.SWP391.repository.OrderOverseaRepository;
 import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.StatusRepository;
 import com.example.SWP391.util.AccountUtils;
@@ -35,6 +34,9 @@ public class StatusService {
 
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    OrderOverseaRepository orderOverseaRepository;
 
     @Autowired
     OrderDetailService orderDetailService;
@@ -60,6 +62,7 @@ public class StatusService {
                 throw new NotFoundException("Not found this order");
             }
 
+            //xử lí đơn trong nước vs ngoại, nếu ngoại thì phải 2 staff nhận
             if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())) {
                 List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
                 if (ordersList.size() > 0) {
@@ -70,40 +73,42 @@ public class StatusService {
                     OrderResponsible orderResponsible = orderService.viewOrderResponsible(statusRequest.getOrder());
                     List<Account> listEmp = orderResponsible.getListEmployee().stream().toList();
                     int totelEmp = listEmp.size();
+                    Account curAccount = authenticationService.getCurrentAccount();
                     if (totelEmp == 1) {
                         String AddressEmp = listEmp.getFirst().getAddress();
-                        Account curAccount = authenticationService.getCurrentAccount();
+                        curAccount = authenticationService.getCurrentAccount();
+
+                        List<OrderResponse> ordersListApproveOversea = orderService.viewOrderByStatusAndEmpId(StatusInfo.WATINGFOR2NDSTAFF, statusRequest.getEmpId());
+                        if (ordersList.size() > 0) {
+                            throw new DuplicateException("You can't approved this order because you already have a approved order!!");
+                        }
+
                         if (TrackingUtil.checkCountryIsVietnam(AddressEmp)) {
                             if (TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
                                 throw new DuplicateException("You can't approved this order already have a approved by a Vietnamese staff!!");
                             } else {
                                 statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-                                //create chatbox
-                                List<String> userRooms = new ArrayList<>();
-                                userRooms.add(orders.getAccount().getId());
-                                userRooms.add(accountUtils.getCurrentUser().getId());
-                                //create Room Chat
-                                RoomRequest roomRequest = new RoomRequest();
-                                roomRequest.setMembers(userRooms);
-                                chatService.createNewRoom(roomRequest);
+                                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
+                                overseaOrder.setEmployeeId2(curAccount.getId());
+                                orderOverseaRepository.save(overseaOrder);
                             }
+
                         } else {
                             if (!TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
                                 throw new DuplicateException("You can't approved this order already have a approved by a Japanese staff!!");
                             } else {
                                 statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-                                //create chatbox
-                                List<String> userRooms = new ArrayList<>();
-                                userRooms.add(orders.getAccount().getId());
-                                userRooms.add(accountUtils.getCurrentUser().getId());
-                                //create Room Chat
-                                RoomRequest roomRequest = new RoomRequest();
-                                roomRequest.setMembers(userRooms);
-                                chatService.createNewRoom(roomRequest);
+                                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
+                                overseaOrder.setEmployeeId2(curAccount.getId());
+                                orderOverseaRepository.save(overseaOrder);
                             }
                         }
                     } else {
                         statusRequest.setStatusInfo(StatusInfo.WATINGFOR2NDSTAFF.toString());
+                        OverseaOrder overseaOrder = new OverseaOrder();
+                        overseaOrder.setOrderId(orders.getOrderID());
+                        overseaOrder.setEmployeeId1(curAccount.getId());
+                        orderOverseaRepository.save(overseaOrder);
                     }
                 }
             } else if (statusRequest.getStatusInfo().equals(StatusInfo.PENDING.toString())) {
@@ -117,13 +122,25 @@ public class StatusService {
                 Payment payment = orders.getPayment();
                 if (payment.getStatus().equals(Paystatus.SUCCESS.toString())) {
                     {
-                        statusRequest.setStatusInfo(StatusInfo.REFUNDED.toString());
+                        statusRequest.setStatusInfo(StatusInfo.UNREFUND.toString());
                     }
                 }
             }
             if (statusRequest.getStatusInfo().equals(StatusInfo.SUCCESS.toString())) {
                 orders.setActDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now()));
                 orderRepository.save(orders);
+            }
+
+            //kiểm tra trạng thái của đơn nếu là APPROVED thì tạo boxchat
+            if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())) {
+                //create chatbox
+                List<String> userRooms = new ArrayList<>();
+                userRooms.add(orders.getAccount().getId());
+                userRooms.add(accountUtils.getCurrentUser().getId());
+                //create Room Chat
+                RoomRequest roomRequest = new RoomRequest();
+                roomRequest.setMembers(userRooms);
+                chatService.createNewRoom(roomRequest);
             }
 
             Status status = new Status();
