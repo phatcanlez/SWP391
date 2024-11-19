@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import License from "../license";
 import InProcess from "../pending/pending";
-import { Alert, Button, Form, Input, Modal, Rate } from "antd";
+import { Alert, Button, Form, Input, message, Modal, Rate } from "antd";
 
 function ApproveOrder() {
   const user = useSelector((store) => store.user);
@@ -24,54 +24,89 @@ function ApproveOrder() {
   const navigate = useNavigate();
   const [id, setId] = useState("");
 
-  const checkApprove = async () => {
+  const fetchOrdersByStatus = async (status) => {
     try {
-      const approve = await api.get(
-        `/orders/status-emp?status=APPROVED&empId=${user.id}`
+      const response = await api.get(
+        `/orders/status-emp?status=${status}&empId=${user.id}`
       );
-      
-      console.log(approve.data);
-      setOrder(approve.data);
-      if (approve.data.length == 0) {
-        const pending = await api.get(
-          `/orders/status-emp?status=PENDING&empId=${user.id}`
-        );
-        console.log(pending.data);
-        if (pending.data.length > 0) {
-          const oid = pending.data?.orderID || pending.data[0]?.orderID;
-          console.log(oid);
-          setId(oid);
-        } else {
-          navigate("/staff/empty");
-        }
-      } else {
-        const oid = approve.data?.orderID || approve.data[0]?.orderID;
-        console.log(oid);
-        setId(oid);
-      }
+      console.log(response.data);
+      return response.data;
     } catch (error) {
-      console.log(error);
-    } finally {
-      if (id) await fetchOrderDetail(id);
+      console.error(`Error fetching ${status} orders:`, error);
+      return [];
     }
+  };
+  const getOrderId = (orders) => {
+    return orders?.orderID || orders[0]?.orderID;
   };
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
       const response = await api.get(`orders/${id}`);
-      setOrder(response.data);
-      setService(response.data.orderDetail.extraService);
-      console.log(response.data.orderDetail.extraService);
-      const value = response.data;
-      const status = value.status[value.status?.length - 1]?.statusInfo;
+      const orderData = response.data;
+      setOrder(orderData);
+      setService(orderData.orderDetail.extraService);
+      console.log(orderData.orderDetail.extraService);
+
+      const status = orderData.status[orderData.status?.length - 1]?.statusInfo;
       setStatus(status);
       console.log(status);
+
       handleViewFeedBack();
-    } catch (err) {
-      toast.error(err);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      message.error("Failed to fetch order details.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkApprove = async () => {
+    try {
+      const approvedOrders = await fetchOrdersByStatus("APPROVED");
+      if (approvedOrders.length > 0) {
+        const orderId = getOrderId(approvedOrders);
+        setId(orderId);
+        await fetchOrderDetail(orderId);
+        return;
+      }
+
+      const pendingOrders = await fetchOrdersByStatus("PENDING");
+      if (pendingOrders.length > 0) {
+        const orderId = getOrderId(pendingOrders);
+        setId(orderId);
+        await fetchOrderDetail(orderId);
+        return;
+      }
+
+      const pendingJapanOrders = await fetchOrdersByStatus("PENDINGJAPAN");
+      if (pendingJapanOrders.length > 0) {
+        const orderId = getOrderId(pendingJapanOrders);
+        setId(orderId);
+        await fetchOrderDetail(orderId);
+        return;
+      }
+
+      const pendingVietnamOrders = await fetchOrdersByStatus("PENDINGVIETNAM");
+      if (pendingVietnamOrders.length > 0) {
+        const orderId = getOrderId(pendingVietnamOrders);
+        setId(orderId);
+        await fetchOrderDetail(orderId);
+        return;
+      }
+
+      const arrivedVietnamOrders = await fetchOrdersByStatus("ARRIVEDVIETNAM");
+      if (arrivedVietnamOrders.length > 0) {
+        const orderId = getOrderId(arrivedVietnamOrders);
+        setId(orderId);
+        await fetchOrderDetail(orderId);
+        return;
+      }
+
+      navigate("/staff/empty");
+    } catch (error) {
+      console.error("Error checking orders:", error);
     }
   };
 
@@ -162,7 +197,7 @@ function ApproveOrder() {
               <span className="color">Order ID: </span> {order.orderID}
             </h3>
             <Alert message={order?.orderDetail?.type} />
-
+            vb
             <div className="time-section">
               <p>
                 Created Delivery Date:
@@ -293,7 +328,7 @@ function ApproveOrder() {
               status === "SUCCESS") && (
               <>
                 <InProcess id={order?.orderID} />
-                {(status === "APPROVED" || status === "PENDING") && (
+                {(status != "SUCCESS" || status != "FAIL") && (
                   <>
                     <button className="btn-item fail-btn" onClick={showModal}>
                       Delivery Failure
