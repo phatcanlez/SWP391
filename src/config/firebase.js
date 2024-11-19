@@ -21,7 +21,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const messaging = getMessaging(app);
+// const messaging = getMessaging(app);
 const googleProvider = new GoogleAuthProvider();
-export {storage, googleProvider, messaging};
+export {storage, googleProvider};
 
