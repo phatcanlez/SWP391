@@ -218,49 +218,44 @@ const Address = forwardRef((props, ref) => {
 
     // Get current form values
     const currentFormValues = form.getFieldsValue();
-
-    // Get existing data from localStorage
-    const existingData = JSON.parse(
-      localStorage.getItem("orderFormData") || "{}"
-    );
+    const existingData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
 
     if (where === "From") {
+      // Update form
       form.setFieldsValue({ senderAddress: selectedAddress });
       setTempSelectionsFrom(selectedAddress);
 
-      // Update localStorage with all form data
-      localStorage.setItem(
-        "orderFormData",
-        JSON.stringify({
-          ...existingData,
-          ...currentFormValues,
-          senderAddress: selectedAddress,
-        })
-      );
+      // Update localStorage
+      const updatedData = {
+        ...existingData,
+        ...currentFormValues,
+        senderAddress: selectedAddress,
+        type: shippingType === "oversea" ? "OVERSEA" : "DOMESTIC"
+      };
+      localStorage.setItem("orderFormData", JSON.stringify(updatedData));
     }
+
     if (where === "To") {
+      // Update form
       form.setFieldsValue({ receiverAddress: selectedAddress });
       setTempSelectionsTo(selectedAddress);
 
-      // Update localStorage with all form data
-      localStorage.setItem(
-        "orderFormData",
-        JSON.stringify({
-          ...existingData,
-          ...currentFormValues,
-          receiverAddress: selectedAddress,
-        })
-      );
+      // Update localStorage
+      const updatedData = {
+        ...existingData,
+        ...currentFormValues,
+        receiverAddress: selectedAddress,
+        type: shippingType === "oversea" ? "OVERSEA" : "DOMESTIC"
+      };
+      localStorage.setItem("orderFormData", JSON.stringify(updatedData));
     }
 
-    if (
-      (tempSelectionsFrom && selectedAddress) ||
-      (selectedAddress && tempSelectionsTo)
-    ) {
-      appRef.current.setLocations(
-        where === "From" ? selectedAddress : tempSelectionsFrom,
-        where === "To" ? selectedAddress : tempSelectionsTo
-      );
+    // Update map if both addresses are available
+    const updatedSenderAddr = where === "From" ? selectedAddress : tempSelectionsFrom;
+    const updatedReceiverAddr = where === "To" ? selectedAddress : tempSelectionsTo;
+    
+    if (updatedSenderAddr && updatedReceiverAddr) {
+      appRef.current.setLocations(updatedSenderAddr, updatedReceiverAddr);
     }
 
     handleHideModal();
@@ -310,11 +305,16 @@ const Address = forwardRef((props, ref) => {
       localStorage.setItem("orderDistance", roundedDistance.toString());
 
       // Update existing orderFormData with new distance
-      const existingData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
-      localStorage.setItem("orderFormData", JSON.stringify({
-        ...existingData,
-        kilometer: roundedDistance
-      }));
+      const existingData = JSON.parse(
+        localStorage.getItem("orderFormData") || "{}"
+      );
+      localStorage.setItem(
+        "orderFormData",
+        JSON.stringify({
+          ...existingData,
+          kilometer: roundedDistance,
+        })
+      );
 
       console.log("Distance saved:", roundedDistance);
     }
@@ -343,22 +343,29 @@ const Address = forwardRef((props, ref) => {
   }, []);
 
   const handleFormValuesChange = (changedValues, allValues) => {
-    const existingData = JSON.parse(
-      localStorage.getItem("orderFormData") || "{}"
-    );
+    const existingData = JSON.parse(localStorage.getItem("orderFormData") || "{}");
+
+    // For oversea shipping sender address
+    if (shippingType === "oversea" && changedValues.senderAddress) {
+      setTempSelectionsFrom(changedValues.senderAddress);
+    }
 
     const updatedData = {
       ...existingData,
       ...allValues,
       kilometer: allValues.kilometer || existingData.kilometer,
       senderAddress: allValues.senderAddress || existingData.senderAddress,
-      receiverAddress:
-        allValues.receiverAddress || existingData.receiverAddress,
+      receiverAddress: allValues.receiverAddress || existingData.receiverAddress,
       shippingType: allValues.shippingType || existingData.shippingType,
-      type: allValues.shippingType === 'oversea' ? 'OVERSEA' : 'DOMESTIC'
+      type: allValues.shippingType === "oversea" ? "OVERSEA" : "DOMESTIC"
     };
 
     localStorage.setItem("orderFormData", JSON.stringify(updatedData));
+
+    // Update map if both addresses are available
+    if (updatedData.senderAddress && updatedData.receiverAddress) {
+      appRef.current.setLocations(updatedData.senderAddress, updatedData.receiverAddress);
+    }
   };
 
   return (
@@ -376,55 +383,6 @@ const Address = forwardRef((props, ref) => {
       }}
       onValuesChange={handleFormValuesChange}
     >
-      <div>Sender Information</div>
-      <Form.Item
-        label="Phone Number"
-        name="senderPhoneNumber"
-        rules={[{ required: true, message: "Please input your phone number!" }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="Address"
-        name="senderAddress"
-        rules={[{ required: true, message: "Please input your address!" }]}
-      >
-        <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
-      </Form.Item>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <Button
-          type="primary"
-          onClick={(e) => {
-            e.preventDefault();
-            handleShowModal(e);
-          }}
-          value="From"
-          style={{
-            width: "200px",
-            backgroundColor: "#e25822",
-            borderColor: "#e25822",
-            height: "40px",
-            borderRadius: "6px",
-            boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
-            "&:hover": {
-              backgroundColor: "#d14812",
-              borderColor: "#d14812",
-            },
-          }}
-        >
-          Select sender location
-        </Button>
-      </div>
-
-      <div>Receiver Information</div>
       <Form.Item
         label="Shipping Type"
         name="shippingType"
@@ -449,7 +407,7 @@ const Address = forwardRef((props, ref) => {
               ...existingData,
               shippingType: value,
               receiverAddress: "", // Reset receiver address trong localStorage
-              type: value === 'oversea' ? 'OVERSEA' : 'DOMESTIC'
+              type: value === "oversea" ? "OVERSEA" : "DOMESTIC",
             };
 
             localStorage.setItem("orderFormData", JSON.stringify(updatedData));
@@ -479,29 +437,20 @@ const Address = forwardRef((props, ref) => {
           </Select.Option>
         </Select>
       </Form.Item>
-      <Form.Item
-        label="Receiver's Name"
-        name="receiverName"
-        rules={[{ required: true, message: "Please input receiver's name!" }]}
-      >
-        <Input />
-      </Form.Item>
-
+      <div>Sender Information</div>
       <Form.Item
         label="Phone Number"
-        name="receiverPhoneNumber"
-        rules={[
-          { required: true, message: "Please input receiver's phone number!" },
-        ]}
+        name="senderPhoneNumber"
+        rules={[{ required: true, message: "Please input your phone number!" }]}
       >
         <Input />
       </Form.Item>
 
       <Form.Item
         label="Address"
-        name="receiverAddress"
+        name="senderAddress"
         rules={[
-          { required: true, message: "Please input receiver's address!" },
+          { required: true, message: "Please input sender's address!" },
         ]}
       >
         {shippingType === "domestic" ? (
@@ -514,7 +463,7 @@ const Address = forwardRef((props, ref) => {
               const overseaAddress = e.target.value;
               if (overseaAddress) {
                 // Cập nhật form và localStorage
-                form.setFieldsValue({ receiverAddress: overseaAddress });
+                form.setFieldsValue({ senderAddress: overseaAddress });
                 setTempSelectionsTo(overseaAddress);
 
                 const existingData = JSON.parse(
@@ -525,7 +474,7 @@ const Address = forwardRef((props, ref) => {
                   "orderFormData",
                   JSON.stringify({
                     ...existingData,
-                    receiverAddress: overseaAddress,
+                    senderAddress: overseaAddress,
                   })
                 );
 
@@ -570,10 +519,66 @@ const Address = forwardRef((props, ref) => {
               },
             }}
           >
-            Select receiver location
+            Select sender location
           </Button>
         </div>
       )}
+
+      <div>Receiver Information</div>
+
+      <Form.Item
+        label="Receiver's Name"
+        name="receiverName"
+        rules={[{ required: true, message: "Please input receiver's name!" }]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="Phone Number"
+        name="receiverPhoneNumber"
+        rules={[
+          { required: true, message: "Please input receiver's phone number!" },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="Address"
+        name="receiverAddress"
+        rules={[{ required: true, message: "Please input receiver's address!" }]}
+      >
+        <Input.TextArea readOnly autoSize={{ minRows: 2, maxRows: 6 }} />
+      </Form.Item>
+
+      {/* Always show select button for receiver address */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "20px",
+        }}
+      >
+        <Button
+          type="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            handleShowModal(e);
+          }}
+          value="To"
+          style={{
+            width: "200px",
+            backgroundColor: "#e25822",
+            borderColor: "#e25822",
+            height: "40px",
+            borderRadius: "6px",
+            boxShadow: "0 2px 0 rgba(226, 88, 34, 0.1)",
+          }}
+        >
+          Select receiver location
+        </Button>
+      </div>
 
       <Form.Item label="Note" name="note">
         <TextArea rows={1} />
