@@ -4,16 +4,21 @@ import { useForm } from "antd/es/form/Form";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import App from "./google";
+import api from "../../../config/axios";
+import box from "../../../img/box.png";
+import airplane from "../../../img/airplane.png";
+import delivery from "../../../img/delivery.png";
 
 const { Option } = Select;
 
 function EstimatedShippingFee() {
   const appRef = useRef();
+  const resultRef = useRef(null);
   const [shippingCost, setShippingCost] = useState(0);
-  const [mediumBoxNeeded, setMediumBoxNeeded] = useState(0);
-  const [noOfBoxesLarge, setNoOfBoxesLarge] = useState(0);
-  const [extraLargeBoxesQuantity, setExtraLargeBoxesQuantity] = useState(0);
-  const [specialLargeBoxesQuantity, setSpecialLargeBoxesQuantity] = useState(0);
+  const [smallBox, setSmallBox] = useState(0);
+  const [mediumBox, setMediumBox] = useState(0);
+  const [largeBox, setLargeBox] = useState(0);
+  const [extraLargeBox, setExtraLargeBox] = useState(0);
   const [data, setData] = useState([]);
   const [selectedCity, setSelectedCity] = useState(undefined);
   const [selectedDistrict, setSelectedDistrict] = useState(undefined);
@@ -21,6 +26,7 @@ function EstimatedShippingFee() {
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [where, setWhere] = useState("");
+
   // const [tempSelectionsFrom, setTempSelectionsFrom] = useState({
   //   cityName: "",
   //   districtName: "",
@@ -43,6 +49,20 @@ function EstimatedShippingFee() {
     wardName: "",
   });
 
+  const [shipMethods, setShipMethods] = useState([]);
+  const [selectedMethod, setSelectedMethod] = useState(undefined);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await api.get("shipmethod");
+  //       setShipMethods(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,6 +70,13 @@ function EstimatedShippingFee() {
           "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
         );
         setData(response.data);
+        setShipMethods([
+          { shipMethodId: 1, description: "Economy shipping" },
+
+          { shipMethodId: 2, description: "Fast shipping" },
+
+          { shipMethodId: 3, description: "Express shipping" },
+        ]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -103,49 +130,6 @@ function EstimatedShippingFee() {
     setTempSelections((prev) => ({ ...prev, wardName: option.children }));
   };
 
-  const handleConfirm = () => {
-    // Here you can perform any action with the confirmed selections
-    console.log("Confirmed selections:", tempSelections);
-  };
-
-  const handleCancel = () => {
-    // Reset to the initial state
-    setSelectedCity(undefined);
-    setSelectedDistrict(undefined);
-    setSelectedWard(undefined);
-    setDistricts([]);
-    setWards([]);
-    setTempSelections({ cityName: "", districtName: "", wardName: "" });
-  };
-
-  let sizeInCM = [
-    "-19.9",
-    "20-25",
-    "25.1 - 30",
-    "30.1 - 40",
-    "40.1 - 44",
-    "44.1 - 50",
-    "50.1 - 55",
-    "55.1 - 65",
-    "50 - 60 Hirenaga (Butterfly)",
-    "60.1 - 65 Hirenaga (Butterfly)",
-    "65.1 - 73",
-    "73.1 - 83",
-  ];
-  let sizeInInch = [
-    "7.86",
-    "7.87 - 9.84",
-    "9.85 - 11.81",
-    "11.82 - 15.75",
-    "15.76 - 17.32",
-    "17.33 - 19.6",
-    "19.7 - 21.6",
-    "21.7 - 25.5",
-    "19.7 - 23.4",
-    "23.5 - 25.5",
-    "25.6 - 28.7",
-    "28.8 - 32.6",
-  ];
   let pointsArray = [
     "1.25",
     "2",
@@ -160,39 +144,16 @@ function EstimatedShippingFee() {
     "16",
     "18",
   ];
-  let mediumBoxPoints = 9;
-  let UPSChargesMedium = 190; //140;
-  let surchargePerBoxMedium = 25; //20;
+  let smallBoxPoints = 9;
 
-  let largeBoxPoints = 15;
-  let UPSChargesLarge = 210; //179;
-  let surchargePerBoxLarge = 25;
+  let mediumBoxPoints = 15;
 
-  let extraLargeBoxPoints = 16;
-  let UPSChargesExtraLarge = 260; //259;
-  let surchargePerBoxExtraLarge = 50;
-
-  let specialLargeBoxPoints = 18;
-  let UPSChargesSpecialLarge = 339;
-  let surchargePerBoxSpecialLarge = 70;
-
-  function calculatePoints() {
+  const calculatePoints = async () => {
     let totalPoints = 0;
-    let mediumBoxNeeded = 0,
-      noOfBoxesLarge = 0,
-      extraLargeBoxesQuantity = 0,
-      specialLargeBoxesQuantity = 0;
-
-    let extraKOI = 0,
-      extraKOI2 = 0,
-      extraKOI3 = 0,
-      extraKOI4 = 0,
-      extraKOI5 = 0;
-    let extraKOISize = 0,
-      extraKOISize2 = 0,
-      extraKOISize3 = 0,
-      extraKOISize4 = 0,
-      extraKOISize5 = 0;
+    let smallBox = 0,
+      mediumBox = 0,
+      largeBox = 0,
+      extraLargeBox = 0;
 
     for (let i = 0; i < pointsArray.length - 2; i++) {
       let points =
@@ -202,105 +163,84 @@ function EstimatedShippingFee() {
 
     let remainingPoints = 0;
 
-    let extraLargeBoxesIndex = Number(pointsArray.length - 2);
+    let largeBoxesIndex = Number(pointsArray.length - 2);
 
-    extraLargeBoxesQuantity =
+    largeBox =
+      parseFloat(
+        document.getElementById("KOIQuantity" + largeBoxesIndex).value
+      ) || 0;
+
+    let extraLargeBoxesIndex = Number(pointsArray.length - 1);
+    extraLargeBox =
       parseFloat(
         document.getElementById("KOIQuantity" + extraLargeBoxesIndex).value
       ) || 0;
 
-    let specialLargeBoxesIndex = Number(pointsArray.length - 1);
-    specialLargeBoxesQuantity =
-      parseFloat(
-        document.getElementById("KOIQuantity" + specialLargeBoxesIndex).value
-      ) || 0;
-
-    if (totalPoints % mediumBoxPoints == 0) {
-      mediumBoxNeeded = totalPoints / mediumBoxPoints;
+    if (totalPoints % smallBoxPoints == 0) {
+      smallBox = totalPoints / smallBoxPoints;
       remainingPoints = 0;
-    } else if (totalPoints % largeBoxPoints == 0) {
-      noOfBoxesLarge = totalPoints / largeBoxPoints;
+    } else if (totalPoints % mediumBoxPoints == 0) {
+      mediumBox = totalPoints / mediumBoxPoints;
       remainingPoints = 0;
     } else {
-      if (totalPoints < largeBoxPoints && totalPoints < mediumBoxPoints) {
-        mediumBoxNeeded = 1;
-        remainingPoints = mediumBoxPoints - totalPoints;
+      if (totalPoints < mediumBoxPoints && totalPoints < smallBoxPoints) {
+        smallBox = 1;
+        remainingPoints = smallBoxPoints - totalPoints;
       } else if (
-        totalPoints <= largeBoxPoints &&
-        totalPoints > mediumBoxPoints
+        totalPoints <= mediumBoxPoints &&
+        totalPoints > smallBoxPoints
       ) {
-        noOfBoxesLarge = 1;
-        remainingPoints = largeBoxPoints - totalPoints;
+        mediumBox = 1;
+        remainingPoints = mediumBoxPoints - totalPoints;
       } else {
-        noOfBoxesLarge = totalPoints / largeBoxPoints;
+        mediumBox = totalPoints / mediumBoxPoints;
         remainingPoints = Math.abs(
-          Math.floor(noOfBoxesLarge) * largeBoxPoints - totalPoints
+          Math.floor(mediumBox) * mediumBoxPoints - totalPoints
         );
         if (remainingPoints <= 9) {
-          mediumBoxNeeded++;
-          remainingPoints = mediumBoxPoints - remainingPoints;
+          smallBox++;
+          remainingPoints = smallBoxPoints - remainingPoints;
         } else if (remainingPoints > 9 && remainingPoints <= 15) {
-          mediumBoxNeeded += 2;
-          remainingPoints = mediumBoxPoints * mediumBoxNeeded - remainingPoints;
+          smallBox += 2;
+          remainingPoints = smallBoxPoints * smallBox - remainingPoints;
         }
       }
     }
 
-    if (remainingPoints > 0) {
-      extraKOI = Math.floor(remainingPoints / 1.25);
-      extraKOISize = "19 CM" + "  (" + sizeInInch[0] + " Inch)";
+    setSmallBox(smallBox);
+    setMediumBox(mediumBox);
+    setLargeBox(largeBox);
+    setExtraLargeBox(extraLargeBox);
+    let values = {
+      kilometers: parseFloat(distance),
+      shipMethodID: selectedMethod,
+      weight: weight,
+      boxAmountDTO: {
+        smallBox: smallBox,
+        mediumBox: Math.floor(mediumBox),
+        largeBox: largeBox,
+        extraLargeBox: extraLargeBox,
+      },
+    };
 
-      extraKOI2 = Math.floor(remainingPoints / 2);
-      extraKOISize2 = "20-25 CM" + "  (" + sizeInInch[1] + " Inch)";
+    console.log(values);
 
-      extraKOI3 = Math.floor(remainingPoints / 2.5);
-      extraKOISize3 = "25.5 - 30 CM" + "  (" + sizeInInch[2] + " Inch)";
-
-      extraKOI4 = Math.floor(remainingPoints / 3);
-      extraKOISize4 = "30.5 - 40 CM" + "  (" + sizeInInch[3] + " Inch)";
-
-      extraKOI5 = Math.floor(remainingPoints / 5);
-      extraKOISize5 = "40.5 - 44 CM" + "  (" + sizeInInch[4] + " Inch)";
-    } else {
-      // extraKOI = 0;
-      // extraKOISize = 0;
-      extraKOI = Math.floor(remainingPoints / 1.25);
-      extraKOISize = "19 CM" + "  (" + sizeInInch[0] + " Inch)";
-
-      extraKOI2 = Math.floor(remainingPoints / 2);
-      extraKOISize2 = "20-25 CM" + "  (" + sizeInInch[1] + " Inch)";
-
-      extraKOI3 = Math.floor(remainingPoints / 2.5);
-      extraKOISize3 = "25.5 - 30 CM" + "  (" + sizeInInch[2] + " Inch)";
-
-      extraKOI4 = Math.floor(remainingPoints / 3);
-      extraKOISize4 = "30.5 - 40 CM" + "  (" + sizeInInch[3] + " Inch)";
-
-      extraKOI5 = Math.floor(remainingPoints / 5);
-      extraKOISize5 = "40.5 - 44 CM" + "  (" + sizeInInch[4] + " Inch)";
+    try {
+      const response = await api.post("tracking/estimate", values);
+      setShippingCost(response.data);
+      setTimeout(() => {
+        if (resultRef.current) {
+          resultRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } catch (err) {
+      console.error("Fetching error: ", err);
     }
+  };
 
-    let shippingCostLargeBox =
-      Math.floor(noOfBoxesLarge) * (UPSChargesLarge + surchargePerBoxLarge);
-    let shippingCostMediumBox =
-      mediumBoxNeeded * (UPSChargesMedium + surchargePerBoxMedium);
-    let shippingCostExtraLargeBox =
-      extraLargeBoxesQuantity *
-      (UPSChargesExtraLarge + surchargePerBoxExtraLarge);
-    let shippingCostSpecialLargeBox =
-      specialLargeBoxesQuantity *
-      (UPSChargesSpecialLarge + surchargePerBoxSpecialLarge);
-    let shippingCost =
-      shippingCostLargeBox +
-      shippingCostMediumBox +
-      shippingCostExtraLargeBox +
-      shippingCostSpecialLargeBox;
-    setMediumBoxNeeded(mediumBoxNeeded);
-    setNoOfBoxesLarge(noOfBoxesLarge);
-    setExtraLargeBoxesQuantity(extraLargeBoxesQuantity);
-    setSpecialLargeBoxesQuantity(specialLargeBoxesQuantity);
-    setShippingCost(shippingCost);
-  }
+  useEffect(() => {
+    calculatePoints();
+  }, []);
 
   const [form] = useForm();
   const [isOpen, setIsOpen] = useState(false);
@@ -418,6 +358,13 @@ function EstimatedShippingFee() {
       setTempSelectionsTo(selectedAddress);
     }
 
+    if (
+      (tempSelectionsFrom && selectedAddress) ||
+      (selectedAddress && tempSelectionsTo)
+    ) {
+      appRef.current.setLocations(tempSelectionsFrom, selectedAddress);
+    }
+
     form.resetFields();
     handleHideModal();
   }
@@ -440,6 +387,28 @@ function EstimatedShippingFee() {
     form.submit();
   }
 
+  const handleShippingMethodChange = (value) => {
+    setSelectedMethod(value);
+    console.log(selectedMethod);
+  };
+  const [distance, setDistance] = useState();
+  const handleGetDistance = (newDistance) => {
+    setDistance(newDistance);
+  };
+
+  useEffect(() => {
+    if (distance) {
+      console.log(distance);
+    }
+  }, [distance]);
+
+  useEffect(() => {
+    if (selectedMethod) {
+      console.log(selectedMethod);
+    }
+  }, [selectedMethod]);
+
+  const [weight, setWeight] = useState(0);
   return (
     <div className="estimatedshippingfee">
       <div className="estimatedshippingfee__title">ESTIMATED SHIPPING FEE</div>
@@ -456,39 +425,50 @@ function EstimatedShippingFee() {
         </div>
         <div className="estimatedshippingfee__products__right">
           <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
+            <img src={box} />
             <div>Number of box you need</div>
             <div id="boxesNeeded"></div>
             <div style={{ color: "red", paddingTop: 50 }}>
-              {mediumBoxNeeded +
-                noOfBoxesLarge +
-                extraLargeBoxesQuantity +
-                specialLargeBoxesQuantity ===
-              0
+              {smallBox + mediumBox + largeBox + extraLargeBox === 0
                 ? "_ boxes"
-                : Math.floor(noOfBoxesLarge) +
+                : smallBox +
                   " small boxes , " +
-                  mediumBoxNeeded +
+                  Math.floor(mediumBox) +
                   " medium boxes, " +
-                  extraLargeBoxesQuantity +
+                  largeBox +
                   " large boxes and " +
-                  specialLargeBoxesQuantity +
+                  extraLargeBox +
                   " extra large boxes"}
             </div>
           </div>
-          <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
+          <div
+            className="estimatedshippingfee__products__right__rectangle"
+            id="estimate"
+            ref={resultRef}
+          >
+            <img src={airplane} />
             <div>Total shipping cost</div>
             <div style={{ color: "red", paddingTop: 50 }}>
-              {shippingCost === 0 ? "$-" : "~$ " + shippingCost}
+              {shippingCost === 0 ? "~ VND" : Math.ceil(shippingCost) + " VND"}
             </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
-            <img src="https://s3-alpha-sig.figma.com/img/ed02/bcc5/30ddd63ae6720e8c9ec6e688a3198b6d?Expires=1728864000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=pg-CK1fnvGhSrgBv0Wdo4AfFb1sst6hpKO5oUCodVAyUmg~-IzlW~MyqtA-fL7DqOj~8l5swvVtLRfHQ~QgeSQrPd2QpECl-iNnCsPciWnMKqSXcTD5Hz6nuCGRs9FZ9gC~b3~ZrgJeL4hFOS0J7rEEKDMFHXnT6oESN5qZr~C8cal6yNBQPZqk8AHg-K6a8hPdXYbhCEwvFuModH-XaNPzAsw4IK57wNftjBUCQR7I9-FnYXw9DyY18JgZjlmZwG9SZB1dPnbqfGg-UKXpP3v6np2zRaMQucOMdnqDIcful~YMc~SZIgIMlM23SCdzT3MjSAKr~ZROyT30IWltW1A__" />
-            <div style={{ textAlign: "left" }}>
-              You can purchase this many more koi, of each size, to fit in the
-              same size box shown above.
+            <img src={delivery} />
+            <div style={{ textAlign: "center", paddingBottom: "20px" }}>
+              Shipping method
             </div>
+            <Select
+              style={{ width: 200 }}
+              value={selectedMethod}
+              onChange={handleShippingMethodChange}
+              placeholder="Select"
+            >
+              {shipMethods.map((method) => (
+                <Option key={method.shipMethodId} value={method.shipMethodId}>
+                  {method.description}
+                </Option>
+              ))}
+            </Select>
           </div>
         </div>
       </div>
@@ -606,18 +586,26 @@ function EstimatedShippingFee() {
         </Modal>
       </div>
       <div className="estimatedshippingfee__map">
-        <App ref={appRef} />
+        <App ref={appRef} getDistance={handleGetDistance} />
       </div>
       <div className="estimatedshippingfee__calculating">
-        <button onClick={calculatePoints}>Tracking</button>
+        Weight :{" "}
+        <Input
+          name="weight"
+          style={{ width: 200 }}
+          type="number"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+        />
+        <br />
+        <br />
+        <button onClick={calculatePoints}>
+          {/* <a href="#estimate" style={{ textDecoration: "none", color: "#fff" }}>
+            Tracking
+          </a> */}
+          Tracking
+        </button>
       </div>
-      <Button
-        onClick={() =>
-          appRef.current.setLocations(tempSelectionsFrom, tempSelectionsTo)
-        }
-      >
-        Calculate Distance
-      </Button>
     </div>
   );
 }

@@ -1,8 +1,9 @@
+import Profile from "../../../components/profile-template"
 
 
 function Account() {
     return(
-        <div>Account</div>
+        <Profile />
     )
 }
 export default Account 

@@ -1,0 +1,12 @@
+.order__item .txt {
+    flex: 1;
+    margin: 0;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+.order__wrapper {
+    width: 600px;
+}

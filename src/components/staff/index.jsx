@@ -1,17 +1,23 @@
-import { Layout, Menu, theme } from "antd";
+import { Layout, Menu } from "antd";
 import { Link, Outlet } from "react-router-dom";
 const { Content, Sider } = Layout;
 import logo from "../../img/logolayout.png";
 import "../staff/index.css";
 import {
   ClockCircleOutlined,
-  CommentOutlined,
-  MenuOutlined,
+  CloseOutlined,
+  ExclamationOutlined,
+  FrownOutlined,
+  GlobalOutlined,
+  MessageOutlined,
+  PushpinOutlined,
   QuestionCircleOutlined,
+  StarOutlined,
+  UsergroupAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import Header from "../header";
 import Footer from "../footer";
+import { useSelector } from "react-redux";
 function getItem(label, key, icon, children) {
   return {
     key,
@@ -20,24 +26,40 @@ function getItem(label, key, icon, children) {
     label: <Link to={`/staff/${key}`}>{label}</Link>,
   };
 }
-const items = [
-  getItem("All Orders", "order", <MenuOutlined />, [
-    getItem("Waiting", "waiting-order"),
-    getItem("Approved", "approved-order"),
-    getItem("Rejected", "rejected-order"),
-  ]),
-  getItem("Order History", "history", <ClockCircleOutlined />),
-  getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
-  getItem("Support", "support", <CommentOutlined />),
-  getItem("My Profile", "profile", <UserOutlined />),
-];
 
-const Staff = () => {
-  const {
-    token: { borderRadiusLG },
-  } = theme.useToken();
+function Staff() {
+  const user = useSelector((store) => store.user);
+
+  const items = [
+    user?.country === "vietnam"
+      ? getItem(
+          "Domestic - Waiting",
+          "waiting-domestic",
+          <ExclamationOutlined />
+        )
+      : null,
+    getItem("Oversea", "", <GlobalOutlined />, [
+      getItem("Waiting", "waiting-oversea"),
+      getItem("A staff approved", "waiting-2nd-staff"),
+    ]),
+
+    getItem(
+      "Waiting another staff",
+      "wait-for-staff",
+      <UsergroupAddOutlined />
+    ),
+    getItem("Approved", "approved", <PushpinOutlined />),
+    getItem("Fail", "rejected-order", <CloseOutlined />),
+    getItem("History", "history", <ClockCircleOutlined />),
+    getItem("FAQ", "FAQ", <QuestionCircleOutlined />),
+    getItem("Feedback", "view-feedback", <StarOutlined />),
+    getItem("Complain", "view-complain", <FrownOutlined />),
+    getItem("Message", "chat", <MessageOutlined />),
+    getItem("My Profile", "profile", <UserOutlined />),
+  ].filter(Boolean);
+
   return (
-    <div style={{ marginTop:"20px" }}>
+    <div style={{ marginTop: "20px" }}>
       <Layout
         style={{
           minHeight: "100vh",
@@ -45,9 +67,9 @@ const Staff = () => {
       >
         <Sider className="sider">
           <div className="sider__header">
-            <div>
+            <Link to="/">
               <img src={logo} alt="" />
-            </div>
+            </Link>
             <h4>KOIKICHI</h4>
           </div>
           <Menu mode="inline" items={items} />
@@ -63,7 +85,6 @@ const Staff = () => {
               style={{
                 padding: 24,
                 minHeight: 360,
-                borderRadius: borderRadiusLG,
               }}
             >
               <Outlet />
@@ -74,5 +95,5 @@ const Staff = () => {
       <Footer />
     </div>
   );
-};
+}
 export default Staff;

@@ -1,25 +1,38 @@
 import { Link } from "react-router-dom";
 import "./index.css";
-import { Avatar, Button } from "antd";
-import { CaretDownOutlined, UserOutlined } from "@ant-design/icons";
-import { Dropdown, Space } from "antd";
+import { Button } from "antd";
 import logo from "../../img/logo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/features/userSlice";
 function Header() {
-  const items = [
-    {
-      label: <a href="https://www.antgroup.com">Vietnamese</a>,
-      key: "0",
-    },
-    {
-      label: <a href="https://www.aliyun.com">Japanese</a>,
-      key: "1",
-    },
-  ];
+  const user = useSelector((store) => store.user);
+  console.log(user);
+  const dispatch = useDispatch();
 
   return (
     <header className="header">
       <div className="header__logo">
-        <img src={logo} alt="Logo" width={80} />
+        {user ? (
+          <>
+            {user?.role === "STAFF" && (
+              <Link to="/staff/order">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+            {user?.role === "CUSTOMER" && (
+              <Link to="/customer-service/order">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+            {user?.role === "MANAGER" && (
+              <Link to="/dashboard/overview">
+                <img src={logo} alt="Logo" width={80} />
+              </Link>
+            )}
+          </>
+        ) : (
+          <img src={logo} alt="Logo" width={80} />
+        )}
       </div>
       <nav className="header__nav">
         <ul>
@@ -36,39 +49,26 @@ function Header() {
             <Link to="/tracking">TRACKING</Link>
           </li>
           <li>
-            <Link to="/">FAQ</Link>
+            <Link to="/FAQ">FAQ</Link>
           </li>
-          <li>
-            <Link to="/">SUPPORT</Link>
-          </li>
-          <Dropdown
-            menu={{
-              items,
-            }}
-            trigger={["click"]}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              <Space>
-                LANGUAGE
-                <CaretDownOutlined />
-              </Space>
-            </a>
-          </Dropdown>
         </ul>
       </nav>
       <div>
-        {/* {user == null ? ( */}
+        {user == null ? (
           <Link to={"/login"}>
             <Button className="header__btn">LOGIN</Button>
           </Link>
-        {/* ) : (
-          // <Link to={"/login"}>
-          //   <Button className="header__btn" onClick={() => dispatch(logout())}>LOGOUT</Button>
-          // </Link>
+        ) : (
+          <Link to={"/login"}>
+            <Button className="header__btn" onClick={() => dispatch(logout())}>
+              LOGOUT
+            </Button>
+          </Link>
+
           // <Link>
           //   <Avatar size={50} icon={<UserOutlined />} />
           // </Link>
-        )} */}
+        )}
       </div>
     </header>
   );

@@ -1,14 +1,22 @@
-import api from "../../../../config/axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import "./index.css";
-import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  DoubleRightOutlined,
+  LoadingOutlined,
+  MessageOutlined,
+  PhoneOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
 import License from "../license";
-import { Button, Form, Input, Modal } from "antd";
+import { Alert, Button, Form, Input, Modal, Rate, Steps } from "antd";
 import { useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
-import { useParams } from "react-router-dom";
-import InProcess from "../processing/process";
+import { useNavigate, useParams } from "react-router-dom";
+import { format, parseISO } from "date-fns";
+import InProcess from "../pending/pending";
+import api from "../../../../config/axios";
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('vi-VN', {
@@ -21,49 +29,60 @@ const formatCurrency = (value) => {
 
 function OrderDetail() {
   const { id } = useParams();
+  const user = useSelector((store) => store.user);
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchOrderDetail = async (id) => {
+    setLoading(true);
     try {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
-      console.log(response.data);
-      response.data.orderDetail.extraService;
       setService(response.data.orderDetail.extraService);
-      console.log(service);
-
-      const statusArray = response.data.status;
-      console.log(statusArray);
-      if (statusArray.length > 0) {
-        console.log(statusArray[statusArray.length - 1]?.statusInfo);
-        setStatus(statusArray[statusArray.length - 1]?.statusInfo);
+      console.log(response.data.orderDetail.extraService);
+      if (response.data.status.length > 0) {
+        setStatus(
+          response.data.status[response.data.status.length - 1]?.statusInfo
+        );
       }
+      handleViewFeedBack();
     } catch (err) {
-      toast.error(err.response.data);
+      toast.error(err);
+    } finally {
+      setLoading(false);
     }
   };
-
   useEffect(() => {
-    if (id) {
-      fetchOrderDetail(id); // Fetch the order details by ID
-    }
-  }, []);
-  // Trigger the effect when `id` changes
-
+    fetchOrderDetail(id);
+  }, [id, status]);
   /////////////////////////////
 
   const [form] = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [fbModalOpen, setFBModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setFBModalOpen(false);
+  };
+  const showFBModal = () => {
+    setFBModalOpen(true);
   };
 
-  const user = useSelector((store) => store.user);
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
   const [description, setDescription] = useState("");
 
   const handleSubmitReject = async (values) => {
@@ -76,6 +95,7 @@ function OrderDetail() {
       await api.post("/status", values);
       setIsModalOpen(false);
       toast.success("REJECTED");
+      navigate("/staff/reject");
     } catch (error) {
       toast.error(error.response.data);
     } finally {
@@ -85,23 +105,85 @@ function OrderDetail() {
 
   const handleAddApprove = async () => {
     try {
-      console.log(user.id);
-      const emid = user.id;
-      const setvalue = {
-        statusInfo: "APPROVED",
-        empId: emid,
-        order: id,
-        description: "The order is approved",
-      };
-      await api.post("/status", setvalue);
-      toast.success("APPROVED");
+      const response = await api.get(
+        `/orders/status-emp?status=APPROVED&empId=${user.id}`
+      );
+      const processingOrder = await api.get(
+        `/orders/status-emp?status=PENDING&empId=${user.id}`
+      );
+      const waiting = await api.get(
+        `/orders/status-emp?status=WATINGFOR2NDSTAFF&empId=${user.id}`
+      );
+      const japan = await api.get(
+        `/orders/status-emp?status=PENDINGJAPAN&empId=${user.id}`
+      );
+      const vietnam = await api.get(
+        `/orders/status-emp?status=PENDINGVIETNAM&empId=${user.id}`
+      );
+      const arrive = await api.get(
+        `/orders/status-emp?status=ARRIVEDVIETNAM&empId=${user.id}`
+      );
+      console.log(waiting.data);
+
+      if (
+        response.data?.length === 0 &&
+        processingOrder.data?.length === 0 &&
+        waiting.data?.length === 0 &&
+        japan.data?.length === 0 &&
+        vietnam.data?.length === 0 &&
+        arrive.data?.length === 0
+      ) {
+        console.log(user.id);
+        const emid = user.id;
+        const setvalue = await api.post("/status", {
+          statusInfo: "APPROVED",
+          empId: emid,
+          order: id,
+          description: "The order is approved",
+        });
+        console.log(setvalue);
+        toast.success("APPROVED");
+      } else {
+        toast.error("Please check if you have any order in process");
+      }
     } catch (error) {
       toast.error(error.response.data);
     } finally {
       fetchOrderDetail(id);
     }
   };
+  const formatDate = (isoString) => {
+    if (!isoString) return "Không có dữ liệu"; // Trả về chuỗi mặc định nếu không có ngày
+    try {
+      return format(parseISO(isoString), "dd/MM/yyyy"); // Định dạng ngày hợp lệ
+    } catch (error) {
+      console.error("Định dạng ngày không hợp lệ:", error);
+      return "Ngày không hợp lệ"; // Xử lý lỗi khi parse thất bại
+    }
+  };
 
+  const [feedback, setFeedback] = useState([]);
+  const handleViewFeedBack = async () => {
+    try {
+      const response = await api.get(`feedback/${id}`);
+      console.log(response.data);
+      setFeedback(response.data);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+  console.log(order);
+
+  const handleRoomChat = async (customerID) => {
+    try {
+      const room = await api.get(`/chat/room/${user?.id}/${customerID}`);
+
+      console.log(room.data);
+      navigate(`/staff/chat/${room.data?.roomID}`);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -110,22 +192,22 @@ function OrderDetail() {
         <h3 style={{ marginBottom: "50px" }}>
           <span className="color">Order ID: </span> {order.orderID}
         </h3>
-
+        <Alert message={order?.orderDetail?.type} />
         <div className="time-section">
           <p>
             Created Delivery Date:
-            <br /> {order?.status?.[0]?.date}
+            <br /> {formatDate(order?.status?.[0]?.date)}
           </p>
           <div className="border"></div>
           <p>
             Exp Delivery Date:
-            <br /> {order.expDeliveryDate}
+            <br /> {formatDate(order?.expDeliveryDate)}
           </p>
-          <div className="border"></div>
+          {/* <div className="border"></div>
           <p>
             Act Delivery Date:
             <br /> {order.actDeliveryDate}
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -135,13 +217,19 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
+                <span className="color">{order?.senderName}</span> -
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
+            {status === "WATINGFOR2NDSTAFF" && (
+              <MessageOutlined
+                onClick={() => handleRoomChat(order?.accountId)}
+                style={{ fontSize: 18, color: "#c3c3c3" }}
+              />
+            )}
           </div>
 
           <DoubleRightOutlined style={{ fontSize: 18, color: "#e25822" }} />
@@ -149,10 +237,10 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order.reciverName} </span>- (+84)
+                <span className="color">{order.reciverName} </span> -
                 {order.reciverPhoneNumber}
               </p>
-              <p>{order.reciverName}</p>
+              <p>{order.reciverAdress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
@@ -228,63 +316,134 @@ function OrderDetail() {
       </div>
 
       <h5 className="title">Delivery status</h5>
+
       <div className="bg-w">
-        <div className="send-section">
-          <div className="item">
-            <div>
-              <p>
-                Payment status:{" "}
-                <span
-                  className="color"
-                  style={{ fontWeight: "600", fontSize: "18px" }}
-                >
-                  {" "}
-                  {order?.payment?.status}
-                </span>
-              </p>
-            </div>
+        <div style={{ marginBottom: "20px" }}>
+          <p>Payment status: {order?.payment?.status}</p>
+          
+        </div>
+        <InProcess />
+        {(status === "APPROVED" || status === "PENDING") && (
+          <>
+            <button className="btn-item fail-btn" onClick={showModal}>
+              Delivery Failure
+            </button>
+          </>
+        )}
+        {status === "SUCCESS" && order?.orderDetail?.type === "DOMESTIC" && (
+          <>
+            <Steps
+              className="step"
+              items={[
+                {
+                  title: "Approved",
+                  status: "finish",
+                  icon: <CheckCircleOutlined />,
+                },
+                {
+                  title: "Preparing",
+                  status: "finish",
+                  icon: <LoadingOutlined />,
+                },
+                {
+                  title: "On delivery",
+                  status: "finish",
+                  icon: <DoubleRightOutlined />,
+                },
+                {
+                  title: "DONE",
+                  status: "finish",
+                  icon: <SmileOutlined />,
+                },
+              ]}
+            />
+          </>
+        )}
+        {status === "SUCCESS" && order?.orderDetail?.type === "OVERSEA" && (
+          <>
+            <Steps
+              progressDot
+              current={6}
+              direction="vertical"
+              items={[
+                {
+                  title: "Waiting for Approval",
+                  description: "Order is pending initial staff approval.",
+                },
+                {
+                  title: "Waiting for Second Staff",
+                  description:
+                    "Order has been approved by first staff member, awaiting second approval.",
+                },
+                {
+                  title: "Order Approved",
+                  description: "Order has been approved by both staff members.",
+                },
+                {
+                  title: "Processing in Japan",
+                  description:
+                    "Order is being processed at our Japan facility.",
+                },
+                {
+                  title: "Arrived in Vietnam",
+                  description:
+                    "Order has arrived and is being processed in Vietnam.",
+                },
+                {
+                  title: "Processing in Vietnam",
+                  description: "The order is being processed in Vietnam.",
+                },
+                {
+                  title: "Order Complete",
+                  description:
+                    "Order has been successfully processed and completed.",
+                },
+              ]}
+            />
+          </>
+        )}
+        {status === "SUCCESS" && (
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="fb-btn btn-item" onClick={showFBModal}>
+              View Feedback
+            </button>
           </div>
-        </div>
+        )}
+        {status === "FAIL" && (
+          <div style={{ textAlign: "center", fontSize: "20px" }}>
+            This order has been rejected!
+          </div>
+        )}
       </div>
-
-      {status == "WAITING" ? (
-        <div className="btn-wrap">
-          <Button className="btn btn-r" onClick={showModal}>
-            REJECT
-          </Button>
-          <Button
-            className="btn btn-a"
-            onClick={() => {
-              handleAddApprove();
-            }}
-          >
-            APPROVE
-          </Button>
-        </div>
+      {loading ? (
+        <p>Loading...</p>
       ) : (
-        <div>
-          <InProcess />
+        <div className="btn-wrap">
+          {}
+          {status === "WAITING" && (
+            <>
+              <Button className="btn btn-r" onClick={showModal}>
+                REJECT
+              </Button>
+              <Button className="btn btn-a" onClick={handleAddApprove}>
+                APPROVE
+              </Button>
+            </>
+          )}
+          {status === "WATINGFOR2NDSTAFF" && (
+            <>
+              <Button className="btn btn-a" onClick={handleAddApprove}>
+                APPROVE
+              </Button>
+            </>
+          )}
         </div>
       )}
-      {status == "FAIL" ? (
-        <div className="btn-wrap">
-          <Button
-            className="btn btn-a"
-            onClick={() => {
-              handleAddApprove();
-            }}
-          >
-            APPROVE
-          </Button>
-        </div>
-      ) : (
-        <div></div>
-      )}
 
-      {/* <span>Price: {order.price}</span>            */}
+      {/* <span>Price: {order.price}</span>*/}
 
       <Modal
-        title="Are you really want to reject this order?"
+        title="Failed Report "
         open={isModalOpen}
         onOk={() => form.submit()}
         onCancel={handleCancel}
@@ -298,6 +457,25 @@ function OrderDetail() {
           </Form.Item>
           {/* Hiển thị description */}
         </Form>
+      </Modal>
+
+      <Modal
+        title="FeedBack "
+        open={fbModalOpen}
+        onCancel={handleCancel}
+        footer={<Button onClick={handleCancel}>Cancel</Button>}
+      >
+        {feedback === null ? (
+          <p>Customer has not feedback any thing</p>
+        ) : (
+          <>
+            <p>Time:</p> {feedback?.time}
+            <p>Rating: </p>
+            <Rate disabled value={feedback?.rating} />
+            <p>Comment: </p>
+            {feedback?.comment}
+          </>
+        )}
       </Modal>
     </div>
   );
