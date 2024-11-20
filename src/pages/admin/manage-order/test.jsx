@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
-import { Button, Input, Pagination, Table } from "antd";
+import { Button, Input, Pagination, Popconfirm, Table } from "antd";
 import { FileSyncOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +31,7 @@ function Test01(path, field) {
           orderID: order.orderID,
           name: order.name,
           date: order.status.date,
+          type: order.type,
           statusInfo: order.status.statusInfo,
         }));
         setTotalOrders(response.data.totalElements);
@@ -42,6 +43,7 @@ function Test01(path, field) {
           orderID: order.orderID,
           name: order.name,
           date: order.status.date,
+          type: order.type,
           statusInfo: order.status.statusInfo,
         }));
         setDisplayPagination(false);
@@ -64,7 +66,6 @@ function Test01(path, field) {
       title: "ID",
       dataIndex: "orderID",
       key: "orderID",
-      width: "27%",
     },
     {
       title: "Customer",
@@ -83,19 +84,50 @@ function Test01(path, field) {
         }),
     },
     {
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+      filters: [
+        { text: "DOMESTIC", value: "DOMESTIC" },
+        { text: "OVERSEA", value: "OVERSEA" },
+      ],
+      onFilter: (value, record) => record.type.includes(value),
+    },
+    {
       title: "Status",
       dataIndex: "statusInfo",
       key: "statusInfo",
     },
     {
-      title: "",
+      title: "Action",
       dataIndex: "note",
       key: "note",
-      render: (record, value) => (
-        <Button onClick={() => navigate(`/dashboard/view/${value.orderID}`)}>
-          View
-        </Button>
-      ),
+      fixed: "right",
+      render: (record, value) =>
+        `${value.statusInfo}` === "UNREFUND" ? (
+          <>
+            <Popconfirm
+              title="Accept Refund"
+              description="Are you sure to accept this refund?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => refund(value.orderID)}
+              loading={loading}
+            >
+              <Button>Accept</Button>
+            </Popconfirm>
+            <Button
+              onClick={() => navigate(`/dashboard/view/${value.orderID}`)}
+              style={{ marginLeft: 20 }}
+            >
+              View
+            </Button>
+          </>
+        ) : (
+          <Button onClick={() => navigate(`/dashboard/view/${value.orderID}`)}>
+            View
+          </Button>
+        ),
     },
   ];
 
@@ -132,6 +164,17 @@ function Test01(path, field) {
 
   const handleTableChange = (pagination) => {
     setPagination(pagination);
+  };
+
+  const refund = async (value) => {
+    setLoading(true);
+    try {
+      await api.put(`orders/refund?orderId=${value}`);
+      setLoading(false);
+    } catch (e) {
+      console.log("Error", e);
+      setLoading(false);
+    }
   };
 
   return (

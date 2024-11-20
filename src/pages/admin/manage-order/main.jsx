@@ -33,7 +33,27 @@ function History_AD() {
   );
 }
 
+function UnRefund_AD() {
+  // const user = useSelector((store) => store);
+  return (
+    <div>
+      <Test01 path={`orders/status?status=UNREFUND`} field="Status" />
+    </div>
+  );
+}
+
+function Refunded_AD() {
+  // const user = useSelector((store) => store);
+  return (
+    <div>
+      <Test01 path={`orders/status?status=REFUNDED`} field="Status" />
+    </div>
+  );
+}
+
 export default AllOrder_AD;
 export { WaitingOrder_AD };
 export { FailOrder_AD };
 export { History_AD };
+export { UnRefund_AD };
+export { Refunded_AD };

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { FileSyncOutlined } from "@ant-design/icons";
 
+
 const { Search } = Input;
 
 function StaffOrder({ path, isPaging = false }) {
@@ -64,6 +65,7 @@ function StaffOrder({ path, isPaging = false }) {
     setPagination(pagination);
   };
 
+  
   const columns = [
     {
       title: "ID",
@@ -94,7 +96,11 @@ function StaffOrder({ path, isPaging = false }) {
       dataIndex: "note",
       key: "note",
       render: (record, value) => (
-        <Button onClick={() => navigate(`/staff/view/${value.orderID}`)}>
+        <Button onClick={() => navigate(
+          isWaiting 
+            ? `/staff/view/waiting-for-second-staff/${value.orderID}`
+            : `/staff/view/${value.orderID}`
+        )}>
           View
         </Button>
       ),
