@@ -314,18 +314,18 @@ function WaitingAnotherStaff() {
           {/* <span>Price: {order.price}</span>            */}
 
           <Modal
-            title="Failed Report"
+            title="Failed Report "
             open={isModalOpen}
-            onOk={() => {
-              form.submit();
-            }}
+            onOk={() => form.submit()}
             onCancel={handleCancel}
           >
             <Form onFinish={handleConfirm} form={form}>
-              <Input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <Form.Item name="description">
+                <Input
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Form.Item>
               <Upload
                 listType="picture"
                 fileList={fileList}
