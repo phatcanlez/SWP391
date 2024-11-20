@@ -15,15 +15,49 @@ function StaffList() {
   const [form] = Form.useForm();
 
   const handleStatusChange = async (value) => {
-    console.log(!value.status);
     try {
       setLoading(true);
-      await api.patch(`account`, {
-        id: value.id,
-        status: !value.status,
+      let workingStatus = [
+        "PENDING",
+        "APPROVED",
+        "WATINGFOR2NDSTAFF",
+        "PENDINGJAPAN",
+        "ARRIVEDVIETNAM",
+        "PENDINGVIETNAM",
+      ];
+      let result = [];
+      let isWorking = false;
+      const response1 = workingStatus.map(async (status) => {
+        const response = await api.get(
+          `orders/status-emp?status=${status}&empId=${value.id}`
+        );
+        return response.data;
       });
-      toast.success("Successfull");
-      fetchStaffData();
+      result = await Promise.all(response1);
+      result.forEach((data) => {
+        if (data && data.length > 0) {
+          console.log(data[0].orderID);
+          isWorking = true;
+        }
+      });
+      if (!isWorking) {
+        await api.patch(`account`, {
+          id: value.id,
+          status: !value.status,
+        });
+        toast.success("Successfull");
+        fetchStaffData();
+      } else {
+        Modal.info({
+          title: "Ongoing Orders",
+          content: (
+            <div>
+              <p>There are ongoing orders in progress.</p>
+            </div>
+          ),
+          onOk() {}, // You can define what happens when the modal is closed
+        });
+      }
     } catch (err) {
       toast.error(err.response.data);
     } finally {
@@ -160,32 +194,44 @@ function StaffList() {
   }, []);
 
   const handleOpenModal = async (staff) => {
-    // setSelectedStaff(staff);
     setShowModal(true);
     try {
-      const response1 = await api.get(
-        `orders/status-emp?status=PENDING&empId=${staff}`
-      );
+      let workingStatus = [
+        "PENDING",
+        "APPROVED",
+        "WATINGFOR2NDSTAFF",
+        "PENDINGJAPAN",
+        "ARRIVEDVIETNAM",
+        "PENDINGVIETNAM",
+      ];
+      let result = [];
+      const response1 = workingStatus.map(async (status) => {
+        const response = await api.get(
+          `orders/status-emp?status=${status}&empId=${staff}`
+        );
+        return response.data;
+      });
       const response2 = await api.get(
         `orders/status-emp-total?status=SUCCESS&empId=${staff}`
       );
       let responsibility = "Not Working on any Order";
       let total = 0;
-      if (response1.data.length > 0) {
-        responsibility = response1.data[0].orderID;
-      }
+      result = await Promise.all(response1);
+      console.log(result);
+      result.forEach((data) => {
+        if (data && data.length > 0) {
+          console.log(data);
+          responsibility = data[0].orderID;
+        }
+      });
       if (response2.data.total > 0) {
         total = response2.data.total;
       }
-      console.log(response1.data);
-      console.log(response2.data);
-      console.log(responsibility);
       setSelectedStaff({ responsibility: responsibility, total: total });
     } catch (err) {
       toast.error(err.response.data);
     }
   };
-  console.log(selectedStaff);
   const handelCancel = () => {
     setShowModal(false);
     setSelectedStaff([]);
