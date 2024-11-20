@@ -124,36 +124,83 @@ function Overview() {
           </Card>
         </Col>
       </Row>
+
       <div
         style={{
-          marginTop: 30,
+          marginTop: 20,
           display: "flex",
           justifyContent: "space-evenly",
         }}
       >
-        <LineChart
-          width={500}
-          height={250}
-          data={data2}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="totalOrder" stroke="#8884d8" />
-          <Line type="monotone" dataKey="totalOrderSuccess" stroke="#82ca9d" />
-          <Line type="monotone" dataKey="totalOrderFail" stroke="red" />
-        </LineChart>
-        <BarChart width={500} height={250} data={data3}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="day" />
-          <YAxis tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`} />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="totalPrice" fill="#8884d8" />
-        </BarChart>
+        <div>
+          <p style={{ textAlign: "center" }}>Order Details</p>
+          <LineChart
+            width={450}
+            height={250}
+            data={data2}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="month"
+              label={{
+                value: "Months",
+                position: "insideBottomRight",
+                offset: -5,
+              }}
+            />
+            <YAxis
+              label={{
+                value: "Orders",
+                angle: -90,
+                position: "insideLeft",
+                offset: 0,
+              }}
+            />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="totalOrder" stroke="#8884d8" />
+            <Line
+              type="monotone"
+              dataKey="totalOrderSuccess"
+              stroke="#82ca9d"
+            />
+            <Line type="monotone" dataKey="totalOrderFail" stroke="red" />
+          </LineChart>
+        </div>
+        <div>
+          <p style={{ textAlign: "center" }}>Monthly Revenue</p>
+          <BarChart width={450} height={250} data={data3}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="day"
+              label={{
+                value: "Date",
+                position: "insideBottomRight",
+                offset: -5,
+              }}
+            />
+            <YAxis
+              tickFormatter={(value) => {
+                if (value >= 1000000) {
+                  return `${(value / 1000000).toFixed(0)}M`; // Format for millions
+                } else if (value >= 1000) {
+                  return `${(value / 1000).toFixed(0)}K`; // Format for thousands
+                }
+                return value;
+              }}
+              label={{
+                value: "VND",
+                angle: -90,
+                position: "insideLeft",
+                offset: 0,
+              }}
+            />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="totalPrice" fill="#8884d8" />
+          </BarChart>
+        </div>
       </div>
     </div>
   );
