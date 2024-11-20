@@ -6,7 +6,16 @@ import {
   SmileOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Steps, Button, Modal, Form, Upload, Image, message } from "antd";
+import {
+  Steps,
+  Button,
+  Modal,
+  Form,
+  Upload,
+  Image,
+  message,
+  Divider,
+} from "antd";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import api from "../../../../config/axios";
@@ -15,10 +24,10 @@ import uploadFile from "../../../../config/file";
 import "./index.css";
 import { useNavigate } from "react-router-dom";
 
-const InProcess = ({id}) => {
+const InProcess = ({ id }) => {
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
-  const [current, setCurrent] = useState(-1);
+  // const [current, setCurrent] = useState(-1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -51,11 +60,10 @@ const InProcess = ({id}) => {
       console.error(err);
     }
   };
-  console.log(viewOrder);
   console.log(statuss);
   useEffect(() => {
     fetchOrderDetail();
-    fetchStatusForOversea();
+    // fetchStatusForOversea();
   }, []);
 
   const handlePreview = async (file) => {
@@ -82,6 +90,55 @@ const InProcess = ({id}) => {
       toast.error(error.response.data);
     }
   };
+
+  const handlePendingJapan = async () => {
+    try {
+      const setvalue = {
+        statusInfo: "PENDINGJAPAN",
+        empId: user.id,
+        order: viewOrder.orderID,
+        description: "Your order is currently in transit to you form Japan.",
+      };
+      await api.post("/status", setvalue);
+      toast.success("The order status is changed to PENDINGJAPAN");
+      fetchOrderDetail();
+    } catch (error) {
+      toast.error(error.response.data);
+    }
+  };
+
+  const handleArrivedVietNam = async () => {
+    try {
+      const setvalue = {
+        statusInfo: "ARRIVEDVIETNAM",
+        empId: user.id,
+        order: viewOrder.orderID,
+        description: "Your order is arrived in Vietnam.",
+      };
+      await api.post("/status", setvalue);
+      toast.success("The order status is changed to ARRIVEDVIETNAM");
+      fetchOrderDetail();
+    } catch (error) {
+      toast.error(error.response.data);
+    }
+  };
+
+  const handlePendingVietNam = async () => {
+    try {
+      const setvalue = {
+        statusInfo: "PENDINGVIETNAM",
+        empId: user.id,
+        order: viewOrder.orderID,
+        description: "Your order is currently in transit to you form Japan.",
+      };
+      await api.post("/status", setvalue);
+      toast.success("The order status is changed to PENDINGVIETNAM");
+      fetchOrderDetail();
+    } catch (error) {
+      toast.error(error.response.data);
+    }
+  };
+
   const handleConfirm = async () => {
     if (fileList.length === 0) {
       message.error("Please upload your picture");
@@ -121,30 +178,30 @@ const InProcess = ({id}) => {
     }
   };
 
-  const getCurrentStatus = (statusInfo) => {
-    switch (statusInfo) {
+  const getCurrentStatus = (statuss) => {
+    switch (statuss) {
       case "WAITING":
         return 0;
-      case "APPROVED":
+      case "WATINGFOR2NDSTAFF":
         return 1;
-      case "PENDING":
+      case "APPROVED":
         return 2;
-      case "SUCCESS":
+      case "PENDINGJAPAN":
         return 3;
+      case "ARRIVEDVIETNAM":
+        return 4;
+      case "PENDINGVIETNAM":
+        return 5;
+      case "SUCCESS":
+        return 6;
       default:
         return -1;
     }
   };
 
-  const fetchStatusForOversea = () => {
-    if (viewOrder?.status?.length > 0) {
-      const lastStatus = viewOrder.status[viewOrder.status.length - 1];
-      if (lastStatus) {
-        setCurrent(getCurrentStatus(lastStatus.statusInfo));
-        setStatus(lastStatus.statusInfo);
-      }
-    }
-  };
+  // const fetchStatusForOversea = () => {
+  //   setCurrent(getCurrentStatus(statuss));
+  // };
 
   const steps = [
     {
@@ -175,7 +232,7 @@ const InProcess = ({id}) => {
       icon: <SmileOutlined />,
     },
   ];
-  const description = "This is a description.";
+
   return (
     <div>
       {viewOrder?.orderDetail?.type === "DOMESTIC" && (
@@ -191,13 +248,6 @@ const InProcess = ({id}) => {
               >
                 Next Step
               </button>
-              {/* <Button
-  type="primary"
-  onClick={()=>{dispatch(reset())}}
-  style={{ marginTop: 20 }}
->
-  RESET Step
-</Button> */}
             </>
           )}
 
@@ -251,28 +301,129 @@ const InProcess = ({id}) => {
           )}
         </>
       )}
+
       {viewOrder?.orderDetail?.type === "OVERSEA" && (
         <>
-          <div className="bg-w" style={{ marginTop: "20px" }}>
-            <Steps
-              direction="vertical"
-              current={1}
-              items={[
-                {
-                  title: "Finished",
-                  description,
-                },
-                {
-                  title: "In Progress",
-                  description,
-                },
-                {
-                  title: "Waiting",
-                  description,
-                },
-              ]}
-            />
-          </div>
+          <Divider />
+          <Steps
+            progressDot
+            current={getCurrentStatus(statuss)}
+            direction="vertical"
+            items={[
+              {
+                title: "Waiting for Approval",
+                description: "Order is pending initial staff approval.",
+              },
+              {
+                title: "Waiting for Second Staff",
+                description:
+                  "Order has been approved by first staff member, awaiting second approval.",
+              },
+              {
+                title: "Order Approved",
+                description: "Order has been approved by both staff members.",
+              },
+              {
+                title: "Processing in Japan",
+                description: "Order is being processed at our Japan facility.",
+              },
+              {
+                title: "Arrived in Vietnam",
+                description:
+                  "Order has arrived and is being processed in Vietnam.",
+              },
+              {
+                title: "Processing in Vietnam",
+                description: "The order is being processed in Vietnam.",
+              },
+              {
+                title: "Order Complete",
+                description:
+                  "Order has been successfully processed and completed.",
+              },
+            ]}
+          />
+          {statuss === "APPROVED" && user?.country === "japan" && (
+            <>
+              <button
+                className="nextStep-btn btn-item"
+                onClick={handlePendingJapan}
+                style={{ marginTop: 20 }}
+              >
+                Next Step
+              </button>
+            </>
+          )}
+          {statuss === "PENDINGJAPAN" && user?.country === "japan" && (
+            <>
+              <button
+                className="nextStep-btn btn-item"
+                onClick={handleArrivedVietNam}
+                style={{ marginTop: 20 }}
+              >
+                Next Step
+              </button>
+            </>
+          )}
+          {statuss === "ARRIVEDVIETNAM" && user?.country === "vietnam" && (
+            <>
+              <button
+                className="nextStep-btn btn-item"
+                onClick={handlePendingVietNam}
+                style={{ marginTop: 20 }}
+              >
+                Next Step
+              </button>
+            </>
+          )}
+          {statuss === "PENDINGVIETNAM" && user?.country === "vietnam" && (
+            <>
+              <div className="done">
+                <button
+                  className="done-btn btn-item"
+                  type="primary"
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                >
+                  Order Successfully Delivered
+                </button>
+              </div>
+              <Modal
+                title="Confirmation Of Successful Delivery"
+                open={isModalOpen}
+                onOk={() => {
+                  form.submit();
+                }}
+                onCancel={handleCancel}
+              >
+                <Form onFinish={handleConfirm} form={form}>
+                  <Upload
+                    listType="picture"
+                    fileList={fileList}
+                    onPreview={handlePreview}
+                    onChange={handleChange}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload </Button>
+                  </Upload>
+                </Form>
+              </Modal>
+              {previewImage && (
+                <Image
+                  wrapperStyle={{
+                    display: "none",
+                  }}
+                  preview={{
+                    visible: previewOpen,
+                    onVisibleChange: (visible) => setPreviewOpen(visible),
+                    afterOpenChange: (visible) =>
+                      !visible && setPreviewImage(""),
+                  }}
+                  src={previewImage}
+                />
+              )}
+            </>
+          )}
         </>
       )}
     </div>
