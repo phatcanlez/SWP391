@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import api from "../../../config/axios";
-import { Button, Input, Pagination, Popconfirm, Table } from "antd";
+import { Button, Input, Pagination, Popconfirm, Select, Table } from "antd";
 import { FileSyncOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-function Test01(path, field) {
+const { Option } = Select;
+
+function Test01(path) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -17,13 +19,19 @@ function Test01(path, field) {
     pageSize: 10, // Number of items per page
   });
   const [displayPagination, setDisplayPagination] = useState(true);
+  const [finalPath, setFinalPath] = useState({
+    path: path.path,
+    field: path.field,
+  });
+  const [isFilter, setIsFilter] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const navigate = useNavigate();
-  const fetchData = async () => {
+  const fetchData = async (status) => {
     try {
       setLoading(true);
       let result;
-      if (path.field === "All") {
+      if (finalPath.field === "All") {
         const response = await api.get(
           `orders?page=${pagination.page - 1}&size=${pagination.pageSize}`
         );
@@ -35,10 +43,14 @@ function Test01(path, field) {
           statusInfo: order.status.statusInfo,
         }));
         setTotalOrders(response.data.totalElements);
-        console.log(response);
       }
-      if (path.field === "Status") {
-        const response = await api.get(path.path);
+      if (finalPath.field === "Status") {
+        let response;
+        if (isFilter) {
+          response = await api.get(`/orders/status?status=${status}`);
+        } else {
+          response = await api.get(path.path);
+        }
         result = response.data.map((order) => ({
           orderID: order.orderID,
           name: order.name,
@@ -57,9 +69,31 @@ function Test01(path, field) {
     }
   };
 
+  const status = [
+    "SUCCESS",
+    "FAIL",
+    "PENDING",
+    "WAITING",
+    "APPROVED",
+    "REFUNDED",
+    "UNREFUND",
+    "WATINGFOR2NDSTAFF",
+    "PENDINGJAPAN",
+    "ARRIVEDVIETNAM",
+  ];
+  const handleStatusChange = (status) => {
+    setFinalPath({
+      path: path.path,
+      field: "Status",
+    });
+    setIsFilter(true);
+    setSelectedStatus(status);
+    fetchData(status);
+  };
+
   useEffect(() => {
-    fetchData();
-  }, [pagination]);
+    fetchData(selectedStatus);
+  }, [pagination, finalPath, selectedStatus]);
 
   const columns = [
     {
@@ -177,6 +211,16 @@ function Test01(path, field) {
     }
   };
 
+  const handleRefresh = () => {
+    setSearchValue("");
+    setIsSearch(false);
+    setIsFilter(false);
+    setFinalPath({
+      path: path.path,
+      field: path.field,
+    });
+  };
+
   return (
     <>
       <div className="note">
@@ -191,13 +235,25 @@ function Test01(path, field) {
           onChange={handleSearchValueChange}
         />
         <Button onClick={handleSearch}>Search</Button>
-        <Button
-          onClick={() => {
-            fetchData(), setSearchValue(""), setIsSearch(false);
-          }}
-        >
-          ReFresh
-        </Button>
+        <Button onClick={handleRefresh}>ReFresh</Button>
+        {path.field === "All" ? (
+          <div>
+            Status :{" "}
+            <Select
+              placeholder="Select a status"
+              onChange={handleStatusChange}
+              style={{ width: 200 }} // Adjust styling as needed
+            >
+              {status.map((status) => (
+                <Option key={status} value={status}>
+                  {status}
+                </Option>
+              ))}
+            </Select>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
       <Table
         dataSource={isSearch !== true ? data : searchResult}
