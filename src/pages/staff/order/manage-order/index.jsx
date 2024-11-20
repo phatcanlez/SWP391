@@ -50,9 +50,7 @@ function WaitingOversea() {
 function Waiting2ndStaff() {
   return (
     <div>
-      <StaffOrder
-        path={`orders/status-type?status=WATINGFOR2NDSTAFF&type=OVERSEA`}
-      />
+      <StaffOrder path={"orders/wait2nd"} />
     </div>
   );
 }
@@ -69,7 +67,10 @@ function WaitingFor2ndStaff() {
   const user = useSelector((store) => store);
   return (
     <div>
-      <StaffOrder isWaiting  path={`orders/waiting-for-2nd-staff?empId=${user.user.id}` } />
+      <StaffOrder
+        isWaiting
+        path={`orders/waiting-for-2nd-staff?empId=${user.user.id}`}
+      />
     </div>
   );
 }
