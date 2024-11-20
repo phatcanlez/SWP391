@@ -31,11 +31,6 @@ function Staff() {
   const user = useSelector((store) => store.user);
 
   const items = [
-    getItem("Oversea", "", <GlobalOutlined />, [
-      getItem("Waiting", "waiting-oversea"),
-      getItem("A staff approved", "waiting-2nd-staff"),
-    ]),
-
     user?.country === "vietnam"
       ? getItem(
           "Domestic - Waiting",
@@ -43,6 +38,10 @@ function Staff() {
           <ExclamationOutlined />
         )
       : null,
+    getItem("Oversea", "", <GlobalOutlined />, [
+      getItem("Waiting", "waiting-oversea"),
+      getItem("A staff approved", "waiting-2nd-staff"),
+    ]),
 
     getItem(
       "Waiting another staff",
