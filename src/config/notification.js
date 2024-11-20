@@ -1,5 +1,5 @@
-const requestPermissions = async () => {
-    await Notification.requestPermission();
-}
+// const requestPermissions = async () => {
+//     await Notification.requestPermission();
+// }
 
-export default requestPermissions;
+// export default requestPermissions;
