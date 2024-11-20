@@ -107,9 +107,9 @@ function StaffList() {
           <Button
             type="primary"
             onClick={() => {
+              setItems("edit");
               setShowModal(true);
               form.setFieldsValue(Item);
-              setItems("edit");
             }}
           >
             Edit
@@ -189,7 +189,87 @@ function StaffList() {
   const handelCancel = () => {
     setShowModal(false);
     setSelectedStaff([]);
+    form.resetFields();
   };
+
+  const registerStaff = (
+    <>
+      <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Phone number"
+        name="phoneNumber"
+        rules={[
+          {
+            required: true,
+            pattern: /^(?:\d*)$/,
+
+            message: "Invalid phone number",
+          },
+          {
+            required: true,
+            pattern: /^[\d]{10,11}$/,
+            message: "Invalid phone number",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item label="Address" name="address" rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label="Password"
+        name="password"
+        rules={[
+          { required: true, message: "Please input your password!" },
+          { min: 3, message: "Password must be at least 3 characters long!" },
+        ]}
+        hasFeedback
+      >
+        <Input.Password placeholder="Password must be at least 3 characters long" />
+      </Form.Item>
+
+      <Form.Item
+        label="Confirm Password"
+        name="confirmPassword"
+        dependencies={["password"]}
+        hasFeedback
+        rules={[
+          { required: true, message: "Please confirm your password!" },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                new Error("The two passwords do not match!")
+              );
+            },
+          }),
+        ]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item
+        label="Email"
+        name="email"
+        rules={[
+          { required: true, message: "Please input your email!" },
+          {
+            type: "email",
+            message: "Please enter a valid email!",
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+    </>
+  );
 
   const staffDetails = (
     <>
@@ -245,12 +325,13 @@ function StaffList() {
   );
 
   const handleSubmit = async (values) => {
-    console.log(values);
     try {
       setLoading(true);
       console.log(values);
       if (values.id) {
         await api.patch(`account`, values);
+      } else {
+        await api.post(`register`, { ...values, role: "STAFF" });
       }
       toast.success("Successfull");
       fetchStaffData();
@@ -265,7 +346,14 @@ function StaffList() {
 
   return (
     <div>
-      <div style={{ display: "flex", gap: "20px", paddingLeft: "20px" }}>
+      <div style={{ display: "flex", gap: "20px" }}>
+        <Button
+          onClick={() => {
+            setItems("add"), setShowModal(true);
+          }}
+        >
+          Register new account
+        </Button>
         <Input
           style={{ width: "200px" }}
           placeholder="Username"
@@ -290,12 +378,14 @@ function StaffList() {
         onOk={
           items === "details" ? () => setShowModal(false) : () => form.submit()
         }
+        loading={loading}
       >
         {items === "details" ? (
           staffDetails
         ) : (
           <Form form={form} labelCol={{ span: 24 }} onFinish={handleSubmit}>
-            {editStaff}
+            {items === "add" ? registerStaff : ""}
+            {items === "edit" ? editStaff : ""}
           </Form>
         )}
       </Modal>
