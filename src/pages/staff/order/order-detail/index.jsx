@@ -10,6 +10,15 @@ import { useForm } from "antd/es/form/Form";
 import { useParams } from "react-router-dom";
 import InProcess from "../processing/process";
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+};
+
 function OrderDetail() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
@@ -203,7 +212,7 @@ function OrderDetail() {
                 <div key={service.id} className="item item-cnt">
                   <p className="color">{index + 1}</p>
                   <p>{service.nameService}</p>
-                  <p>{service.price}</p>
+                  <p>{formatCurrency(service.price)}</p>
                 </div>
               ))}
             </div>
@@ -212,7 +221,7 @@ function OrderDetail() {
           <p>
             Total price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
-              {order.orderPrice}
+              {formatCurrency(order.orderPrice)}
             </span>
           </p>
         </div>
