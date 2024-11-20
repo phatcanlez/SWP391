@@ -67,19 +67,32 @@ function LoginPage() {
 
   const handleLogin = async (values) => {
     try {
+
       const response = await api.post("login", values);
+      if (response.data.status == false) {
+        toast.error("Your account has been disabled. Please contact support.");
+        return;
+      }
+
       toast.success("Successful");
       console.log(response);
       dispatch(login(response.data));
+      
       const { id, role, token } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("accountId", id);
+      
       if (role === "MANAGER") navigate("/dashboard/overview");
       if (role === "STAFF") navigate("/staff/order");
       if (role === "CUSTOMER") navigate("/customer-service/history");
+
     } catch (err) {
       console.error(err);
-      toast.error("Wrong username or password!");
+      if (err.response?.status === 404) {
+        toast.error("Account not found!");
+      } else {
+        toast.error("Wrong username or password!");
+      }
     }
   };
 

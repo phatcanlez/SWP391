@@ -188,7 +188,7 @@ const History = ({ order, onFeedbackClick, onReportClick }) => {
         <Alert message={order?.status} type={getAlertType(order?.status)} />
 
         <div className="order__item">
-          <p>Reciver name: </p>
+          <p>Receiver name: </p>
           <p>{order?.reciverName}</p>
         </div>
 
