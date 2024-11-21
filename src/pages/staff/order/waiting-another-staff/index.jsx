@@ -398,11 +398,6 @@ function WaitingAnotherStaff() {
                 Delivery Failure
               </button>
             )}
-            {user?.country === "vietnam" && status === "ARRIVEDVIETNAM" && (
-              <button className="btn-item fail-btn" onClick={showModal}>
-                Delivery Failure
-              </button>
-            )}
 
             {user?.country === "vietnam" && status === "WATINGFOR2NDSTAFF" && (
               <button
