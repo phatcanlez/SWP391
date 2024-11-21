@@ -17,4 +17,5 @@ public class OrderResponse {
     Status status;
     String payment;
     String type;
+    String shipmethod;
 }

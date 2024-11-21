@@ -82,7 +82,7 @@ public class TrackingService {
         } else {
             float lastPrice = listPrice.getLast().getPrice();
             System.out.println(price);
-            if (kilometer > listPrice.getLast().getDistance() + 500) {
+            if (kilometer > listPrice.getLast().getDistance() + 1000) {
                 double pricePer50KilometerUpperLastPrice = (kilometer - (listPrice.getLast().getDistance() + 500)) / 50 * (0.1 * price);
                 double priceWithTax = lastPrice + pricePer50KilometerUpperLastPrice + 1000000 //khai báo thuế
                         + 2000000 //kiểm dịch và chứng nhận y tế sức khỏe

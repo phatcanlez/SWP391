@@ -36,9 +36,9 @@ public class ExtraServiceAPI {
         }
 
 
-        @PutMapping("/api/extraservice/{id}")
-        public ResponseEntity updateExtraService(@RequestBody @Valid ExtraService extraService,@PathVariable long id) {
-            return ResponseEntity.ok(extraServiceService.updateExtraService(extraService, id));
+        @PutMapping("/api/extraservice")
+        public ResponseEntity updateExtraService(@RequestBody @Valid ExtraService extraService) {
+            return ResponseEntity.ok(extraServiceService.updateExtraService(extraService));
         }
 
         @DeleteMapping("/api/extraservice/{id}")
