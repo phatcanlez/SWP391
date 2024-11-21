@@ -9,11 +9,13 @@ import International from "./international";
 import Dosmetic from "./dosmetic";
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
+
   }).format(value);
 };
 
@@ -132,6 +134,60 @@ function Service() {
 
       {service === 1 && <International />}
       {service === 2 && <Dosmetic />}
+
+      <div>
+        {" "}
+        {/* Extra Services Section */}
+        <div style={{ padding: "40px 20px" }}>
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "30px",
+              color: "#2C2C2C",
+              fontSize: "40px",
+              fontWeight: "bold",
+            }}
+          >
+            OUR EXTRA SERVICES
+          </h2>
+          <Row gutter={[24, 24]} justify="center">
+            {extraServices.map((service) => (
+              <Col xs={24} sm={12} md={8} key={service.extraServiceId}>
+                <Card
+                  hoverable
+                  style={{
+                    height: "100%",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <h3
+                    style={{
+                      color: "#e25822",
+                      fontSize: "20px",
+                      fontWeight: "600",
+                      marginBottom: "16px",
+                    }}
+                  >
+                    {service.nameService}
+                  </h3>
+
+                  <p
+                    style={{
+                      color: "#666",
+                      fontSize: "14px",
+                      lineHeight: "1.5",
+                    }}
+                  >
+                    {service.description}
+                  </p>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );

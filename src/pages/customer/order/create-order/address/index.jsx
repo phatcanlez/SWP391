@@ -611,56 +611,28 @@ const Address = forwardRef((props, ref) => {
         <span>Current Distance: {distance} km</span>
       </div> */}
 
-      <div className="estimatedshippingfee__map" style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '20px',
-        backgroundColor: '#fff',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        margin: '20px 0'
-      }}>
-        {/* Map title */}
-        <h2 style={{ 
-          textAlign: 'center',
-          color: '#2c2c2c',
-          margin: 0,
-          fontSize: '24px',
-          fontWeight: 'bold'
-        }}>
-          Route Map
-        </h2>
 
-        {/* Addresses display */}
-        {tempSelectionsFrom && tempSelectionsTo && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            padding: '16px',
-            backgroundColor: '#f5f5f5',
-            borderRadius: '6px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontWeight: 'bold', color: '#666' }}>From:</span>
-              <span>{tempSelectionsFrom}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontWeight: 'bold', color: '#666' }}>To:</span>
-              <span>{tempSelectionsTo}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Map component */}
-        <App 
-          ref={appRef} 
-          getDistance={handleGetDistance} 
+      <div
+        className="estimatedshippingfee__map"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          backgroundColor: "#fff",
+          padding: "20px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          margin: "20px 0",
+        }}
+      >
+        <App
+          ref={appRef}
+          getDistance={handleGetDistance}
           style={{
-            width: '100%',
-            borderRadius: '8px',
-            overflow: 'hidden'
+            width: "100%",
+            borderRadius: "8px",
+            overflow: "hidden",
+
           }}
         />
       </div>
