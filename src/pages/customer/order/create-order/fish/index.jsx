@@ -80,6 +80,30 @@ const boxSizes = {
   }
 };
 
+// Add box size constants at the top
+const BOX_SIZES = {
+  small: {
+    dimensions: "30cm x 20cm x 20cm",
+    maxLength: 25,
+    maxWeight: 5
+  },
+  medium: {
+    dimensions: "50cm x 30cm x 30cm", 
+    maxLength: 44,
+    maxWeight: 8
+  },
+  large: {
+    dimensions: "70cm x 40cm x 40cm",
+    maxLength: 65,
+    maxWeight: 12
+  },
+  extraLarge: {
+    dimensions: "90cm x 50cm x 50cm",
+    maxLength: 83,
+    maxWeight: 15
+  }
+};
+
 function Fish() {
   const [fishCount, setFishCount] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
@@ -787,85 +811,279 @@ function Fish() {
       <Card
         style={{
           marginTop: 24,
-          backgroundColor: "#fff",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          backgroundColor: '#fff',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          padding: '24px'
         }}
       >
-        <Title level={4} style={{ color: "#e25822", marginBottom: 24 }}>
+        <Title level={4} style={{ 
+          color: '#e25822', 
+          marginBottom: 24,
+          fontSize: '24px',
+          fontWeight: 'bold',
+          textAlign: 'center'
+        }}>
           Order Summary
         </Title>
-        <Row gutter={[16, 16]}>
+
+        {/* Summary Cards */}
+        <Row gutter={[24, 24]}>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Total Weight</span>}
+                title={
+                  <div style={{ 
+                    color: '#666', 
+                    fontSize: '16px',
+                    marginBottom: '8px',
+                    textAlign: 'center'
+                  }}>
+                    Total Weight
+                  </div>
+                }
                 value={totalWeight}
                 precision={2}
                 suffix="kg"
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Total Fish</span>}
+                title={
+                  <div style={{ 
+                    color: '#666', 
+                    fontSize: '16px',
+                    marginBottom: '8px',
+                    textAlign: 'center'
+                  }}>
+                    Total Fish
+                  </div>
+                }
                 value={fishCount}
                 suffix="fish"
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Total Price</span>}
+                title={
+                  <div style={{ 
+                    color: '#666', 
+                    fontSize: '16px',
+                    marginBottom: '8px',
+                    textAlign: 'center'
+                  }}>
+                    Total Price
+                  </div>
+                }
                 value={totalPrice}
                 formatter={(value) => formatCurrency(value)}
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
         </Row>
 
-        <Title level={5} style={{ margin: "24px 0 16px", color: "#000" }}>
+        {/* Box Requirements Section */}
+        <Title level={5} style={{ 
+          margin: '32px 0 24px', 
+          color: '#2c2c2c',
+          fontSize: '20px',
+          textAlign: 'center'
+        }}>
           Box Requirements
         </Title>
-        <Row gutter={[16, 16]}>
+        <Row gutter={[24, 24]}>
           <Col span={6}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Small Boxes</span>}
+                title={
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                      color: '#666', 
+                      fontSize: '16px',
+                      marginBottom: '8px'
+                    }}>
+                      Small Boxes
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#666',
+                      fontWeight: 'normal'
+                    }}>
+                      {BOX_SIZES.small.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.small}
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Medium Boxes</span>}
+                title={
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                      color: '#666', 
+                      fontSize: '16px',
+                      marginBottom: '8px'
+                    }}>
+                      Medium Boxes
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#666',
+                      fontWeight: 'normal'
+                    }}>
+                      {BOX_SIZES.medium.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.medium}
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Large Boxes</span>}
+                title={
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                      color: '#666', 
+                      fontSize: '16px',
+                      marginBottom: '8px'
+                    }}>
+                      Large Boxes
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#666',
+                      fontWeight: 'normal'
+                    }}>
+                      {BOX_SIZES.large.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.large}
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
           <Col span={6}>
-            <Card size="small" style={{ borderRadius: "6px" }}>
+            <Card 
+              size="small" 
+              style={{ 
+                borderRadius: '8px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                height: '100%'
+              }}
+            >
               <Statistic
-                title={<span style={{ color: "#666" }}>Extra Large Boxes</span>}
+                title={
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                      color: '#666', 
+                      fontSize: '16px',
+                      marginBottom: '8px'
+                    }}>
+                      Extra Large Boxes
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: '#666',
+                      fontWeight: 'normal'
+                    }}>
+                      {BOX_SIZES.extraLarge.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.extraLarge}
-                valueStyle={{ color: "#000" }}
+                valueStyle={{ 
+                  color: '#e25822',
+                  fontSize: '24px',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }}
               />
             </Card>
           </Col>
