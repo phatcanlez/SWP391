@@ -34,6 +34,24 @@ function ExtraService() {
           : "";
       },
     },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      width: "50%",
+      render: (text) => (
+        <a
+          onClick={() => showDescriptionModal(text)}
+          style={{
+            cursor: "pointer",
+            color: "#2c2c2c",
+            fontWeight: 400,
+          }}
+        >
+          {text.length > 50 ? text.substring(0, 50) + "..." : text}
+        </a>
+      ),
+    },
   ];
 
   const formItems = (
@@ -60,6 +78,13 @@ function ExtraService() {
         ]}
       >
         <Input />
+      </Form.Item>
+      <Form.Item
+        name="description"
+        label="Description"
+        rules={[{ required: true }]}
+      >
+        <Input.TextArea rows={4} />
       </Form.Item>
     </>
   );
