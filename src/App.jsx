@@ -282,7 +282,6 @@ function App() {
       path: "pay-fail",
       element: <PaymentFail />,
     },
-
     {
       path: "staff",
       element: (

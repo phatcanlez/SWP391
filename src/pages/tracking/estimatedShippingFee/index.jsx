@@ -11,6 +11,30 @@ import delivery from "../../../img/delivery.png";
 
 const { Option } = Select;
 
+// Add box size constants
+const BOX_SIZES = {
+  small: {
+    dimensions: "30cm x 20cm x 20cm",
+    maxLength: 25,
+    maxWeight: 5
+  },
+  medium: {
+    dimensions: "50cm x 30cm x 30cm", 
+    maxLength: 44,
+    maxWeight: 8
+  },
+  large: {
+    dimensions: "70cm x 40cm x 40cm",
+    maxLength: 65,
+    maxWeight: 12
+  },
+  extraLarge: {
+    dimensions: "90cm x 50cm x 50cm",
+    maxLength: 83,
+    maxWeight: 15
+  }
+};
+
 function EstimatedShippingFee() {
   const appRef = useRef();
   const resultRef = useRef(null);
@@ -439,17 +463,54 @@ function EstimatedShippingFee() {
             <img src={box} />
             <div>Number of box you need</div>
             <div id="boxesNeeded"></div>
-            <div style={{ color: "red", paddingTop: 50 }}>
-              {smallBox + mediumBox + largeBox + extraLargeBox === 0
-                ? "_ boxes"
-                : smallBox +
-                  " small boxes , " +
-                  Math.floor(mediumBox) +
-                  " medium boxes, " +
-                  largeBox +
-                  " large boxes and " +
-                  extraLargeBox +
-                  " extra large boxes"}
+            <div className="box">
+              <div className="box__item">
+                <p>Small Box</p>
+                <p>{smallBox}</p>
+                <p style={{ 
+                  fontSize: '12px',
+                  color: '#666',
+                  marginTop: '4px'
+                }}>
+                  {BOX_SIZES.small.dimensions}
+                </p>
+              </div>
+              <div className="border"></div>
+              <div className="box__item">
+                <p>Medium Box</p>
+                <p>{Math.floor(mediumBox)}</p>
+                <p style={{ 
+                  fontSize: '12px',
+                  color: '#666', 
+                  marginTop: '4px'
+                }}>
+                  {BOX_SIZES.medium.dimensions}
+                </p>
+              </div>
+              <div className="border"></div>
+              <div className="box__item">
+                <p>Large Box</p>
+                <p>{largeBox}</p>
+                <p style={{ 
+                  fontSize: '12px',
+                  color: '#666',
+                  marginTop: '4px'
+                }}>
+                  {BOX_SIZES.large.dimensions}
+                </p>
+              </div>
+              <div className="border"></div>
+              <div className="box__item">
+                <p>Extra Large Box</p>
+                <p>{extraLargeBox}</p>
+                <p style={{ 
+                  fontSize: '12px',
+                  color: '#666',
+                  marginTop: '4px'
+                }}>
+                  {BOX_SIZES.extraLarge.dimensions}
+                </p>
+              </div>
             </div>
           </div>
           <div
