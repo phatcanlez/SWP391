@@ -24,6 +24,11 @@ function ExtraService() {
           : "";
       },
     },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
   ];
 
   const formItems = (
@@ -48,6 +53,13 @@ function ExtraService() {
             message: "Wrong number",
           },
         ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="description"
+        label="Description"
+        rules={[{ required: true }]}
       >
         <Input />
       </Form.Item>

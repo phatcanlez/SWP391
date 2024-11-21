@@ -72,6 +72,7 @@ import RoomChat from "./components/roomChat";
 import ChatDetail from "./components/chat-detail";
 import Free from "./pages/staff/free-page";
 import WaitingAnotherStaff from "./pages/staff/order/waiting-another-staff";
+import Delivery11 from "./pages/admin/manage-service";
 
 function App() {
   // useEffect(() => {
@@ -279,6 +280,10 @@ function App() {
     {
       path: "pay-fail",
       element: <PaymentFail />,
+    },
+    {
+      path: "delivery11",
+      element: <Delivery11 />,
     },
 
     {
