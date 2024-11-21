@@ -39,16 +39,37 @@ function Staff() {
         )
       : null,
     getItem("Oversea", "", <GlobalOutlined />, [
-      getItem("Waiting", "waiting-oversea"),
-      getItem("A staff approved", "waiting-2nd-staff"),
+      user?.country === "japan" ? getItem("Waiting", "waiting-oversea") : null,
+      user?.country === "vietnam"
+        ? getItem("Japan Orders", "waiting-2nd-staff")
+        : null,
     ]),
+    user?.country === "vietnam"
+      ? getItem(
+          "Approved Japan Orders",
+          "approved-japan-by-staff-vietnam",
+          <PushpinOutlined />
+        )
+      : null,
+    user?.country === "japan"
+      ? getItem(
+          "Waiting another staff",
+          "wait-for-staff",
+          <UsergroupAddOutlined />
+        )
+      : null,
+    user?.country === "japan"
+      ? getItem(
+          "Approved Orders",
+          "approved-japan-by-staff-vietnam",
+          <PushpinOutlined />
+        )
+      : null,
 
-    getItem(
-      "Waiting another staff",
-      "wait-for-staff",
-      <UsergroupAddOutlined />
-    ),
-    getItem("Approved", "approved", <PushpinOutlined />),
+    user?.country === "vietnam"
+      ? getItem("Approved", "approved", <PushpinOutlined />)
+      : null,
+
     getItem("Fail", "rejected-order", <CloseOutlined />),
     getItem("History", "history", <ClockCircleOutlined />),
     getItem("FAQ", "FAQ", <QuestionCircleOutlined />),

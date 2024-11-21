@@ -184,7 +184,7 @@ const InProcess = ({ id }) => {
         return 0;
       case "WATINGFOR2NDSTAFF":
         return 1;
-      case "APPROVED":
+      case "APPROVEDJAPAN":
         return 2;
       case "PENDINGJAPAN":
         return 3;
@@ -343,7 +343,7 @@ const InProcess = ({ id }) => {
               },
             ]}
           />
-          {statuss === "APPROVED" && user?.country === "japan" && (
+          {statuss === "APPROVEDJAPAN" && user?.country === "japan" && (
             <>
               <button
                 className="nextStep-btn btn-item"
