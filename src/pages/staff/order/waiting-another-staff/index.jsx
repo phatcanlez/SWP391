@@ -164,8 +164,8 @@ function WaitingAnotherStaff() {
       const approveJapan = await api.get(
         `/orders/status-emp?status=APPROVEDJAPAN&empId=${user.id}`
       );
-      const processingOrder = await api.get(
-        `/orders/status-emp?status=PENDING&empId=${user.id}`
+      const pending = await api.get(
+        `/orders/status-emp?status=PENDINGJAPAN&empId=${user.id}`
       );
       const vietnam = await api.get(
         `/orders/status-emp?status=PENDINGVIETNAM&empId=${user.id}`
@@ -176,9 +176,9 @@ function WaitingAnotherStaff() {
 
       if (
         approveJapan.data?.length === 0 &&
-        processingOrder.data?.length === 0 &&
         vietnam.data?.length === 0 &&
-        arrive.data?.length === 0
+        arrive.data?.length === 0 &&
+        pending.data?.length === 0
       ) {
         console.log(user.id);
         const emid = user.id;
@@ -193,6 +193,22 @@ function WaitingAnotherStaff() {
       } else {
         toast.error("Please check if you have any order from Japan in process");
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleApproveByJapanStaff = async () => {
+    try {
+      console.log(user.id);
+      const emid = user.id;
+      const setvalue = await api.post("/status", {
+        statusInfo: "WATINGFOR2NDSTAFF",
+        empId: emid,
+        order: id,
+        description: "The order are waiting for 2nd staff",
+      });
+      console.log(setvalue);
+      toast.success("WAITINGFOR2NDSTAFF");
     } catch (error) {
       console.log(error);
     }
@@ -352,15 +368,55 @@ function WaitingAnotherStaff() {
           <div className="bg-w">
             <InProcess id={order?.orderID} />
 
-            {user?.country === "japan" && (
+            {status === "WAITING" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Reject
+              </button>
+            )}
+            {user?.country === "japan" && status === "WATINGFOR2NDSTAFF" && (
               <button className="btn-item fail-btn" onClick={showModal}>
                 Delivery Failure
               </button>
             )}
+            {user?.country === "japan" && status === "PENDINGJAPAN" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "japan" && status === "APPROVEDJAPAN" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "vietnam" && status === "PENDINGVIETNAM" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "vietnam" && status === "ARRIVEDVIETNAM" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "vietnam" && status === "ARRIVEDVIETNAM" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+
             {user?.country === "vietnam" && status === "WATINGFOR2NDSTAFF" && (
               <button
                 className="btn-item"
                 onClick={handleApproveJapan}
+                style={{ background: "#e25822" }}
+              >
+                Approve
+              </button>
+            )}
+            {user?.country === "japan" && status === "WAITING" && (
+              <button
+                className="btn-item"
+                onClick={handleApproveByJapanStaff}
                 style={{ background: "#e25822" }}
               >
                 Approve
