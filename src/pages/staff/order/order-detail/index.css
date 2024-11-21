@@ -98,6 +98,16 @@
         margin-bottom: 25px;
     }
 
+    .shipmethod {
+        margin-bottom: 20px;
+
+        p {
+
+            color: #e25822;
+            text-align: center;
+        }
+    }
+
     .s-method {
         margin-bottom: 50px;
 

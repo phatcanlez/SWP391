@@ -310,7 +310,7 @@ function ApproveOrder() {
               </div>
             </div>
             <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-              Distance: {order?.orderDetail?.kilometer}
+              Distance: {order?.orderDetail?.kilometer} km
             </h6>
           </div>
 
@@ -352,6 +352,10 @@ function ApproveOrder() {
                   <p>{order?.orderDetail?.extraLargeBox}</p>
                 </div>
               </div>
+              <div className="shipmethod">
+                <h6 style={{ marginTop: "40px" }}>Ship Method</h6>
+                <p>{order?.orderDetail?.shipMethod?.description}</p>
+              </div>
               <div className="s-method">
                 <h6>Service Method</h6>
                 <div className="item">
@@ -364,7 +368,7 @@ function ApproveOrder() {
                   {service.map((service, index) => (
                     <div key={service.id} className="item item-cnt">
                       <p className="color">{index + 1}</p>
-                      <p>{service.nameService}</p>
+                      <p>{service?.nameService}</p>
                       <p>{formatCurrency(service.price)}</p>
                     </div>
                   ))}
@@ -374,9 +378,10 @@ function ApproveOrder() {
               <p>
                 Total price:{" "}
                 <span className="color" style={{ fontWeight: "600" }}>
-                  {formatCurrency(order.orderPrice)}
+                  {formatCurrency(order?.totalPrice)}
                 </span>
               </p>
+              <p style={{ marginTop : "20px" }}><span style={{ color:"#e25822" }}>Note:</span> {order?.note}</p>
             </div>
           </div>
 
@@ -384,9 +389,9 @@ function ApproveOrder() {
 
           <div className="bg-w">
             <InProcess id={order?.orderID} />
-            {(((status === "PENDINGJAPAN" || status === "APPROVED") &&
+            {(((status === "PENDINGJAPAN" || status === "APPROVEDJAPAN") &&
               user?.country === "japan") ||
-              ((status === "ARRIVEDVIETNAM" || status === "PENDINGVIETNAM") &&
+              ((status === "ARRIVEDVIETNAM" || status === "PENDINGVIETNAM" || status === "APPROVED") &&
                 user?.country === "vietnam")) && (
               <>
                 <button className="btn-item fail-btn" onClick={showModal}>

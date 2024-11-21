@@ -25,6 +25,8 @@ import PriceListDistance from "./pages/admin/manage-price/priceListDistance";
 import Feedback from "./pages/admin/feedback";
 import Delivery from "./pages/admin/manage-service/delivery";
 import AllOrder, {
+  ApprovedJapan,
+  ApprovedJapanStaffVietnam,
   FailOrder,
   History,
   Waiting2ndStaff,
@@ -280,7 +282,6 @@ function App() {
       path: "pay-fail",
       element: <PaymentFail />,
     },
-
     {
       path: "staff",
       element: (
@@ -370,6 +371,14 @@ function App() {
         {
           path: "wait-for-staff",
           element: <WaitingFor2ndStaff />,
+        },
+        {
+          path: "approved-japan",
+          element: < ApprovedJapan/>,
+        },
+        {
+          path: "approved-japan-by-staff-vietnam",
+          element: < ApprovedJapanStaffVietnam/>,
         },
         {
           path: "view/waiting-for-second-staff/:id",

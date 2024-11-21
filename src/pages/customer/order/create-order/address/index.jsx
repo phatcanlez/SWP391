@@ -611,6 +611,7 @@ const Address = forwardRef((props, ref) => {
         <span>Current Distance: {distance} km</span>
       </div> */}
 
+
       <div
         className="estimatedshippingfee__map"
         style={{
@@ -631,6 +632,7 @@ const Address = forwardRef((props, ref) => {
             width: "100%",
             borderRadius: "8px",
             overflow: "hidden",
+
           }}
         />
       </div>

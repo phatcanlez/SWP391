@@ -9,11 +9,13 @@ import International from "./international";
 import Dosmetic from "./dosmetic";
 
 const formatCurrency = (value) => {
+
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
+
   }).format(value);
 };
 
@@ -77,10 +79,62 @@ function Service() {
             Domestic transportation
           </button>
         </div>
+
+        {/* Extra Services Section */}
+        <div style={{ padding: "40px 20px" }}>
+          <h2 style={{ 
+            textAlign: "center", 
+            marginBottom: "30px",
+            color: "#e25822",
+            fontSize: "28px",
+            fontWeight: "bold"
+          }}>
+            Extra Services
+          </h2>
+          <Row gutter={[24, 24]} justify="center">
+            {extraServices.map((service) => (
+              <Col xs={24} sm={12} md={8} key={service.extraServiceId}>
+                <Card
+                  hoverable
+                  style={{
+                    height: '100%',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <h3 style={{ 
+                    color: '#2c2c2c',
+                    marginBottom: '16px',
+                    fontSize: '18px',
+                    fontWeight: 'bold'
+                  }}>
+                    {service.nameService}
+                  </h3>
+                  <p style={{ 
+                    color: '#e25822',
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    marginBottom: '16px'
+                  }}>
+                    {formatCurrency(service.price)}
+                  </p>
+                  <p style={{ 
+                    color: '#666',
+                    fontSize: '14px',
+                    lineHeight: '1.5'
+                  }}>
+                    {service.description}
+                  </p>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
       </div>
 
       {service === 1 && <International />}
       {service === 2 && <Dosmetic />}
+
       <div>
         {" "}
         {/* Extra Services Section */}
@@ -133,6 +187,7 @@ function Service() {
           </Row>
         </div>
       </div>
+
       <Footer />
     </div>
   );

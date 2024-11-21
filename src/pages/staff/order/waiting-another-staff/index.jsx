@@ -25,6 +25,7 @@ import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
 import api from "../../../../config/axios";
 import uploadFile from "../../../../config/file";
+import StaffList from "./staff-list";
 
 function WaitingAnotherStaff() {
   const { id } = useParams();
@@ -157,6 +158,61 @@ function WaitingAnotherStaff() {
       toast.error(error);
     }
   };
+
+  const handleApproveJapan = async () => {
+    try {
+      const approveJapan = await api.get(
+        `/orders/status-emp?status=APPROVEDJAPAN&empId=${user.id}`
+      );
+      const pending = await api.get(
+        `/orders/status-emp?status=PENDINGJAPAN&empId=${user.id}`
+      );
+      const vietnam = await api.get(
+        `/orders/status-emp?status=PENDINGVIETNAM&empId=${user.id}`
+      );
+      const arrive = await api.get(
+        `/orders/status-emp?status=ARRIVEDVIETNAM&empId=${user.id}`
+      );
+
+      if (
+        approveJapan.data?.length === 0 &&
+        vietnam.data?.length === 0 &&
+        arrive.data?.length === 0 &&
+        pending.data?.length === 0
+      ) {
+        console.log(user.id);
+        const emid = user.id;
+        const setvalue = await api.post("/status", {
+          statusInfo: "APPROVEDJAPAN",
+          empId: emid,
+          order: id,
+          description: "The order from Japan is approved ",
+        });
+        console.log(setvalue);
+        toast.success("APPROVEDJAPAN");
+      } else {
+        toast.error("Please check if you have any order from Japan in process");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleApproveByJapanStaff = async () => {
+    try {
+      console.log(user.id);
+      const emid = user.id;
+      const setvalue = await api.post("/status", {
+        statusInfo: "WATINGFOR2NDSTAFF",
+        empId: emid,
+        order: id,
+        description: "The order are waiting for 2nd staff",
+      });
+      console.log(setvalue);
+      toast.success("WAITINGFOR2NDSTAFF");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -225,7 +281,7 @@ function WaitingAnotherStaff() {
               </div>
             </div>
             <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-              Distance: {order?.orderDetail?.kilometer}
+              Distance: {order?.orderDetail?.kilometer} km
             </h6>
           </div>
 
@@ -267,6 +323,10 @@ function WaitingAnotherStaff() {
                   <p>{order?.orderDetail?.extraLargeBox}</p>
                 </div>
               </div>
+              <div className="shipmethod">
+                <h6 style={{ marginTop: "40px" }}>Ship Method</h6>
+                <p>{order?.orderDetail?.shipMethod?.description}</p>
+              </div>
               <div className="s-method">
                 <h6>Service Method</h6>
                 <div className="item">
@@ -289,10 +349,18 @@ function WaitingAnotherStaff() {
               <p>
                 Total price:{" "}
                 <span className="color" style={{ fontWeight: "600" }}>
-                {formatCurrency(order.orderPrice)}
+                  {formatCurrency(order?.totalPrice)}
                 </span>
               </p>
+              <p style={{ marginTop: "20px" }}>
+                <span style={{ color: "#e25822" }}>Note:</span> {order?.note}
+              </p>
             </div>
+          </div>
+          <h5 className="title">Staff Information</h5>
+
+          <div className="bg-w">
+            <StaffList id={order?.orderID} />
           </div>
 
           <h5 className="title">Delivery status</h5>
@@ -300,9 +368,55 @@ function WaitingAnotherStaff() {
           <div className="bg-w">
             <InProcess id={order?.orderID} />
 
-            <button className="btn-item fail-btn" onClick={showModal}>
-              Delivery Failure
-            </button>
+            {status === "WAITING" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Reject
+              </button>
+            )}
+            {user?.country === "japan" && status === "WATINGFOR2NDSTAFF" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "japan" && status === "PENDINGJAPAN" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "japan" && status === "APPROVEDJAPAN" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "vietnam" && status === "PENDINGVIETNAM" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+            {user?.country === "vietnam" && status === "ARRIVEDVIETNAM" && (
+              <button className="btn-item fail-btn" onClick={showModal}>
+                Delivery Failure
+              </button>
+            )}
+
+            {user?.country === "vietnam" && status === "WATINGFOR2NDSTAFF" && (
+              <button
+                className="btn-item"
+                onClick={handleApproveJapan}
+                style={{ background: "#e25822" }}
+              >
+                Approve
+              </button>
+            )}
+            {user?.country === "japan" && status === "WAITING" && (
+              <button
+                className="btn-item"
+                onClick={handleApproveByJapanStaff}
+                style={{ background: "#e25822" }}
+              >
+                Approve
+              </button>
+            )}
 
             {status === "FAIL" && (
               <div style={{ textAlign: "center", fontSize: "20px" }}>

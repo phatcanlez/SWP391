@@ -42,7 +42,7 @@ function History() {
 function WaitingOversea() {
   return (
     <div>
-      <StaffOrder path={`orders/status-type?status=WAITING&type=OVERSEA`} />
+      <StaffOrder isWaiting path={`orders/status-type?status=WAITING&type=OVERSEA`} />
     </div>
   );
 }
@@ -50,7 +50,7 @@ function WaitingOversea() {
 function Waiting2ndStaff() {
   return (
     <div>
-      <StaffOrder path={"orders/wait2nd"} />
+      <StaffOrder isWaiting path={"orders/status?status=WATINGFOR2NDSTAFF"} />
     </div>
   );
 }
@@ -59,6 +59,22 @@ function WaitingDomestic() {
   return (
     <div>
       <StaffOrder path={`orders/status-type?status=WAITING&type=DOMESTIC`} />
+    </div>
+  );
+}
+function ApprovedJapan() {
+  return (
+    <div>
+      <StaffOrder path={`orders/status?status=APPROVEDJAPAN`} />
+    </div>
+  );
+}
+
+function ApprovedJapanStaffVietnam() {
+  const user = useSelector((store) => store);
+  return (
+    <div>
+      <StaffOrder isWaiting path={`orders/statusvn-jp?empId=${user.user.id}`} />
     </div>
   );
 }
@@ -83,3 +99,5 @@ export { Waiting2ndStaff };
 export { WaitingOversea };
 export { WaitingDomestic };
 export { WaitingFor2ndStaff };
+export { ApprovedJapan };
+export { ApprovedJapanStaffVietnam };
