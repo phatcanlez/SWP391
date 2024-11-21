@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
-import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
+import { DoubleRightOutlined, PhoneOutlined, MessageOutlined } from "@ant-design/icons";
 import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
 
@@ -154,6 +154,10 @@ function ViewOrderDetail() {
 
   // const [isPaid, setIsPaid] = useState(false);
 
+  const [allStaffDetails, setAllStaffDetails] = useState([]);
+
+  const navigate = useNavigate();
+
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
@@ -161,26 +165,34 @@ function ViewOrderDetail() {
       setOrder(response.data);
       setService(response.data.orderDetail.extraService);
 
-      // setIsPaid(response.data.isPaid || false);
+      // Get all unique staff IDs from status list
+      const staffIds = [...new Set(
+        response.data.status
+          .filter(status => status.empId && status.empId !== 'customer')
+          .map(status => status.empId)
+      )];
 
-      if (response.data.status.length > 0) {
-        const lastStatus =
-          response.data.status[response.data.status.length - 1];
-        setStatus(lastStatus.statusInfo);
-        setStaffInfo(lastStatus.empId);
-
-        if (lastStatus.empId) {
-          try {
-            const staffResponse = await api.get(`account/${lastStatus.empId}`);
-            setStaffDetail(staffResponse.data);
-            console.log("Staff detail:", staffResponse.data);
-          } catch (staffError) {
-            console.error("Error fetching staff detail:", staffError);
-          }
+      // Fetch staff details for all staff IDs
+      if (staffIds.length > 0) {
+        try {
+          const staffDetailsPromises = staffIds.map(staffId => 
+            api.get(`account/${staffId}`)
+          );
+          const staffResponses = await Promise.all(staffDetailsPromises);
+          const allStaffDetails = staffResponses.map(res => res.data);
+          setAllStaffDetails(allStaffDetails);
+        } catch (staffError) {
+          console.error("Error fetching staff details:", staffError);
         }
       }
+
+      if (response.data.status.length > 0) {
+        const lastStatus = response.data.status[response.data.status.length - 1];
+        setStatus(lastStatus.statusInfo);
+      }
+
     } catch (err) {
-      toast.error(err.response.data);
+      toast.error(err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -275,6 +287,26 @@ function ViewOrderDetail() {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to cancel order");
+    }
+  };
+
+  const handleRoomChat = async (staffId) => {
+    try {
+      if (!staffId) {
+        toast.error("Staff not available for chat");
+        return;
+      }
+
+      const room = await api.get(`/chat/room/${user?.id}/${staffId}`);
+      
+      if (room.data?.roomID) {
+        navigate(`/customer-service/chat/${room.data.roomID}`);
+      } else {
+        toast.error("Could not create chat room");
+      }
+    } catch (error) {
+      console.error("Chat room error:", error);
+      toast.error("Error creating chat room");
     }
   };
 
@@ -452,11 +484,37 @@ function ViewOrderDetail() {
           </div>
 
           <p>
-            Total fish price:{" "}
+            Total price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
-              {formatCurrency(order.orderPrice)}
+              {formatCurrency(order.totalPrice)}
             </span>
           </p>
+          {order?.note && (
+            <div
+              style={{
+                marginTop: "20px",
+                padding: "16px",
+                backgroundColor: "#f5f5f5",
+                borderRadius: "8px",
+                border: "1px solid #eee",
+              }}
+            >
+              <p className="color" style={{ fontWeight: "600" }}>
+                Note:
+              </p>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: "#2c2c2c",
+                  marginBottom: "0",
+                  lineHeight: "1.5",
+                  fontWeight: "600",
+                }}
+              >
+                {order.note}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -518,23 +576,61 @@ function ViewOrderDetail() {
         Staff Info
       </h5>
       <div className="bg-w" style={{ marginTop: "20px", padding: "20px" }}>
-        {staffDetail ? (
-          <div className="staff-info">
-            <div className="item">
-              <p>
-                <span className="color">Staff Name:</span> {staffDetail.name}
-              </p>
-            </div>
-            <div className="item">
-              <p>
-                <span className="color">Phone:</span> {staffDetail.phoneNumber}
-              </p>
-            </div>
-            <div className="item">
-              <p>
-                <span className="color">Email:</span> {staffDetail.email}
-              </p>
-            </div>
+        {allStaffDetails.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {allStaffDetails.map((staff, index) => (
+              <div 
+                key={staff.id} 
+                style={{
+                  padding: '16px',
+                  backgroundColor: index % 2 === 0 ? '#f5f5f5' : '#fff',
+                  borderRadius: '8px'
+                }}
+              >
+                <div className="staff-info">
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Staff Name:</span> {staff.name}
+                        </p>
+                      </div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Role:</span> {staff.role}
+                        </p>
+                      </div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Phone:</span> {staff.phoneNumber}
+                        </p>
+                      </div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Email:</span> {staff.email}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      type="primary"
+                      icon={<MessageOutlined />}
+                      onClick={() => handleRoomChat(staff.id)}
+                      style={{
+                        backgroundColor: '#e25822',
+                        borderColor: '#e25822'
+                      }}
+                    >
+                      Chat
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <p>No staff information available</p>
@@ -556,14 +652,14 @@ function ViewOrderDetail() {
           </div>
         )}
       {order?.status?.[0]?.statusInfo === "WAITING" &&
-        order?.status[order?.status?.length - 1].statusInfo != "FAIL" && (
+        order?.payment?.status === "UNPAYED" && (
           <div style={{ marginTop: "20px", textAlign: "center" }}>
             <Button
               type="primary"
               onClick={handleCancel}
               style={{
-                backgroundColor: "#2c2c2c",
-                borderColor: "#2c2c2c",
+                backgroundColor: "#ff4d4f",
+                borderColor: "#ff4d4f",
                 marginLeft: "10px",
               }}
             >
