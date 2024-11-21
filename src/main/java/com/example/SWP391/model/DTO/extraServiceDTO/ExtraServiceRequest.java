@@ -13,4 +13,8 @@ public class ExtraServiceRequest {
 
     @Size(min = 0,message = "Price must positive number")
     float price;
+
+    @NotBlank(message = "Description is required")
+    @Size(min = 10, max = 1000, message = "Description must be between 10 and 1000 characters")
+    String description;
 }

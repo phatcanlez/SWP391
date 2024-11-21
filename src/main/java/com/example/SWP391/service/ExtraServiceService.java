@@ -40,14 +40,15 @@ public class ExtraServiceService {
         }
     }
 
-    public ExtraService updateExtraService(ExtraService extraService, long Id){
-        ExtraService oldExtraService = extraServiceRepository.findExtraServiceByExtraServiceId(Id);
+    public ExtraService updateExtraService(ExtraService extraService){
+        ExtraService oldExtraService = extraServiceRepository.findExtraServiceByExtraServiceId(extraService.getExtraServiceId());
         if(oldExtraService == null){
             throw new NotFoundException("Not found!");
         }
         try{
             oldExtraService.setNameService(extraService.getNameService());
             oldExtraService.setPrice(extraService.getPrice());
+            oldExtraService.setDescription(extraService.getDescription());
             return extraServiceRepository.save(oldExtraService);
         }catch (Exception e){
             throw new DuplicateException("Update fail");

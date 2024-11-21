@@ -33,5 +33,7 @@ public class OrderRes {
     Payment payment;
     List<Feedback> feedbacks;
     OrderDetail orderDetail;
+    String senderName;
     String accountId;
+    String username;
 }

@@ -11,6 +11,7 @@ import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.*;
 import com.example.SWP391.util.DateConversionUtil;
+import com.example.SWP391.util.TrackingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ import java.util.*;
 public class OrderService {
     @Autowired
     OrderRepository orderRepository;
+
+    @Autowired
+    OrderOverseaRepository orderOverseaRepository;
 
     @Autowired
     AuthenticationService authenticationService;
@@ -51,10 +55,41 @@ public class OrderService {
     @Autowired
     OrderDetailRepository orderDetailRepository;
 
+//    @Autowired
+//    OrderOverseaRepository overseaOrderRepository;
+
     @Autowired
     StatusService statusService;
     @Autowired
     ChatService chatService;
+
+
+    public List<OrderResponse> viewOrderOversea(String empid, StatusInfo status) {
+        List<OverseaOrder> order1 = orderOverseaRepository.findOrdersByEmployeeId1(empid);
+        List<OverseaOrder> order2 = orderOverseaRepository.findOrdersByemployeeId2(empid);
+        List<Orders> list = new ArrayList<>();
+        for (OverseaOrder order : order1) {
+            Orders orders = orderRepository.findByorderID(order.getOrderId());
+            if (orders.getStatus().getLast().getStatusInfo().equals(status)) {
+                list.add(orders);
+            }
+        }
+        for (OverseaOrder order : order2) {
+            Orders orders = orderRepository.findByorderID(order.getOrderId());
+            if (orders.getStatus().getLast().getStatusInfo().equals(status)) {
+                list.add(orders);
+            }
+        }
+        return list.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+            return orderResponse;
+        }).toList();
+    }
 
     public OrdersReponsePage getAllOrders(int page, int size) {
         Page<Orders> orders = orderRepository.findAll(PageRequest.of(page, size));
@@ -64,6 +99,8 @@ public class OrderService {
             orderResponse.setPayment(order.getPayment().getStatus());
             String type = String.valueOf(orderDetailService.viewOrderDetailById(order.getOrderID()).getType());
             orderResponse.setType(type);
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
         OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
@@ -80,10 +117,22 @@ public class OrderService {
             Orders newOrder = modelMapper.map(order, Orders.class);
             Account account = accountRepository.findByUsername(order.getUsername());
             newOrder.setActDeliveryDate(null);
-            if (order.getType().equals(OrderType.OVERSEA.toString())){
-                newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(14)));
-            }else {
-                newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(7)));
+            if (order.getType().equals(OrderType.OVERSEA.toString())) {
+                if (order.getShipMethod() == 3) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(8)));
+                } else if (order.getShipMethod() == 2) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(10)));
+                } else {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(14)));
+                }
+            } else {
+                if (order.getShipMethod() == 3) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(3)));
+                } else if (order.getShipMethod() == 2) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(5)));
+                } else {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(7)));
+                }
             }
             if (account == null) {
                 throw new NotFoundException("Account not found");
@@ -106,19 +155,18 @@ public class OrderService {
             orderDetail.setOrderID(newOrder.getOrderID());
             orderDetail.setShipMethodId(order.getShipMethod());
             orderDetail.setExtraServiceId(order.getExtraService());
-            orderDetailService.createOrderDetail(orderDetail);
+            newOrder.setOrderDetail(orderDetailService.createOrderDetail(orderDetail));
+            newOrder =  orderRepository.save(newOrder);
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
             orderResponse.setPayment(newOrder.getPayment().getStatus());
             orderResponse.setType(order.getType());
-
-
-
-
+            orderResponse.setName(newOrder.getAccount().getName());
+            orderResponse.setShipmethod(newOrder.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         } catch (NotFoundException e) {
             throw new NotFoundException(" Account not found");
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw new DuplicateException("Unexpected error!");
         }
@@ -130,7 +178,9 @@ public class OrderService {
             throw new NotFoundException("Not found this order");
         }
         OrderRes orderRes = modelMapper.map(order, OrderRes.class);
+        orderRes.setSenderName(order.getAccount().getName());
         orderRes.setAccountId(order.getAccount().getId());
+        orderRes.setUsername(order.getAccount().getUsername());
         if (order == null) {
             throw new NotFoundException("Not found this order");
         } else {
@@ -138,7 +188,7 @@ public class OrderService {
         }
     }
 
-    public Orders updateOrder (OrderRequest order,String id){
+    public Orders updateOrder(OrderRequest order, String id) {
         Orders existingOrder = orderRepository.findByorderID(id);
         if (existingOrder == null) {
             throw new NotFoundException("Not found!");
@@ -159,15 +209,13 @@ public class OrderService {
     @Transactional
     public List<Orders> viewOrderByStatus(StatusInfo status) {
         try {
-            List<Status> statuses = statusRepository.findByStatusInfo(status);
             List<Orders> list = new ArrayList<>();
+            List<Status> statuses = statusRepository.findByStatusInfo(status);
             for (Status s : statuses) {
-                Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == status) {
-                    list.add(orders);
+                if (s.getOrders().getStatus().getLast().getStatusInfo() == status) {
+                    list.add(s.getOrders());
                 }
             }
-
             return list;
         } catch (Exception e) {
             throw new NotFoundException("Error");
@@ -176,15 +224,24 @@ public class OrderService {
 
     @Transactional
     public List<OrderResponse> viewOrderByStatusAndEmpId(StatusInfo status, String empId) {
-        List<Orders> list = new ArrayList<>();
+        Set<Orders> list = new HashSet<>();
         try {
             List<Status> statuses = statusRepository.findByStatusInfo(status);
 
+            //xem đơn quốc tế
+            List<OrderResponse> orders = viewOrderOversea(empId, status);
+            if (!orders.isEmpty()) {
+                for (OrderResponse o : orders) {
+                    Orders order = orderRepository.findByorderID(o.getOrderID());
+                    list.add(order);
+                }
+            }
+
             for (Status s : statuses) {
-                Orders orders = s.getOrders();
-                if (orders.getStatus().getLast().getStatusInfo() == status
-                        && orders.getStatus().getLast().getEmpId().equals(empId)) {
-                    list.add(orders);
+                Orders order = s.getOrders();
+                if (order.getStatus().getLast().getStatusInfo().equals(status)
+                        && order.getStatus().getLast().getEmpId().equals(empId)) {
+                    list.add(order);
                 }
             }
             if (list.isEmpty()) {
@@ -198,19 +255,61 @@ public class OrderService {
             OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
     }
 
-    public OrderListAndTotal viewOrderByStatusAndEmpIdAndTotal(StatusInfo status, String empId){
+    public List<OrderResponse> viewOrderVN_JPByEmpId(String empId){
+        Set<Orders> list = new HashSet<>();
+        List<Orders> orders = orderRepository.findAll();
+        for (Orders order : orders) {
+            if (order.getStatus().getLast().getEmpId().equals(empId)) {
+                if(order.getStatus().getLast().getStatusInfo().equals(StatusInfo.PENDINGJAPAN) || order.getStatus().getLast().getStatusInfo().equals(StatusInfo.PENDINGVIETNAM) || order.getStatus().getLast().getStatusInfo().equals(StatusInfo.APPROVEDJAPAN) || order.getStatus().getLast().getStatusInfo().equals(StatusInfo.ARRIVEDVIETNAM)){
+                    list.add(order);
+                }
+            }
+        }
+
+        viewOrderOversea(empId, StatusInfo.APPROVEDJAPAN).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+        viewOrderOversea(empId, StatusInfo.PENDINGJAPAN).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+        viewOrderOversea(empId, StatusInfo.PENDINGVIETNAM).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+        viewOrderOversea(empId, StatusInfo.ARRIVEDVIETNAM).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+
+        return list.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+            return orderResponse;
+        }).toList();
+    }
+
+    public OrderListAndTotal viewOrderByStatusAndEmpIdAndTotal(StatusInfo status, String empId) {
         OrderListAndTotal orderListAndTotal = new OrderListAndTotal();
         orderListAndTotal.setTotal(0);
         orderListAndTotal.setListOrders(new ArrayList<>());
-        try{
-            List<OrderResponse> orderList = viewOrderByStatusAndEmpId(status,empId);
+        try {
+            List<OrderResponse> orderList = viewOrderByStatusAndEmpId(status, empId);
             orderListAndTotal.setListOrders(orderList);
             orderListAndTotal.setTotal(orderList.size());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new NotFoundException("Error");
         }
@@ -218,12 +317,12 @@ public class OrderService {
     }
 
     @Transactional
-    public TotalOrderOfEmp getTotalByEmpUsername(StatusInfo status, String username){
+    public TotalOrderOfEmp getTotalByEmpUsername(StatusInfo status, String username) {
         Account emp = accountRepository.findByUsername(username);
         TotalOrderOfEmp result = new TotalOrderOfEmp();
         try {
             result.setTotal(viewOrderByStatusAndEmpIdAndTotal(status, emp.getId()).getTotal());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new NotFoundException("Error");
         }
         return result;
@@ -248,6 +347,26 @@ public class OrderService {
         } catch (Exception e) {
             throw new NotFoundException("Error");
         }
+    }
+
+    public List<OrderResponse> viewOrderByOrderType(OrderType type) {
+        List<OrderDetail> list = orderDetailRepository.findOrderDetailByType(type);
+        if (list.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Orders> orders = new ArrayList<>();
+        for (OrderDetail orderDetail : list) {
+            orders.add(orderDetail.getOrders());
+        }
+        return orders.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+            return orderResponse;
+        }).toList();
     }
 
     public void createOrdersFromJson(String jsonArray) {
@@ -309,7 +428,7 @@ public class OrderService {
         }
     }
 
-    public String updateRefund(String orderId){
+    public String updateRefund(String orderId) {
         Orders order = orderRepository.findByorderID(orderId);
         if (order == null) {
             throw new NotFoundException("Not found this order");
@@ -331,7 +450,7 @@ public class OrderService {
     public String updateAllOrder() {
         orderRepository.findAll().forEach(order -> {
             String address = order.getSenderAddress();
-            String[] list =address.trim().split(",");
+            String[] list = address.trim().split(",");
             if (list[list.length - 1].matches("Thành phố Hồ Chí Minh") || list[list.length - 1].matches(" Hồ Chí Minh") || list[list.length - 1].matches(" TP.HCM")) {
                 list[list.length - 1] = " Thành phố Hồ Chí Minh";
             }
@@ -376,6 +495,71 @@ public class OrderService {
         orderResponsible.setListEmployee(listEmp);
         orderResponsible.setTotalEmployee(listEmp.size());
         return orderResponsible;
+    }
+
+    public boolean checkStatus(String orderId, OrderType status) {
+        Orders order = orderRepository.findByorderID(orderId);
+        if (order == null) {
+            throw new NotFoundException("Not found this order");
+        }
+        try {
+            if (order.getOrderDetail().getType().equals(status)) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            throw new NotFoundException("Error");
+        }
+    }
+
+    public List<OrderResponse> viewOrderByStatusAndType(StatusInfo status, OrderType type) {
+        List<Orders> listResult = new ArrayList<>();
+        try {
+            List<Orders> orders = viewOrderByStatus(status);
+            for (Orders order : orders) {
+                if (checkStatus(order.getOrderID(), type)) {
+                    listResult.add(order);
+                }
+            }
+        } catch (Exception e) {
+            throw new NotFoundException("Error");
+        }
+        if (listResult.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return listResult.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+            return orderResponse;
+        }).toList();
+    }
+
+//    public List<OrderResponse>
+
+    public List<OrderResponse> getAccWait2nd(String empId) {
+        List<Orders> list = viewOrderByStatus(StatusInfo.WATINGFOR2NDSTAFF);
+        List<Orders> listResult = new ArrayList<>();
+        for (Orders order : list) {
+            if (order.getStatus().getLast().getEmpId().equals(empId)) {
+                listResult.add(order);
+            }
+        }
+        if (listResult.isEmpty()) {
+            throw new NotFoundException("");
+        }
+        return listResult.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+            return orderResponse;
+        }).toList();
     }
 }
 

@@ -32,7 +32,6 @@ public class EmailService {
             context.setVariable("subject",emailDetail.getSubject());
 
              String template = templateEngine.process("welcome-template", context);
-        //
 
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);

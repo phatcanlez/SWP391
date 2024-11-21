@@ -79,7 +79,7 @@ public class OrderDetailService {
     }
 
         public OrderDetail viewOrderDetailById(String ordId) {
-            OrderDetail orderDetail = orderDetailRepository.findOrderDetailByOrdersOrderID(ordId);
+            OrderDetail orderDetail = orderRepository.findByorderID(ordId).getOrderDetail();
             if (orderDetail == null) {
                 throw new NotFoundException("Not found this order");
             } else {

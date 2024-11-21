@@ -33,6 +33,10 @@ public class ExtraService {
     @Min(value = 0,message = "Price must positive number")
     float price;
 
+
+    @Column(name = "description", length = 500) // Increase the length to 500
+    private String description;
+
     @ManyToMany(mappedBy = "extraService",cascade = CascadeType.ALL)
     @JsonIgnore
     Set<OrderDetail> orderDetails;
