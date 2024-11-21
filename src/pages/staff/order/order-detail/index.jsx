@@ -18,6 +18,15 @@ import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
 import api from "../../../../config/axios";
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+};
+
 function OrderDetail() {
   const { id } = useParams();
   const user = useSelector((store) => store.user);

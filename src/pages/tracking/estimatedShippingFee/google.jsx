@@ -182,10 +182,7 @@ class App extends Component {
         {/* Map container */}
         <div>
           <h3 style={{ fontSize: 20, color: "#e25822" }}>
-            Distance: {this.state.distance}
-          </h3>
-          <h3 style={{ fontSize: 20, color: "#e25822" }}>
-            Duration: {this.state.duration}
+            Distance: {this.state.distance} km
           </h3>
         </div>
       </div>

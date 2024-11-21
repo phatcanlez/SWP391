@@ -120,7 +120,7 @@ function LoginPage() {
               },
             ]}
           >
-            <Input.Password />
+            <Input.Password placeholder="Password" />
           </Form.Item>
 
           <Link to="/login"> </Link>
