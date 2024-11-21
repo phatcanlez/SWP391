@@ -403,12 +403,12 @@ const Address = forwardRef((props, ref) => {
           onChange={(value) => {
             setShippingType(value);
 
-            // Reset receiver address khi chuyển đổi shipping type
+            // Reset receiver address when changing shipping type
             form.setFieldsValue({
               receiverAddress: "",
             });
 
-            // Cập nhật localStorage với type
+            // Update localStorage with type
             const existingData = JSON.parse(
               localStorage.getItem("orderFormData") || "{}"
             );
@@ -416,13 +416,13 @@ const Address = forwardRef((props, ref) => {
             const updatedData = {
               ...existingData,
               shippingType: value,
-              receiverAddress: "", // Reset receiver address trong localStorage
+              receiverAddress: "",
               type: value === "oversea" ? "OVERSEA" : "DOMESTIC",
             };
 
             localStorage.setItem("orderFormData", JSON.stringify(updatedData));
 
-            // Reset các state liên quan nếu chuyển từ domestic sang oversea
+            // Reset states if switching to oversea
             if (value === "oversea") {
               setTempSelectionsTo("");
             }
@@ -442,7 +442,7 @@ const Address = forwardRef((props, ref) => {
           </Select.Option>
           <Select.Option value="oversea">
             <div style={{ display: "flex", alignItems: "center" }}>
-              <span style={{ marginLeft: 8 }}>Oversea</span>
+              <span style={{ marginLeft: 8 }}>Japan to Vietnam</span>
             </div>
           </Select.Option>
         </Select>
@@ -611,8 +611,58 @@ const Address = forwardRef((props, ref) => {
         <span>Current Distance: {distance} km</span>
       </div> */}
 
-      <div className="estimatedshippingfee__map">
-        <App ref={appRef} getDistance={handleGetDistance} />
+      <div className="estimatedshippingfee__map" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        backgroundColor: '#fff',
+        padding: '20px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        margin: '20px 0'
+      }}>
+        {/* Map title */}
+        <h2 style={{ 
+          textAlign: 'center',
+          color: '#2c2c2c',
+          margin: 0,
+          fontSize: '24px',
+          fontWeight: 'bold'
+        }}>
+          Route Map
+        </h2>
+
+        {/* Addresses display */}
+        {tempSelectionsFrom && tempSelectionsTo && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            padding: '16px',
+            backgroundColor: '#f5f5f5',
+            borderRadius: '6px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontWeight: 'bold', color: '#666' }}>From:</span>
+              <span>{tempSelectionsFrom}</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontWeight: 'bold', color: '#666' }}>To:</span>
+              <span>{tempSelectionsTo}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Map component */}
+        <App 
+          ref={appRef} 
+          getDistance={handleGetDistance} 
+          style={{
+            width: '100%',
+            borderRadius: '8px',
+            overflow: 'hidden'
+          }}
+        />
       </div>
 
       <Modal
