@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../../config/axios";
 import { toast } from "react-toastify";
-import { DoubleRightOutlined, PhoneOutlined } from "@ant-design/icons";
+import { DoubleRightOutlined, PhoneOutlined, MessageOutlined } from "@ant-design/icons";
 import License from "../../staff/order/license";
 import { format, parseISO } from "date-fns";
 
@@ -156,6 +156,8 @@ function ViewOrderDetail() {
 
   const [allStaffDetails, setAllStaffDetails] = useState([]);
 
+  const navigate = useNavigate();
+
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
@@ -285,6 +287,26 @@ function ViewOrderDetail() {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to cancel order");
+    }
+  };
+
+  const handleRoomChat = async (staffId) => {
+    try {
+      if (!staffId) {
+        toast.error("Staff not available for chat");
+        return;
+      }
+
+      const room = await api.get(`/chat/room/${user?.id}/${staffId}`);
+      
+      if (room.data?.roomID) {
+        navigate(`/customer-service/chat/${room.data.roomID}`);
+      } else {
+        toast.error("Could not create chat room");
+      }
+    } catch (error) {
+      console.error("Chat room error:", error);
+      toast.error("Error creating chat room");
     }
   };
 
@@ -566,25 +588,45 @@ function ViewOrderDetail() {
                 }}
               >
                 <div className="staff-info">
-                  <div className="item">
-                    <p>
-                      <span className="color">Staff Name:</span> {staff.name}
-                    </p>
-                  </div>
-                  <div className="item">
-                    <p>
-                      <span className="color">Role:</span> {staff.role}
-                    </p>
-                  </div>
-                  <div className="item">
-                    <p>
-                      <span className="color">Phone:</span> {staff.phoneNumber}
-                    </p>
-                  </div>
-                  <div className="item">
-                    <p>
-                      <span className="color">Email:</span> {staff.email}
-                    </p>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Staff Name:</span> {staff.name}
+                        </p>
+                      </div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Role:</span> {staff.role}
+                        </p>
+                      </div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Phone:</span> {staff.phoneNumber}
+                        </p>
+                      </div>
+                      <div className="item">
+                        <p>
+                          <span className="color">Email:</span> {staff.email}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <Button
+                      type="primary"
+                      icon={<MessageOutlined />}
+                      onClick={() => handleRoomChat(staff.id)}
+                      style={{
+                        backgroundColor: '#e25822',
+                        borderColor: '#e25822'
+                      }}
+                    >
+                      Chat
+                    </Button>
                   </div>
                 </div>
               </div>
