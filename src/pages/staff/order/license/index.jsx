@@ -120,19 +120,16 @@ const getSizeDetails = (size) => {
       return sizeOptions.find(option => option.sizeInCM.includes('Hirenaga'));
     }
 
-    // For normal sizes, extract the first number
-    const firstNumber = parseFloat(size.match(/\d+\.?\d*/)?.[0]);
-    if (!firstNumber) return null;
+    // Extract the first number (minimum size)
+    const minSize = parseFloat(size.match(/\d+\.?\d*/)?.[0]);
+    if (!minSize) return null;
 
-    // Find the appropriate size range
+    // Find the appropriate size range based on minimum size
     const sizeOption = sizeOptions.find(option => {
-      const [min, max] = option.sizeInCM
-        .replace(/[^\d.-]/g, ' ')
-        .split(' ')
-        .filter(Boolean)
-        .map(Number);
-
-      return firstNumber >= min && firstNumber <= (max || min);
+      if (!option.sizeInCM.includes('Hirenaga')) {
+        return minSize >= option.minSize && minSize <= option.maxSize;
+      }
+      return false;
     });
 
     return sizeOption;
@@ -182,20 +179,34 @@ const ShowLicense = ({ licenses, index }) => {
           <Image className="koi-img" src={licenses?.imgLicense} alt="" />
           <div className="item">
             <p>Size: {sizeDetails ? (
-              <span>
-                {sizeDetails.sizeInCM} cm ({sizeDetails.sizeInInch} inch)
-                <br/>
-                <span style={{ 
-                  color: '#666', 
-                  fontSize: '0.9em',
-                  fontStyle: 'italic' 
+              <div>
+                <div style={{ 
+                  fontSize: '15px',
+                  fontWeight: '500',
+                  color: '#2c2c2c',
+                  marginBottom: '4px'
+                }}>
+                  {sizeDetails.sizeInCM} cm
+                </div>
+                <div style={{ 
+                  fontSize: '13px',
+                  color: '#666',
+                  marginBottom: '4px'
+                }}>
+                  ({sizeDetails.sizeInInch} inch)
+                </div>
+                <div style={{ 
+                  color: '#e25822', 
+                  fontSize: '13px',
+                  fontStyle: 'italic',
+                  fontWeight: '500'
                 }}>
                   {sizeDetails.description}
                   {sizeDetails.sizeInCM.includes('Hirenaga') && ' - Butterfly Type'}
-                </span>
-              </span>
+                </div>
+              </div>
             ) : licenses?.size}</p>
-            <p>Weight: {licenses?.weight} kg</p>
+            <p style={{ marginTop: '8px' }}>Weight: {licenses?.weight} kg</p>
           </div>
         </div>
 
@@ -204,9 +215,7 @@ const ShowLicense = ({ licenses, index }) => {
             Price of Koi: <span className="color">{formatCurrency(licenses?.priceOfKoi)}</span>
           </p>
         </div>
-        
       </div>
-      
     </div>
   );
 };

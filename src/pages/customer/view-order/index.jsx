@@ -150,6 +150,7 @@ function ViewOrderDetail() {
   const [staffInfo, setStaffInfo] = useState("");
   const [current, setCurrent] = useState(-1);
   const [staffDetail, setStaffDetail] = useState(null);
+  const [secondStaffDetail, setSecondStaffDetail] = useState(null);
   const user = useSelector((store) => store.user);
 
   // const [isPaid, setIsPaid] = useState(false);
@@ -169,18 +170,27 @@ function ViewOrderDetail() {
         setStatus(lastStatus.statusInfo);
         setStaffInfo(lastStatus.empId);
 
-        if (lastStatus.empId) {
+        if (lastStatus.empId && lastStatus.empId !== 'customer') {
           try {
             const staffResponse = await api.get(`account/${lastStatus.empId}`);
             setStaffDetail(staffResponse.data);
-            console.log("Staff detail:", staffResponse.data);
+            
+            if (response.data.orderDetail.type === 'OVERSEA') {
+              const secondStaffStatus = response.data.status.find(s => 
+                s.statusInfo === 'WATINGFOR2NDSTAFF' && s.empId !== lastStatus.empId
+              );
+              if (secondStaffStatus?.empId) {
+                const secondStaffResponse = await api.get(`account/${secondStaffStatus.empId}`);
+                setSecondStaffDetail(secondStaffResponse.data);
+              }
+            }
           } catch (staffError) {
             console.error("Error fetching staff detail:", staffError);
           }
         }
       }
     } catch (err) {
-      toast.error(err.response.data);
+      toast.error(err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -451,12 +461,72 @@ function ViewOrderDetail() {
             </div>
           </div>
 
-          <p>
-            Total fish price:{" "}
-            <span className="color" style={{ fontWeight: "600" }}>
-              {formatCurrency(order.orderPrice)}
-            </span>
-          </p>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '20px',
+            paddingTop: '20px',
+            borderTop: '1px solid #f0f0f0'
+          }}>
+            <div>
+              <p style={{ 
+                fontSize: '15px', 
+                color: '#666',
+                marginBottom: '8px'
+              }}>
+                Fish Price: <span style={{ color: '#2c2c2c', fontWeight: '500' }}>
+                  {formatCurrency(order.orderPrice)}
+                </span>
+              </p>
+              <p style={{ 
+                fontSize: '15px', 
+                color: '#666',
+                marginBottom: '0'
+              }}>
+                Service Price: <span style={{ color: '#2c2c2c', fontWeight: '500' }}>
+                  {formatCurrency(service.reduce((sum, item) => sum + item.price, 0))}
+                </span>
+              </p>
+            </div>
+            <div>
+              <p style={{ 
+                fontSize: '18px',
+                color: '#e25822',
+                fontWeight: 'bold',
+                marginBottom: '0'
+              }}>
+                Total Order Value: {formatCurrency(order.totalPrice)}
+              </p>
+            </div>
+          </div>
+
+          {order?.note && (
+            <div style={{
+              marginTop: '20px',
+              padding: '16px',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '8px',
+              border: '1px solid #eee'
+            }}>
+              <p style={{
+                fontSize: '15px',
+                color: '#666',
+                marginBottom: '8px',
+                fontWeight: '500'
+              }}>
+                Note:
+              </p>
+              <p style={{
+                fontSize: '14px',
+                color: '#2c2c2c',
+                marginBottom: '0',
+                lineHeight: '1.5'
+              }}>
+                {order.note}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -518,26 +588,81 @@ function ViewOrderDetail() {
         Staff Info
       </h5>
       <div className="bg-w" style={{ marginTop: "20px", padding: "20px" }}>
-        {staffDetail ? (
-          <div className="staff-info">
-            <div className="item">
-              <p>
-                <span className="color">Staff Name:</span> {staffDetail.name}
-              </p>
+        {isOversea() ? (
+          <div style={{ display: 'flex', gap: '40px' }}>
+            {/* Japanese Staff */}
+            <div style={{ flex: 1 }}>
+              <h6 style={{ 
+                color: '#e25822', 
+                marginBottom: '16px',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}>
+                Japanese Staff
+              </h6>
+              {staffDetail && staffDetail.role === 'JAPANSTAFF' ? (
+                <div className="staff-info">
+                  <div className="item">
+                    <p><span className="color">Staff Name:</span> {staffDetail.name}</p>
+                  </div>
+                  <div className="item">
+                    <p><span className="color">Phone:</span> {staffDetail.phoneNumber}</p>
+                  </div>
+                  <div className="item">
+                    <p><span className="color">Email:</span> {staffDetail.email}</p>
+                  </div>
+                </div>
+              ) : (
+                <p style={{ color: '#666' }}>Waiting for Japanese staff assignment</p>
+              )}
             </div>
-            <div className="item">
-              <p>
-                <span className="color">Phone:</span> {staffDetail.phoneNumber}
-              </p>
-            </div>
-            <div className="item">
-              <p>
-                <span className="color">Email:</span> {staffDetail.email}
-              </p>
+
+            {/* Vietnamese Staff */}
+            <div style={{ flex: 1 }}>
+              <h6 style={{ 
+                color: '#e25822', 
+                marginBottom: '16px',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}>
+                Vietnamese Staff
+              </h6>
+              {secondStaffDetail && secondStaffDetail.role === 'VIETNAMSTAFF' ? (
+                <div className="staff-info">
+                  <div className="item">
+                    <p><span className="color">Staff Name:</span> {secondStaffDetail.name}</p>
+                  </div>
+                  <div className="item">
+                    <p><span className="color">Phone:</span> {secondStaffDetail.phoneNumber}</p>
+                  </div>
+                  <div className="item">
+                    <p><span className="color">Email:</span> {secondStaffDetail.email}</p>
+                  </div>
+                </div>
+              ) : (
+                <p style={{ color: '#666' }}>Waiting for Vietnamese staff assignment</p>
+              )}
             </div>
           </div>
         ) : (
-          <p>No staff information available</p>
+          // For domestic orders - show single staff
+          <>
+            {staffDetail ? (
+              <div className="staff-info">
+                <div className="item">
+                  <p><span className="color">Staff Name:</span> {staffDetail.name}</p>
+                </div>
+                <div className="item">
+                  <p><span className="color">Phone:</span> {staffDetail.phoneNumber}</p>
+                </div>
+                <div className="item">
+                  <p><span className="color">Email:</span> {staffDetail.email}</p>
+                </div>
+              </div>
+            ) : (
+              <p>No staff information available</p>
+            )}
+          </>
         )}
       </div>
       {order?.payment?.status === "UNPAYED" &&
@@ -555,22 +680,22 @@ function ViewOrderDetail() {
             </Button>
           </div>
         )}
-      {order?.status?.[0]?.statusInfo === "WAITING" &&
-        order?.status[order?.status?.length - 1].statusInfo != "FAIL" && (
-          <div style={{ marginTop: "20px", textAlign: "center" }}>
-            <Button
-              type="primary"
-              onClick={handleCancel}
-              style={{
-                backgroundColor: "#2c2c2c",
-                borderColor: "#2c2c2c",
-                marginLeft: "10px",
-              }}
-            >
-              Cancel Order
-            </Button>
-          </div>
-        )}
+      {order?.status?.[0]?.statusInfo === "WAITING" && 
+       order?.payment?.status === "UNPAYED" && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <Button
+            type="primary"
+            onClick={handleCancel}
+            style={{
+              backgroundColor: "#ff4d4f",
+              borderColor: "#ff4d4f",
+              marginLeft: "10px"
+            }}
+          >
+            Cancel Order
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
