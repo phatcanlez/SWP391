@@ -282,6 +282,7 @@ function App() {
       path: "pay-fail",
       element: <PaymentFail />,
     },
+
     {
       path: "staff",
       element: (
@@ -374,11 +375,11 @@ function App() {
         },
         {
           path: "approved-japan",
-          element: < ApprovedJapan/>,
+          element: <ApprovedJapan />,
         },
         {
           path: "approved-japan-by-staff-vietnam",
-          element: < ApprovedJapanStaffVietnam/>,
+          element: <ApprovedJapanStaffVietnam />,
         },
         {
           path: "view/waiting-for-second-staff/:id",

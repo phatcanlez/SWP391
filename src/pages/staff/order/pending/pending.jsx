@@ -156,6 +156,7 @@ const InProcess = ({ id }) => {
         const response = await api.put(`orders/image`, value);
         console.log(response);
         handleSuccessOrder();
+        fetchOrderDetail();
       } catch (error) {
         toast.error(error);
       }

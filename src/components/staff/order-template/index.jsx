@@ -80,6 +80,25 @@ function StaffOrder({ path, isPaging = false, isWaiting = false }) {
       },
     },
     {
+      title: "Ship Method",
+      dataIndex: "shipmethod",
+      key: "shipmethod", filters: [
+        {
+          text: "Economy shipping",
+          value: "Economy shipping",
+        },
+        {
+          text: "Fast shipping",
+          value: "Fast shipping",
+        },
+        {
+          text: "Express shipping",
+          value: "Express shipping",
+        },
+      ],
+      onFilter: (value, record) => record.shipmethod.indexOf(value) === 0,
+    },
+    {
       title: "Status",
       key: "status.statusInfo",
       render: (record) => record.status?.statusInfo,
@@ -118,27 +137,27 @@ function StaffOrder({ path, isPaging = false, isWaiting = false }) {
   return (
     <div>
       <div style={{ display: "flex" }}>
-      <Input
-        style={{ width: "200px", height: "30px" }}
-        placeholder="Order ID"
-        value={searchValue}
-        onChange={handleSearchValueChange}
-      />
-      <div
-        className="note"
-        style={{ marginLeft: 20, display: "flex", alignItems: "center" }}
-      >
-        <FileSyncOutlined
-          style={{ fontSize: 20, color: "#e25822", marginRight: 8 }}
+        <Input
+          style={{ width: "200px", height: "30px" }}
+          placeholder="Order ID"
+          value={searchValue}
+          onChange={handleSearchValueChange}
         />
-        <p style={{ margin: 0 }}>
-          Have{" "}
-          <span className="color" style={{ fontWeight: 600 }}>
-            {totalOrders} orders
-          </span>{" "}
-          in this list
-        </p>
-      </div>
+        <div
+          className="note"
+          style={{ marginLeft: 20, display: "flex", alignItems: "center" }}
+        >
+          <FileSyncOutlined
+            style={{ fontSize: 20, color: "#e25822", marginRight: 8 }}
+          />
+          <p style={{ margin: 0 }}>
+            Have{" "}
+            <span className="color" style={{ fontWeight: 600 }}>
+              {totalOrders} orders
+            </span>{" "}
+            in this list
+          </p>
+        </div>
       </div>
 
       <Table

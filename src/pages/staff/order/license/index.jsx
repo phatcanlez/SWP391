@@ -216,6 +216,9 @@ const ShowLicense = ({ licenses, index }) => {
           </p>
         </div>
       </div>
+
+      <p>Description: {licenses?.description}</p>
+
     </div>
   );
 };
