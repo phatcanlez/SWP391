@@ -190,6 +190,7 @@ function WaitingAnotherStaff() {
         });
         console.log(setvalue);
         toast.success("APPROVEDJAPAN");
+        fetchOrderDetail();
       } else {
         toast.error("Please check if you have any order from Japan in process");
       }
@@ -209,6 +210,7 @@ function WaitingAnotherStaff() {
       });
       console.log(setvalue);
       toast.success("WAITINGFOR2NDSTAFF");
+      fetchOrderDetail();
     } catch (error) {
       console.log(error);
     }
