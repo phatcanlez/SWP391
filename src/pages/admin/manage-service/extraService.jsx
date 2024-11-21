@@ -7,8 +7,10 @@ function ExtraService() {
   const [selectedDescription, setSelectedDescription] = useState("");
 
   const showDescriptionModal = (description) => {
-    setSelectedDescription(description);
-    setIsModalVisible(true);
+    if (description) {
+      setSelectedDescription(description);
+      setIsModalVisible(true);
+    }
   };
 
   const columns = [
@@ -49,7 +51,7 @@ function ExtraService() {
             fontWeight: 400
           }}
         >
-          {text.length > 50 ? text.substring(0, 50) + "..." : text}
+          {text && text.length > 50 ? `${text.substring(0, 50)}...` : text || ''}
         </a>
       ),
     },
