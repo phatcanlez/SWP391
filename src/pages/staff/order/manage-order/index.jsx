@@ -42,7 +42,7 @@ function History() {
 function WaitingOversea() {
   return (
     <div>
-      <StaffOrder path={`orders/status-type?status=WAITING&type=OVERSEA`} />
+      <StaffOrder isWaiting path={`orders/status-type?status=WAITING&type=OVERSEA`} />
     </div>
   );
 }
@@ -74,10 +74,7 @@ function ApprovedJapanStaffVietnam() {
   const user = useSelector((store) => store);
   return (
     <div>
-      <StaffOrder isWaiting
-        path={`orders/status-emp?status=APPROVEDJAPAN&empId=${user.user.id}`}
-      />
-      
+      <StaffOrder isWaiting path={`orders/statusvn-jp?empId=${user.user.id}`} />
     </div>
   );
 }

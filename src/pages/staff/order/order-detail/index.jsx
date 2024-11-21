@@ -19,11 +19,11 @@ import InProcess from "../pending/pending";
 import api from "../../../../config/axios";
 
 const formatCurrency = (value) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(value);
 };
 
@@ -122,7 +122,7 @@ function OrderDetail() {
         response.data?.length === 0 &&
         processingOrder.data?.length === 0 &&
         vietnam.data?.length === 0 &&
-        arrive.data?.length === 0
+        arrive.data?.length === 0 
       ) {
         console.log(user.id);
         const emid = user.id;
@@ -434,6 +434,7 @@ function OrderDetail() {
               </Button>
             </>
           )}
+          
         </div>
       )}
 
