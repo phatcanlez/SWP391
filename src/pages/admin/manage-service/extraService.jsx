@@ -28,30 +28,11 @@ function ExtraService() {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      width: "20%",
       render: (text) => {
         return text
           ? text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND"
           : "";
       },
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      width: "50%",
-      render: (text) => (
-        <a 
-          onClick={() => showDescriptionModal(text)} 
-          style={{ 
-            cursor: 'pointer',
-            color: '#2c2c2c',
-            fontWeight: 400
-          }}
-        >
-          {text.length > 50 ? text.substring(0, 50) + "..." : text}
-        </a>
-      ),
     },
   ];
 
@@ -80,13 +61,6 @@ function ExtraService() {
       >
         <Input />
       </Form.Item>
-      <Form.Item
-        name="description"
-        label="Description"
-        rules={[{ required: true }]}
-      >
-        <Input.TextArea rows={4} />
-      </Form.Item>
     </>
   );
 
@@ -107,21 +81,23 @@ function ExtraService() {
         onCancel={() => setIsModalVisible(false)}
         width={600}
         okText="Close"
-        cancelButtonProps={{ style: { display: 'none' } }}
-        okButtonProps={{ 
-          style: { 
-            backgroundColor: '#e25822',
-            borderColor: '#e25822'
-          }
+        cancelButtonProps={{ style: { display: "none" } }}
+        okButtonProps={{
+          style: {
+            backgroundColor: "#e25822",
+            borderColor: "#e25822",
+          },
         }}
       >
-        <div style={{ 
-          padding: '20px',
-          backgroundColor: '#f5f5f5',
-          borderRadius: '8px',
-          minHeight: '100px',
-          whiteSpace: 'pre-wrap'
-        }}>
+        <div
+          style={{
+            padding: "20px",
+            backgroundColor: "#f5f5f5",
+            borderRadius: "8px",
+            minHeight: "100px",
+            whiteSpace: "pre-wrap",
+          }}
+        >
           {selectedDescription}
         </div>
       </Modal>

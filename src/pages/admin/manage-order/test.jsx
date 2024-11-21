@@ -27,7 +27,7 @@ function Test01(path) {
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const navigate = useNavigate();
-  const fetchData = async (status) => {
+  const fetchData = async () => {
     try {
       setLoading(true);
       let result;
@@ -47,7 +47,7 @@ function Test01(path) {
       if (finalPath.field === "Status") {
         let response;
         if (isFilter) {
-          response = await api.get(`/orders/status?status=${status}`);
+          response = await api.get(`/orders/status?status=${selectedStatus}`);
         } else {
           response = await api.get(path.path);
         }
@@ -88,11 +88,10 @@ function Test01(path) {
     });
     setIsFilter(true);
     setSelectedStatus(status);
-    fetchData(status);
   };
 
   useEffect(() => {
-    fetchData(selectedStatus);
+    fetchData();
   }, [pagination, finalPath, selectedStatus]);
 
   const columns = [
