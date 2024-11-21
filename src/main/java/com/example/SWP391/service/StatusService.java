@@ -3,6 +3,7 @@ package com.example.SWP391.service;
 import com.example.SWP391.entity.*;
 import com.example.SWP391.exception.DuplicateException;
 import com.example.SWP391.exception.NotFoundException;
+import com.example.SWP391.model.DTO.EmailDetail;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponse;
 import com.example.SWP391.model.DTO.OrderDTO.OrderResponsible;
 import com.example.SWP391.model.DTO.chatDTO.RoomRequest;
@@ -31,6 +32,9 @@ import java.util.List;
 public class StatusService {
     @Autowired
     StatusRepository statusRepository;
+
+    @Autowired
+    EmailService emailService;
 
     @Autowired
     OrderRepository orderRepository;
@@ -63,54 +67,65 @@ public class StatusService {
             }
 
             //xử lí đơn trong nước vs ngoại, nếu ngoại thì phải 2 staff nhận
-            if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())) {
-                List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
-                if (ordersList.size() > 0) {
-                    throw new DuplicateException("You can't approved this order because you already have a approved order!!");
-                }
+            if (statusRequest.getStatusInfo().equals(StatusInfo.WATINGFOR2NDSTAFF.toString())) {
+                Account curAccount = authenticationService.getCurrentAccount();
+                OverseaOrder overseaOrder = new OverseaOrder();
+                overseaOrder.setOrderId(orders.getOrderID());
+                overseaOrder.setEmployeeId1(curAccount.getId());
+                orderOverseaRepository.save(overseaOrder);
+            } else if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVEDJAPAN.toString())) {
+                Account curAccount = authenticationService.getCurrentAccount();
+                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
+                overseaOrder.setEmployeeId2(curAccount.getId());
+                orderOverseaRepository.save(overseaOrder);
 
-                if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
-                    OrderResponsible orderResponsible = orderService.viewOrderResponsible(statusRequest.getOrder());
-                    List<Account> listEmp = orderResponsible.getListEmployee().stream().toList();
-                    int totelEmp = listEmp.size();
-                    Account curAccount = authenticationService.getCurrentAccount();
-                    if (totelEmp == 1) {
-                        String AddressEmp = listEmp.getFirst().getAddress();
-                        curAccount = authenticationService.getCurrentAccount();
+//                List<OrderResponse> ordersList = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
+//                if (ordersList.size() > 0) {
+//                    throw new DuplicateException("You can't approved this order because you already have a approved order!!");
+//                }
+//
+//                if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
+//                    OrderResponsible orderResponsible = orderService.viewOrderResponsible(statusRequest.getOrder());
+//                    List<Account> listEmp = orderResponsible.getListEmployee().stream().toList();
+//                    int totelEmp = listEmp.size();
 
-                        List<OrderResponse> ordersListApproveOversea = orderService.viewOrderByStatusAndEmpId(StatusInfo.WATINGFOR2NDSTAFF, statusRequest.getEmpId());
-                        if (ordersList.size() > 0) {
-                            throw new DuplicateException("You can't approved this order because you already have a approved order!!");
-                        }
-
-                        if (TrackingUtil.checkCountryIsVietnam(AddressEmp)) {
-                            if (TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
-                                throw new DuplicateException("You can't approved this order already have a approved by a Vietnamese staff!!");
-                            } else {
-                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-                                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
-                                overseaOrder.setEmployeeId2(curAccount.getId());
-                                orderOverseaRepository.save(overseaOrder);
-                            }
-
-                        } else {
-                            if (!TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
-                                throw new DuplicateException("You can't approved this order already have a approved by a Japanese staff!!");
-                            } else {
-                                statusRequest.setStatusInfo(StatusInfo.APPROVED.toString());
-                                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
-                                overseaOrder.setEmployeeId2(curAccount.getId());
-                                orderOverseaRepository.save(overseaOrder);
-                            }
-                        }
-                    } else {
-                        statusRequest.setStatusInfo(StatusInfo.WATINGFOR2NDSTAFF.toString());
-                        OverseaOrder overseaOrder = new OverseaOrder();
-                        overseaOrder.setOrderId(orders.getOrderID());
-                        overseaOrder.setEmployeeId1(curAccount.getId());
-                        orderOverseaRepository.save(overseaOrder);
-                    }
-                }
+//                    if (totelEmp == 1) {
+//                        String AddressEmp = listEmp.getFirst().getAddress();
+//                        curAccount = authenticationService.getCurrentAccount();
+//
+//                        List<OrderResponse> ordersListApproveOversea = orderService.viewOrderByStatusAndEmpId(StatusInfo.WATINGFOR2NDSTAFF, statusRequest.getEmpId());
+//                        if (ordersList.size() > 0) {
+//                            throw new DuplicateException("You can't approved this order because you already have a approved order!!");
+//                        }
+//
+//                        if (TrackingUtil.checkCountryIsVietnam(AddressEmp)) {
+//                            if (TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
+//                                throw new DuplicateException("You can't approved this order already have a approved by a Vietnamese staff!!");
+//                            } else {
+//                                statusRequest.setStatusInfo(StatusInfo.APPROVEDJAPAN.toString());
+//                                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
+//                                overseaOrder.setEmployeeId2(curAccount.getId());
+//                                orderOverseaRepository.save(overseaOrder);
+//                            }
+//
+//                        } else {
+//                            if (!TrackingUtil.checkCountryIsVietnam(curAccount.getAddress())) {
+//                                throw new DuplicateException("You can't approved this order already have a approved by a Japanese staff!!");
+//                            } else {
+//                                statusRequest.setStatusInfo(StatusInfo.APPROVEDJAPAN.toString());
+//                                OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
+//                                overseaOrder.setEmployeeId2(curAccount.getId());
+//                                orderOverseaRepository.save(overseaOrder);
+//                            }
+//                        }
+//                    } else {
+//                        statusRequest.setStatusInfo(StatusInfo.WATINGFOR2NDSTAFF.toString());
+//                        OverseaOrder overseaOrder = new OverseaOrder();
+//                        overseaOrder.setOrderId(orders.getOrderID());
+//                        overseaOrder.setEmployeeId1(curAccount.getId());
+//                        orderOverseaRepository.save(overseaOrder);
+//                    }
+//                }
             } else if (statusRequest.getStatusInfo().equals(StatusInfo.PENDING.toString())) {
                 List<OrderResponse> ordersListIsPending = orderService.viewOrderByStatusAndEmpId(StatusInfo.valueOf(statusRequest.getStatusInfo()), statusRequest.getEmpId());
                 if (ordersListIsPending.size() > 0) {
@@ -129,10 +144,27 @@ public class StatusService {
             if (statusRequest.getStatusInfo().equals(StatusInfo.SUCCESS.toString())) {
                 orders.setActDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now()));
                 orderRepository.save(orders);
+                EmailDetail emailDetail = new EmailDetail();
+                emailDetail.setReceiver(orders.getAccount());
+                emailDetail.setSubject("Your order is delivered successfully");
+                emailDetail.setContent("Your order is delivered successfully");
+                emailService.sendEmail(emailDetail);
+                if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
+                    OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
+                    if (overseaOrder.getEmployeeId2() != null) {
+                        EmailDetail emailDetail2 = new EmailDetail();
+                        emailDetail2.setReceiver(orders.getAccount());
+                        emailDetail2.setSubject("Your order is delivered successfully");
+                        emailDetail2.setContent("Your order is delivered successfully");
+                        emailService.sendEmail(emailDetail2);
+                    }
+                }
             }
 
             //kiểm tra trạng thái của đơn nếu là APPROVED thì tạo boxchat
-            if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())) {
+            if (statusRequest.getStatusInfo().equals(StatusInfo.APPROVED.toString())
+                    || statusRequest.getStatusInfo().equals(StatusInfo.WATINGFOR2NDSTAFF.toString())
+                    || statusRequest.getStatusInfo().equals(StatusInfo.APPROVEDJAPAN.toString())){
                 //create chatbox
                 List<String> userRooms = new ArrayList<>();
                 userRooms.add(orders.getAccount().getId());

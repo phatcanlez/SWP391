@@ -65,14 +65,21 @@ public class OrdersAPI {
     public ResponseEntity getOrderByStatus(@RequestParam(name = "status") StatusInfo status) {
 
         List<Orders> orders = orderService.viewOrderByStatus(status);
-        List<OrderResponse> orderResponses = orders.stream().map(order -> {
-            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
-            orderResponse.setStatus(order.getStatus().getLast());
-            orderResponse.setPayment(order.getPayment().getStatus());
-            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
-            return orderResponse;
-        }).toList();
+        try{
+            List<OrderResponse> orderResponses = orders.stream().map(order -> {
+                OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+                orderResponse.setStatus(order.getStatus().getLast());
+                orderResponse.setPayment(order.getPayment().getStatus());
+                orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+                orderResponse.setName(order.getAccount().getName());
+                orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+                return orderResponse;
+            }).toList();
         return ResponseEntity.ok(orderResponses);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/api/orders/status-type")
@@ -142,8 +149,13 @@ public class OrdersAPI {
         return ResponseEntity.ok(orderService.updateRefund(orderId));
     }
 
-    @DeleteMapping("/api/orders/{id}")
-    public ResponseEntity deleteOrder(@PathVariable String id) {
-        return ResponseEntity.ok(orderService.deleteOrder(id));
+    @GetMapping("/api/orders/statusvn-jp")
+    public ResponseEntity getOrderByStatusVNJP(@RequestParam(name = "empId") String empId) {
+        return ResponseEntity.ok(orderService.viewOrderVN_JPByEmpId(empId));
     }
+
+//    @DeleteMapping("/api/orders/{id}")
+//    public ResponseEntity deleteOrder(@PathVariable String id) {
+//        return ResponseEntity.ok(orderService.deleteOrder(id));
+//    }
 }

@@ -85,6 +85,8 @@ public class OrderService {
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
             orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
     }
@@ -97,6 +99,8 @@ public class OrderService {
             orderResponse.setPayment(order.getPayment().getStatus());
             String type = String.valueOf(orderDetailService.viewOrderDetailById(order.getOrderID()).getType());
             orderResponse.setType(type);
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
         OrdersReponsePage ordersReponsePage = new OrdersReponsePage();
@@ -114,9 +118,21 @@ public class OrderService {
             Account account = accountRepository.findByUsername(order.getUsername());
             newOrder.setActDeliveryDate(null);
             if (order.getType().equals(OrderType.OVERSEA.toString())) {
-                newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(14)));
+                if (order.getShipMethod() == 3) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(8)));
+                } else if (order.getShipMethod() == 2) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(10)));
+                } else {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(14)));
+                }
             } else {
-                newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(7)));
+                if (order.getShipMethod() == 3) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(3)));
+                } else if (order.getShipMethod() == 2) {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(5)));
+                } else {
+                    newOrder.setExpDeliveryDate(DateConversionUtil.convertToDate(LocalDateTime.now().plusDays(7)));
+                }
             }
             if (account == null) {
                 throw new NotFoundException("Account not found");
@@ -139,12 +155,14 @@ public class OrderService {
             orderDetail.setOrderID(newOrder.getOrderID());
             orderDetail.setShipMethodId(order.getShipMethod());
             orderDetail.setExtraServiceId(order.getExtraService());
-            orderDetailService.createOrderDetail(orderDetail);
+            newOrder.setOrderDetail(orderDetailService.createOrderDetail(orderDetail));
+            newOrder =  orderRepository.save(newOrder);
             OrderResponse orderResponse = modelMapper.map(newOrder, OrderResponse.class);
             orderResponse.setStatus(newOrder.getStatus().getLast());
             orderResponse.setPayment(newOrder.getPayment().getStatus());
             orderResponse.setType(order.getType());
-
+            orderResponse.setName(newOrder.getAccount().getName());
+            orderResponse.setShipmethod(newOrder.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         } catch (NotFoundException e) {
             throw new NotFoundException(" Account not found");
@@ -238,6 +256,47 @@ public class OrderService {
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
             orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
+            return orderResponse;
+        }).toList();
+    }
+
+    public List<OrderResponse> viewOrderVN_JPByEmpId(String empId){
+        Set<Orders> list = new HashSet<>();
+        List<Orders> orders = orderRepository.findAll();
+        for (Orders order : orders) {
+            if (order.getStatus().getLast().getEmpId().equals(empId)) {
+                if(order.getStatus().getLast().getStatusInfo().equals(StatusInfo.PENDINGJAPAN) || order.getStatus().getLast().getStatusInfo().equals(StatusInfo.PENDINGVIETNAM) || order.getStatus().getLast().getStatusInfo().equals(StatusInfo.APPROVEDJAPAN) || order.getStatus().getLast().getStatusInfo().equals(StatusInfo.ARRIVEDVIETNAM)){
+                    list.add(order);
+                }
+            }
+        }
+
+        viewOrderOversea(empId, StatusInfo.APPROVEDJAPAN).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+        viewOrderOversea(empId, StatusInfo.PENDINGJAPAN).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+        viewOrderOversea(empId, StatusInfo.PENDINGVIETNAM).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+        viewOrderOversea(empId, StatusInfo.ARRIVEDVIETNAM).forEach(order -> {
+            Orders orders1 = orderRepository.findByorderID(order.getOrderID());
+            list.add(orders1);
+        });
+
+        return list.stream().map(order -> {
+            OrderResponse orderResponse = modelMapper.map(order, OrderResponse.class);
+            orderResponse.setStatus(order.getStatus().getLast());
+            orderResponse.setPayment(order.getPayment().getStatus());
+            orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
     }
@@ -304,6 +363,8 @@ public class OrderService {
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
             orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
     }
@@ -471,6 +532,8 @@ public class OrderService {
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
             orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
     }
@@ -493,6 +556,8 @@ public class OrderService {
             orderResponse.setStatus(order.getStatus().getLast());
             orderResponse.setPayment(order.getPayment().getStatus());
             orderResponse.setType(orderDetailService.viewOrderDetailById(order.getOrderID()).getType().toString());
+            orderResponse.setName(order.getAccount().getName());
+            orderResponse.setShipmethod(order.getOrderDetail().getShipMethod().getDescription());
             return orderResponse;
         }).toList();
     }
