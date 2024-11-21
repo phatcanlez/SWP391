@@ -409,6 +409,17 @@ function EstimatedShippingFee() {
   }, [selectedMethod]);
 
   const [weight, setWeight] = useState(0);
+
+  // Add currency formatter
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+
   return (
     <div className="estimatedshippingfee">
       <div className="estimatedshippingfee__title">ESTIMATED SHIPPING FEE</div>
@@ -446,10 +457,15 @@ function EstimatedShippingFee() {
             id="estimate"
             ref={resultRef}
           >
-            <img src={airplane} />
+            <img src={airplane} alt="Shipping" />
             <div>Total shipping cost</div>
-            <div style={{ color: "red", paddingTop: 50 }}>
-              {shippingCost === 0 ? "~ VND" : Math.ceil(shippingCost) + " VND"}
+            <div style={{ 
+              color: "#e25822", 
+              paddingTop: 50,
+              fontSize: "20px",
+              fontWeight: "600" 
+            }}>
+              {shippingCost === 0 ? "~ VND" : formatCurrency(shippingCost)}
             </div>
           </div>
           <div className="estimatedshippingfee__products__right__rectangle">
