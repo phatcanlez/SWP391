@@ -111,25 +111,16 @@ function OrderDetail() {
       const processingOrder = await api.get(
         `/orders/status-emp?status=PENDING&empId=${user.id}`
       );
-      const waiting = await api.get(
-        `/orders/status-emp?status=WATINGFOR2NDSTAFF&empId=${user.id}`
-      );
-      const japan = await api.get(
-        `/orders/status-emp?status=PENDINGJAPAN&empId=${user.id}`
-      );
       const vietnam = await api.get(
         `/orders/status-emp?status=PENDINGVIETNAM&empId=${user.id}`
       );
       const arrive = await api.get(
         `/orders/status-emp?status=ARRIVEDVIETNAM&empId=${user.id}`
       );
-      console.log(waiting.data);
 
       if (
         response.data?.length === 0 &&
         processingOrder.data?.length === 0 &&
-        waiting.data?.length === 0 &&
-        japan.data?.length === 0 &&
         vietnam.data?.length === 0 &&
         arrive.data?.length === 0
       ) {
@@ -247,7 +238,7 @@ function OrderDetail() {
           </div>
         </div>
         <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-          Distance: {order?.orderDetail?.kilometer}
+          Distance: {order?.orderDetail?.kilometer} km
         </h6>
       </div>
 
@@ -287,6 +278,10 @@ function OrderDetail() {
               <p>{order?.orderDetail?.extraLargeBox}</p>
             </div>
           </div>
+          <div className="shipmethod">
+            <h6 style={{ marginTop: "40px" }}>Ship Method</h6>
+            <p>{order?.orderDetail?.shipMethod?.description}</p>
+          </div>
           <div className="s-method">
             <h6>Service Method</h6>
             <div className="item">
@@ -309,8 +304,11 @@ function OrderDetail() {
           <p>
             Total price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
-              {formatCurrency(order.orderPrice)}
+              {formatCurrency(order?.totalPrice)}
             </span>
+          </p>
+          <p style={{ marginTop: "20px" }}>
+            <span style={{ color: "#e25822" }}>Note:</span> {order?.note}
           </p>
         </div>
       </div>
@@ -320,7 +318,6 @@ function OrderDetail() {
       <div className="bg-w">
         <div style={{ marginBottom: "20px" }}>
           <p>Payment status: {order?.payment?.status}</p>
-          
         </div>
         <InProcess />
         {(status === "APPROVED" || status === "PENDING") && (

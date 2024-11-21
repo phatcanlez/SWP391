@@ -204,7 +204,9 @@ const ShowLicense = ({ licenses, index }) => {
             Price of Koi: <span className="color">{formatCurrency(licenses?.priceOfKoi)}</span>
           </p>
         </div>
+        
       </div>
+      
     </div>
   );
 };
