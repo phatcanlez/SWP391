@@ -381,7 +381,9 @@ function ApproveOrder() {
                   {formatCurrency(order?.totalPrice)}
                 </span>
               </p>
-              <p style={{ marginTop : "20px" }}><span style={{ color:"#e25822" }}>Note:</span> {order?.note}</p>
+              <p style={{ marginTop: "20px" }}>
+                <span style={{ color: "#e25822" }}>Note:</span> {order?.note}
+              </p>
             </div>
           </div>
 
@@ -391,7 +393,10 @@ function ApproveOrder() {
             <InProcess id={order?.orderID} />
             {(((status === "PENDINGJAPAN" || status === "APPROVEDJAPAN") &&
               user?.country === "japan") ||
-              ((status === "ARRIVEDVIETNAM" || status === "PENDINGVIETNAM" || status === "APPROVED") &&
+              ((status === "ARRIVEDVIETNAM" ||
+                status === "PENDINGVIETNAM" ||
+                status === "APPROVED" ||
+                status === "PENDING") &&
                 user?.country === "vietnam")) && (
               <>
                 <button className="btn-item fail-btn" onClick={showModal}>
