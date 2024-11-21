@@ -58,26 +58,50 @@ const boxSizes = {
     name: "Small Box",
     maxLength: 25, // cm
     maxFish: 2,
-    maxWeight: 5 // kg
+    maxWeight: 5, // kg
   },
   medium: {
     name: "Medium Box",
     maxLength: 40, // cm
     maxFish: 1,
-    maxWeight: 8 // kg
+    maxWeight: 8, // kg
   },
   large: {
     name: "Large Box",
     maxLength: 55, // cm
     maxFish: 1,
-    maxWeight: 12 // kg
+    maxWeight: 12, // kg
   },
   extraLarge: {
     name: "Extra Large Box",
     maxLength: 83, // cm
     maxFish: 1,
-    maxWeight: 15 // kg
-  }
+    maxWeight: 15, // kg
+  },
+};
+
+// Add box size constants at the top
+const BOX_SIZES = {
+  small: {
+    dimensions: "30cm x 20cm x 20cm",
+    maxLength: 25,
+    maxWeight: 5,
+  },
+  medium: {
+    dimensions: "50cm x 30cm x 30cm",
+    maxLength: 44,
+    maxWeight: 8,
+  },
+  large: {
+    dimensions: "70cm x 40cm x 40cm",
+    maxLength: 65,
+    maxWeight: 12,
+  },
+  extraLarge: {
+    dimensions: "90cm x 50cm x 50cm",
+    maxLength: 83,
+    maxWeight: 15,
+  },
 };
 
 function Fish() {
@@ -339,19 +363,23 @@ function Fish() {
         medium: 0,
         large: 0,
         extraLarge: 0,
-        assignments: []
+        assignments: [],
       };
     }
 
     // Sắp xếp cá theo kích thước giảm dần
     const sortedFish = [...fishDetails].sort((a, b) => {
       if (!a || !b) return 0;
-      const sizeA = sizeOptions.find(opt => opt.sizeInCM === a.size);
-      const sizeB = sizeOptions.find(opt => opt.sizeInCM === b.size);
+      const sizeA = sizeOptions.find((opt) => opt.sizeInCM === a.size);
+      const sizeB = sizeOptions.find((opt) => opt.sizeInCM === b.size);
       if (!sizeA || !sizeB) return 0;
-      
-      const maxSizeA = parseFloat(sizeA.sizeInCM.split('-')[1] || sizeA.sizeInCM.split('-')[0]);
-      const maxSizeB = parseFloat(sizeB.sizeInCM.split('-')[1] || sizeB.sizeInCM.split('-')[0]);
+
+      const maxSizeA = parseFloat(
+        sizeA.sizeInCM.split("-")[1] || sizeA.sizeInCM.split("-")[0]
+      );
+      const maxSizeB = parseFloat(
+        sizeB.sizeInCM.split("-")[1] || sizeB.sizeInCM.split("-")[0]
+      );
       return maxSizeB - maxSizeA;
     });
 
@@ -361,55 +389,71 @@ function Fish() {
       large: 0,
       extraLarge: 0,
       assignments: [],
-      smallFish: [] // Track small fish for pairing
+      smallFish: [], // Track small fish for pairing
     };
 
     // Process each fish
     sortedFish.forEach((fish) => {
       if (!fish || !fish.size || !fish.weight) return;
 
-      const sizeOption = sizeOptions.find(opt => opt.sizeInCM === fish.size);
+      const sizeOption = sizeOptions.find((opt) => opt.sizeInCM === fish.size);
       if (!sizeOption) return;
 
-      const fishSize = parseFloat(sizeOption.sizeInCM.split('-')[1] || sizeOption.sizeInCM.split('-')[0]);
+      const fishSize = parseFloat(
+        sizeOption.sizeInCM.split("-")[1] || sizeOption.sizeInCM.split("-")[0]
+      );
       const fishWeight = parseFloat(fish.weight || 0);
 
       // Determine appropriate box
-      if (fishSize <= boxSizes.small.maxLength && fishWeight <= boxSizes.small.maxWeight) {
+      if (
+        fishSize <= boxSizes.small.maxLength &&
+        fishWeight <= boxSizes.small.maxWeight
+      ) {
         // Check if we can pair with another small fish
-        if (boxCounts.smallFish.length > 0 && 
-            (boxCounts.smallFish[0].weight + fishWeight) <= boxSizes.small.maxWeight) {
+        if (
+          boxCounts.smallFish.length > 0 &&
+          boxCounts.smallFish[0].weight + fishWeight <= boxSizes.small.maxWeight
+        ) {
           // Pair with existing small fish
           boxCounts.assignments.push({
-            boxType: 'small',
+            boxType: "small",
             fishCount: 2,
-            fish: [...boxCounts.smallFish, { size: fishSize, weight: fishWeight }]
+            fish: [
+              ...boxCounts.smallFish,
+              { size: fishSize, weight: fishWeight },
+            ],
           });
           boxCounts.smallFish = [];
         } else {
           // Add to small fish waiting list
           boxCounts.smallFish.push({ size: fishSize, weight: fishWeight });
         }
-      } else if (fishSize <= boxSizes.medium.maxLength && fishWeight <= boxSizes.medium.maxWeight) {
+      } else if (
+        fishSize <= boxSizes.medium.maxLength &&
+        fishWeight <= boxSizes.medium.maxWeight
+      ) {
         boxCounts.medium++;
         boxCounts.assignments.push({
-          boxType: 'medium',
+          boxType: "medium",
           fishCount: 1,
-          fish: [{ size: fishSize, weight: fishWeight }]
+          fish: [{ size: fishSize, weight: fishWeight }],
         });
-      } else if (fishSize <= boxSizes.large.maxLength && fishWeight <= boxSizes.large.maxWeight) {
+      } else if (
+        fishSize <= boxSizes.large.maxLength &&
+        fishWeight <= boxSizes.large.maxWeight
+      ) {
         boxCounts.large++;
         boxCounts.assignments.push({
-          boxType: 'large',
+          boxType: "large",
           fishCount: 1,
-          fish: [{ size: fishSize, weight: fishWeight }]
+          fish: [{ size: fishSize, weight: fishWeight }],
         });
       } else {
         boxCounts.extraLarge++;
         boxCounts.assignments.push({
-          boxType: 'extraLarge',
+          boxType: "extraLarge",
           fishCount: 1,
-          fish: [{ size: fishSize, weight: fishWeight }]
+          fish: [{ size: fishSize, weight: fishWeight }],
         });
       }
     });
@@ -418,17 +462,15 @@ function Fish() {
     if (boxCounts.smallFish.length > 0) {
       boxCounts.small++;
       boxCounts.assignments.push({
-        boxType: 'small',
+        boxType: "small",
         fishCount: boxCounts.smallFish.length,
-        fish: [...boxCounts.smallFish]
+        fish: [...boxCounts.smallFish],
       });
     }
 
     // Calculate final small box count
     boxCounts.small = Math.ceil(
-      boxCounts.assignments
-        .filter(a => a.boxType === 'small')
-        .length
+      boxCounts.assignments.filter((a) => a.boxType === "small").length
     );
 
     return boxCounts;
@@ -444,7 +486,7 @@ function Fish() {
 
   const handleFormChange = (changedValues, allValues) => {
     console.log("Form values changed:", changedValues);
-    
+
     // Calculate new values
     const newTotalWeight = calculateTotalWeight(allValues.fishDetails);
     const newBoxCounts = calculateBoxes(allValues.fishDetails);
@@ -464,10 +506,10 @@ function Fish() {
       boxCounts: newBoxCounts,
       totalPrice: newTotalPrice,
       fishImages,
-      licenseImages
+      licenseImages,
     };
 
-    localStorage.setItem('fishFormData', JSON.stringify(dataToSave));
+    localStorage.setItem("fishFormData", JSON.stringify(dataToSave));
     console.log("Updated box counts:", newBoxCounts);
   };
 
@@ -792,7 +834,10 @@ function Fish() {
           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
         }}
       >
-        <Title level={4} style={{ color: "#e25822", marginBottom: 24 }}>
+        <Title
+          level={4}
+          style={{ color: "#e25822", marginBottom: 24, fontWeight: "bold" }}
+        >
           Order Summary
         </Title>
         <Row gutter={[16, 16]}>
@@ -836,7 +881,21 @@ function Fish() {
           <Col span={6}>
             <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: "#666" }}>Small Boxes</span>}
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Small Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.small.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.small}
                 valueStyle={{ color: "#000" }}
               />
@@ -845,7 +904,21 @@ function Fish() {
           <Col span={6}>
             <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: "#666" }}>Medium Boxes</span>}
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Medium Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.medium.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.medium}
                 valueStyle={{ color: "#000" }}
               />
@@ -854,7 +927,21 @@ function Fish() {
           <Col span={6}>
             <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: "#666" }}>Large Boxes</span>}
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Large Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.large.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.large}
                 valueStyle={{ color: "#000" }}
               />
@@ -863,7 +950,21 @@ function Fish() {
           <Col span={6}>
             <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: "#666" }}>Extra Large Boxes</span>}
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Extra Large Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.extraLarge.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.extraLarge}
                 valueStyle={{ color: "#000" }}
               />

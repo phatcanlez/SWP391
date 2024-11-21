@@ -163,7 +163,6 @@ class App extends Component {
     });
   }
 
-  // New method to set origin and destination from outside
   setLocations = (origin, destination) => {
     this.setState(
       {
