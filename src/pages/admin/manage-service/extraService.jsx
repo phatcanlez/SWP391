@@ -1,5 +1,6 @@
 import { Form, Input } from "antd";
 import CRUDTemplate from "../../../components/crud-template";
+import TextArea from "antd/es/input/TextArea";
 
 function ExtraService() {
   const columns = [
@@ -17,6 +18,7 @@ function ExtraService() {
       title: "Price",
       dataIndex: "price",
       key: "price",
+
       render: (text) => {
         // Format the price with spaces every three digits
         return text
@@ -28,6 +30,7 @@ function ExtraService() {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      width: 400,
     },
   ];
 
@@ -61,7 +64,7 @@ function ExtraService() {
         label="Description"
         rules={[{ required: true }]}
       >
-        <Input />
+        <TextArea />
       </Form.Item>
     </>
   );
