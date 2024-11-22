@@ -41,11 +41,10 @@ public class FeedbackAPI {
         return ResponseEntity.ok(feedbackService.getAllFeedbacks(page, size));
     }
 
-    @GetMapping("/api/feedback/{id}")
-    public ResponseEntity getFeedbackById(@PathVariable String id) {
-        return ResponseEntity.ok(feedbackService.viewFeedbackById(id));
+    @GetMapping("/api/feedback/{orderId}")
+    public ResponseEntity getFeedbackById(@PathVariable String orderId) {
+        return ResponseEntity.ok(feedbackService.viewFeedbackById(orderId));
     }
-
 
     @PutMapping("/api/feedback")
     public ResponseEntity updateFeedback(@RequestBody @Valid FeedbackUpdateRequest feedback) {

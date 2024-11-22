@@ -31,14 +31,18 @@ public class ExtraServiceAPI {
         }
 
         @GetMapping("/api/extraservice/{id}")
-        public ResponseEntity getLicenseById(@PathVariable long id) {
+        public ResponseEntity getExtraServiceById(@PathVariable long id) {
             return ResponseEntity.ok(extraServiceService.viewExtraServiceById(id));
         }
 
 
-        @PutMapping("/api/extraservice/{id}")
-        public ResponseEntity updateLicense(@RequestBody @Valid ExtraService extraService,@PathVariable long id) {
-            return ResponseEntity.ok(extraServiceService.updateExtraService(extraService, id));
+        @PutMapping("/api/extraservice")
+        public ResponseEntity updateExtraService(@RequestBody @Valid ExtraService extraService) {
+            return ResponseEntity.ok(extraServiceService.updateExtraService(extraService));
         }
 
+        @DeleteMapping("/api/extraservice/{id}")
+        public ResponseEntity deleteExtraService(@PathVariable long id) {
+            return ResponseEntity.ok(extraServiceService.deleteExtraService(id));
+        }
 }

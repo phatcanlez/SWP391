@@ -13,6 +13,7 @@ import com.example.SWP391.model.Enum.Paystatus;
 import com.example.SWP391.model.Enum.StatusInfo;
 import com.example.SWP391.repository.OrderRepository;
 import com.example.SWP391.repository.PaymentRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,12 @@ public class PaymentService {
         return list;
     }
 
+    @Transactional
+    public List<Payment> getPaymentByStatus(String status){
+        List<Payment> list = paymentRepository.findPaymentByStatus(status);
+        return list;
+    }
+
     public Payment createPayment(PaymentRequest paymentRequest){
         try{
             Payment payment = modelMapper.map(paymentRequest, Payment.class);
@@ -55,6 +62,25 @@ public class PaymentService {
             return paymentRepository.save(payment);
         }catch (Exception e){
             throw new DuplicateException("This payment is existed!!");
+        }
+    }
+
+    public Payment updatePaymentToFail(long id){
+        Payment payment = paymentRepository.findPaymentByPaymentId(id);
+        if(payment == null){
+            throw new NotFoundException("Not found this payment");
+        }
+        if(payment.getStatus().equals(StatusInfo.SUCCESS.toString())){
+            throw new DuplicateException("This payment is successful!");
+        }
+        try{
+            payment.setTypeOfPay(PayType.BANKING.toString());
+            payment.setTimeOfPay(new Date(System.currentTimeMillis()));
+            payment.setStatus(Paystatus.CANCEL.toString());
+            paymentRepository.save(payment);
+            return payment;
+        }catch (Exception e){
+            throw new DuplicateException("Update set payment to fail have error");
         }
     }
 
@@ -69,7 +95,7 @@ public class PaymentService {
     }
 
     public String updatePayment(String orderId){
-        Payment oldPayment = paymentRepository.findPaymentByOrdersOrderID(orderId);
+        Payment oldPayment = orderRepository.findByorderID(orderId).getPayment();
         if(oldPayment == null){
             throw new NotFoundException("Not found!");
         }
@@ -88,7 +114,8 @@ public class PaymentService {
     }
 
     public Payment updatePaymentStatus(String orderId){
-        Payment payment = paymentRepository.findPaymentByOrdersOrderID(orderId);
+
+        Payment payment = orderRepository.findByorderID(orderId).getPayment();
         if(payment == null){
             throw new NotFoundException("Not found!");
         }
@@ -103,7 +130,7 @@ public class PaymentService {
                 emailDetail.setReceiver(authenticationService.getCurrentAccount());
                 emailDetail.setSubject("Payment success");
                 emailDetail.setButton("Go home page");
-                emailDetail.setLink("http://koikichi.io.vn/");
+                emailDetail.setLink("http://koikichi.io.vn");
                 emailDetail.setContent("The payment of order: " + orderId +" is successful, thank you for using our service");
                 emailService.sendEmail(emailDetail);
             return payment;
@@ -119,13 +146,14 @@ public class PaymentService {
 
         //code thanh toan
         Orders order = orderRepository.findByorderID(orderId);
-        double money = order.getTotalPrice() * 100;  // Vnp requires the amount * 100 and no decimal
+        double money = order.getTotalPrice() * 100;  // Vnp requires the amount * 100 and no decimal //đây là tiền đô
+
         String amount = String.valueOf((int) money);
 
         String tmnCode = "FCQGXYEF";
         String secretKey = "5DHWJUAO6ELG2KFHDGET7OCSEK9NF33R";
         String vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        String returnUrl = "http://koikichi.io.vn/?orderId=" + order.getOrderID();
+        String returnUrl = "http://koikichi.io.vn/pay-success/?orderId=" + order.getOrderID();
         String currCode = "VND";
 
         Map<String, String> vnp_Params = new TreeMap<>();

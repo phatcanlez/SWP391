@@ -16,4 +16,6 @@ public class OrderResponse {
     String name;
     Status status;
     String payment;
+    String type;
+    String shipmethod;
 }

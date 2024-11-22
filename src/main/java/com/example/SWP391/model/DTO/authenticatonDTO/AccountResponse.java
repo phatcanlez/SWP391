@@ -17,4 +17,6 @@ public class AccountResponse {
     String address;
     String token;
     String role;
+    Boolean status;
+    String country;
 }
