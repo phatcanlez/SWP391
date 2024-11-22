@@ -25,9 +25,15 @@ import PriceListDistance from "./pages/admin/manage-price/priceListDistance";
 import Feedback from "./pages/admin/feedback";
 import Delivery from "./pages/admin/manage-service/delivery";
 import AllOrder, {
+  ApprovedJapan,
+  ApprovedJapanStaffVietnam,
   FailOrder,
   History,
+  Waiting2ndStaff,
+  WaitingDomestic,
+  WaitingFor2ndStaff,
   WaitingOrder,
+  WaitingOversea,
 } from "./pages/staff/order/manage-order";
 import StaffProfile from "./pages/staff/profile";
 import AdminProfile from "./pages/admin/profile";
@@ -46,7 +52,9 @@ import AllOrder_AD, {
   FailOrder_AD,
   History_AD,
   WaitingOrder_AD,
-} from "./pages/admin/manage-order";
+  Refunded_AD,
+  UnRefund_AD,
+} from "./pages/admin/manage-order/main";
 import OrderDetail_AD from "./pages/admin/manage-order/order-detail";
 import ApproveOrder from "./pages/staff/order/approve-order";
 import Reject from "./pages/staff/reject-page";
@@ -56,8 +64,22 @@ import PaymentFail from "./pages/customer/payment/fail";
 import Complain from "./pages/staff/complain";
 import CustomerComplain from "./pages/customer/complain";
 import CustomerFaqs from "./pages/customer/faqs";
+import { useEffect } from "react";
+// import requestPermissions from "./config/notification";
+
+import StaffList from "./pages/admin/staff-list";
+
+import ManageCustomers from "./pages/admin/manage-user/customer";
+import RoomChat from "./components/roomChat";
+import ChatDetail from "./components/chat-detail";
+import Free from "./pages/staff/free-page";
+import WaitingAnotherStaff from "./pages/staff/order/waiting-another-staff";
 
 function App() {
+  // useEffect(() => {
+  //   requestPermissions();
+  // }, []);
+
   const ProtectRouteAuth = ({ children }) => {
     const location = useLocation();
     const user = useSelector((store) => store);
@@ -149,12 +171,24 @@ function App() {
           element: <History_AD />,
         },
         {
+          path: "un-refund",
+          element: <UnRefund_AD />,
+        },
+        {
+          path: "refunded",
+          element: <Refunded_AD />,
+        },
+        {
           path: "report",
           element: <Report />,
         },
         {
           path: "manage-user",
           element: <ManageUser />,
+        },
+        {
+          path: "manage-customer",
+          element: <ManageCustomers />,
         },
         {
           path: "extra-service",
@@ -188,6 +222,10 @@ function App() {
           path: "profile",
           element: <AdminProfile />,
         },
+        {
+          path: "staff",
+          element: <StaffList />,
+        },
       ],
     },
 
@@ -195,6 +233,16 @@ function App() {
       path: "customer-service",
       element: <CustomerService />,
       children: [
+        {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "/customer-service/chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
         {
           path: "account",
           element: <Account />,
@@ -244,6 +292,16 @@ function App() {
       ),
       children: [
         {
+          path: "chat",
+          element: <RoomChat />,
+          children: [
+            {
+              path: "/staff/chat/:id",
+              element: <ChatDetail />,
+            },
+          ],
+        },
+        {
           path: "order",
           element: <AllOrder />,
         },
@@ -290,6 +348,42 @@ function App() {
         {
           path: "success",
           element: <OrderSuccess />,
+        },
+        {
+          path: "empty",
+          element: <Free />,
+        },
+        {
+          path: "waiting-oversea",
+          element: <WaitingOversea />,
+        },
+        {
+          path: "waiting-2nd-staff",
+          element: <Waiting2ndStaff />,
+        },
+        {
+          path: "waiting-domestic",
+          element: <WaitingDomestic />,
+        },
+        {
+          path: "wait-for-another-staff",
+          element: <WaitingAnotherStaff />,
+        },
+        {
+          path: "wait-for-staff",
+          element: <WaitingFor2ndStaff />,
+        },
+        {
+          path: "approved-japan",
+          element: <ApprovedJapan />,
+        },
+        {
+          path: "approved-japan-by-staff-vietnam",
+          element: <ApprovedJapanStaffVietnam />,
+        },
+        {
+          path: "view/waiting-for-second-staff/:id",
+          element: <WaitingAnotherStaff />,
         },
       ],
     },

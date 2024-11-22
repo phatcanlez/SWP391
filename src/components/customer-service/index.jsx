@@ -3,6 +3,7 @@ import {
   ExclamationCircleOutlined,
   FormOutlined,
   HistoryOutlined,
+  MessageOutlined,
   QuestionCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -25,6 +26,7 @@ const items = [
   getItem("Create Order", "order", <FormOutlined />),
   getItem("Orders History", "history", <HistoryOutlined />),
   getItem("Complain", "cuscomplain", <ExclamationCircleOutlined />),
+  getItem("Message", "chat", <MessageOutlined />),
   getItem("FAQs", "cusfaq", <QuestionCircleOutlined />),
 ];
 

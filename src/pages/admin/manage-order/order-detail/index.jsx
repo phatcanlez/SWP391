@@ -10,22 +10,31 @@ import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../../../staff/order/pending/pending";
-import { approve } from "../../../../redux/features/orderSlice";
 
 function OrderDetail_AD() {
   const { id } = useParams();
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [img, setImg] = useState("");
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
 
   const fetchOrderDetail = async (id) => {
     setLoading(true);
     try {
       const response = await api.get(`orders/${id}`);
       setOrder(response.data);
+      setImg(response.data.image);
       setService(response.data.orderDetail.extraService);
       if (response.data.status.length > 0) {
         setStatus(
@@ -96,7 +105,6 @@ function OrderDetail_AD() {
           order: id,
           description: "The order is approved",
         });
-        dispatch(approve(setvalue));
         toast.success("APPROVED");
       } else {
         toast.error("You have an order in processing");
@@ -162,10 +170,10 @@ function OrderDetail_AD() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
-                {order.senderPhoneNumber}
+                <span className="color">{order?.senderName}</span> - (+84)
+                {order?.senderPhoneNumber}
               </p>
-              <p>{order.senderAddress}</p>
+              <p>{order?.senderAddress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
@@ -176,10 +184,10 @@ function OrderDetail_AD() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order.reciverName} </span>- (+84)
-                {order.reciverPhoneNumber}
+                <span className="color">{order?.reciverName} </span>- (+84)
+                {order?.reciverPhoneNumber}
               </p>
-              <p>{order.reciverAdress}</p>
+              <p>{order?.reciverAdress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
@@ -239,22 +247,23 @@ function OrderDetail_AD() {
                 <div key={service.id} className="item item-cnt">
                   <p className="color">{index + 1}</p>
                   <p>{service.nameService}</p>
-                  <p>{service.price}</p>
+                  <p>{formatCurrency(service.price)}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <p>
-            Total price:{" "}
+            Total fish price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
-              {order.orderPrice}
+              {formatCurrency(order.orderPrice)}
             </span>
           </p>
         </div>
       </div>
 
       <h5 className="title">Delivery status</h5>
+
       <div className="bg-w">
         {(status === "APPROVED" ||
           status === "PENDING" ||
@@ -268,6 +277,12 @@ function OrderDetail_AD() {
                 </button>
               </>
             )}
+            {status === "SUCCESS" ? (
+              <img src={img} style={{ margin: "0 auto", display: "block" }} />
+            ) : (
+              ""
+            )}
+
             {status === "SUCCESS" && (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <button className="fb-btn btn-item" onClick={showFBModal}>

@@ -7,6 +7,15 @@ import { useSelector } from "react-redux";
 
 const { Title, Text } = Typography;
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+};
+
 const Price = forwardRef((props, ref) => {
   const [extraServices, setExtraServices] = useState([]);
   const [shippingMethods, setShippingMethods] = useState([]);
@@ -215,9 +224,14 @@ const Price = forwardRef((props, ref) => {
         return total + (service ? service.price : 0);
       }, 0);
 
+      // Get distance from localStorage
+      const distance = parseFloat(localStorage.getItem("orderDistance")) || 0;
+      console.log("Using distance for calculation:", distance);
+
       console.log("Price calculation:", {
         shippingFee,
         extraServicesTotal,
+        distance,
         total: shippingFee + extraServicesTotal,
       });
 
@@ -229,6 +243,7 @@ const Price = forwardRef((props, ref) => {
         selectedShippingMethod,
         totalPrice: finalTotal,
         estimatePrice: shippingFee,
+        distance: distance ? parseFloat(distance) : 0,
       };
       localStorage.setItem("priceFormData", JSON.stringify(priceData));
       localStorage.setItem("orderTotalPrice", finalTotal.toString());
@@ -295,9 +310,8 @@ const Price = forwardRef((props, ref) => {
       try {
         const fishData = JSON.parse(localStorage.getItem("fishFormData"));
         const addressData = JSON.parse(localStorage.getItem("orderFormData"));
-        const distance = parseFloat(localStorage.getItem("orderDistance"));
 
-        // Submit order first
+        // Submit order với type từ addressData
         const orderData = {
           reciverAdress: addressData.receiverAddress,
           senderAddress: addressData.senderAddress,
@@ -312,16 +326,16 @@ const Price = forwardRef((props, ref) => {
           mediumBox: parseInt(fishData.boxCounts?.medium || 0),
           largeBox: parseInt(fishData.boxCounts?.large || 0),
           extraLargeBox: parseInt(fishData.boxCounts?.extraLarge || 0),
-          kilometer: parseFloat(distance || 0),
+          kilometer: parseFloat(addressData.kilometer || 0),
           totalWeight: parseFloat(getTotalWeightFromStorage() || 0),
           quantity: parseInt(fishData.fishDetails?.length || 0),
-          type: "OVERSEA",
+          type: addressData.shippingType.toUpperCase() || "DOMESTIC",
           shipMethod: parseInt(selectedShippingMethod),
           extraService: selectedServices.map((id) => parseInt(id)),
           username: user.username,
         };
 
-        console.log("Submitting order:", orderData);
+        console.log("Submitting order with type:", orderData.type);
         const orderResponse = await api.post("orders", orderData);
         console.log("Order created successfully:", orderResponse.data);
 
@@ -345,7 +359,9 @@ const Price = forwardRef((props, ref) => {
               };
 
               console.log(
-                `Submitting license for fish ${index + 1}:`, licenseData);
+                `Submitting license for fish ${index + 1}:`,
+                licenseData
+              );
               try {
                 await api.post("licence", licenseData);
                 console.log(`License ${index + 1} submitted successfully`);
@@ -393,43 +409,56 @@ const Price = forwardRef((props, ref) => {
   return (
     <Card>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <Title level={4} style={{ marginBottom: 24, color: '#e25822' }}>Shipping Method</Title>
+        <Title level={4} style={{ marginBottom: 24, color: "#e25822" }}>
+          Shipping Method
+        </Title>
 
         <Spin spinning={loading}>
           <Radio.Group
             onChange={handleShippingMethodChange}
             value={selectedShippingMethod}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
           >
             <Space direction="vertical" style={{ width: "100%" }}>
               {shippingMethods.map((method) => (
-                <Card 
+                <Card
                   key={method.shipMethodId}
-                  style={{ 
-                    width: '100%',
-                    cursor: 'pointer',
-                    border: selectedShippingMethod === method.shipMethodId ? '2px solid #2c2c2c' : '1px solid #d9d9d9'
+                  style={{
+                    width: "100%",
+                    cursor: "pointer",
+                    border:
+                      selectedShippingMethod === method.shipMethodId
+                        ? "2px solid #2c2c2c"
+                        : "1px solid #d9d9d9",
                   }}
                   onClick={() => setSelectedShippingMethod(method.shipMethodId)}
                 >
                   <Radio value={method.shipMethodId}>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center',
-                      width: '100%',
-                      gap: '16px'
-                    }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
+                        gap: "16px",
+                      }}
+                    >
                       <CarOutlined
                         style={{
                           fontSize: "24px",
-                          color: method.shipMethodId === selectedShippingMethod ? '#2c2c2c' : '#666'
+                          color:
+                            method.shipMethodId === selectedShippingMethod
+                              ? "#2c2c2c"
+                              : "#666",
                         }}
                       />
                       <div style={{ flex: 1 }}>
-                        <Text strong style={{ fontSize: '16px', display: 'block' }}>
+                        <Text
+                          strong
+                          style={{ fontSize: "16px", display: "block" }}
+                        >
                           {method.name}
                         </Text>
-                        <Text type="secondary" style={{ fontSize: '14px' }}>
+                        <Text type="secondary" style={{ fontSize: "14px" }}>
                           {method.description}
                         </Text>
                       </div>
@@ -441,7 +470,9 @@ const Price = forwardRef((props, ref) => {
           </Radio.Group>
         </Spin>
 
-        <Title level={4} style={{ margin: '24px 0 16px', color: '#e25822' }}>Extra Services</Title>
+        <Title level={4} style={{ margin: "24px 0 16px", color: "#e25822" }}>
+          Extra Services
+        </Title>
 
         <Spin spinning={loading}>
           <Space direction="vertical" style={{ width: "100%" }}>
@@ -452,6 +483,8 @@ const Price = forwardRef((props, ref) => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "8px 0",
+                  borderBottom: "1px solid #f0f0f0"
                 }}
               >
                 <Checkbox
@@ -463,32 +496,38 @@ const Price = forwardRef((props, ref) => {
                   }
                   checked={selectedServices.includes(service.extraServiceId)}
                 >
-                  {service.nameService}
+                  <span style={{ marginLeft: 8, color: '#666' }}>{service.nameService}</span>
                 </Checkbox>
-                <span>{service.price}$ </span>
+                <span style={{ 
+                  fontWeight: 500,
+                  color: '#e25822'
+                }}>
+                  {formatCurrency(service.price)}
+                </span>
               </div>
             ))}
           </Space>
         </Spin>
 
         <Card style={{ backgroundColor: "#f5f5f5", marginTop: 16 }}>
-          <Title level={4} style={{color: '#e25822'}}>Price Summary</Title>
+          <Title level={4} style={{ color: "#e25822" }}>
+            Price Summary
+          </Title>
           <Space direction="vertical" style={{ width: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Shipping Fee:</Text>
-              <Text strong>${(estimatePrice || 0).toFixed(2)}</Text>
+              <Text strong>{formatCurrency(estimatePrice || 0)}</Text>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Text>Extra Services:</Text>
               <Text strong>
-                $
-                {(
+                {formatCurrency(
                   extraServices
                     .filter((service) =>
                       selectedServices.includes(service.extraServiceId)
                     )
                     .reduce((sum, service) => sum + service.price, 0) || 0
-                ).toFixed(2)}
+                )}
               </Text>
             </div>
             <div
@@ -500,9 +539,11 @@ const Price = forwardRef((props, ref) => {
                 paddingTop: 16,
               }}
             >
-              <Title level={4} style={{color: '#e25822'}}>Total:</Title>
+              <Title level={4} style={{ color: "#e25822" }}>
+                Total:
+              </Title>
               <Title level={4} type="danger">
-                ${(totalPrice || 0).toFixed(2)}
+                {formatCurrency(totalPrice || 0)}
               </Title>
             </div>
           </Space>

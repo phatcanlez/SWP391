@@ -21,7 +21,7 @@ const { Option } = Select;
 const { Title, Text } = Typography;
 
 const sizeOptions = [
-  { sizeInCM: "-19.9", sizeInInch: "7.86", points: 1.25 },
+  { sizeInCM: "1-19.9", sizeInInch: "7.86", points: 1.25 },
   { sizeInCM: "20-25", sizeInInch: "7.87 - 9.84", points: 2 },
   { sizeInCM: "25.1 - 30", sizeInInch: "9.85 - 11.81", points: 2.5 },
   { sizeInCM: "30.1 - 40", sizeInInch: "11.82 - 15.75", points: 3 },
@@ -42,6 +42,67 @@ const sizeOptions = [
   { sizeInCM: "65.1 - 73", sizeInInch: "25.6 - 28.7", points: 16 },
   { sizeInCM: "73.1 - 83", sizeInInch: "28.8 - 32.6", points: 18 },
 ];
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
+// Định nghĩa kích thước box và quy tắc đóng gói
+const boxSizes = {
+  small: {
+    name: "Small Box",
+    maxLength: 25, // cm
+    maxFish: 2,
+    maxWeight: 5, // kg
+  },
+  medium: {
+    name: "Medium Box",
+    maxLength: 40, // cm
+    maxFish: 1,
+    maxWeight: 8, // kg
+  },
+  large: {
+    name: "Large Box",
+    maxLength: 55, // cm
+    maxFish: 1,
+    maxWeight: 12, // kg
+  },
+  extraLarge: {
+    name: "Extra Large Box",
+    maxLength: 83, // cm
+    maxFish: 1,
+    maxWeight: 15, // kg
+  },
+};
+
+// Add box size constants at the top
+const BOX_SIZES = {
+  small: {
+    dimensions: "30cm x 20cm x 20cm",
+    maxLength: 25,
+    maxWeight: 5,
+  },
+  medium: {
+    dimensions: "50cm x 30cm x 30cm",
+    maxLength: 44,
+    maxWeight: 8,
+  },
+  large: {
+    dimensions: "70cm x 40cm x 40cm",
+    maxLength: 65,
+    maxWeight: 12,
+  },
+  extraLarge: {
+    dimensions: "90cm x 50cm x 50cm",
+    maxLength: 83,
+    maxWeight: 15,
+  },
+};
 
 function Fish() {
   const [fishCount, setFishCount] = useState(0);
@@ -296,43 +357,123 @@ function Fish() {
   };
 
   const calculateBoxes = (fishDetails) => {
-    let totalPoints = 0;
-    (fishDetails || []).forEach((fish) => {
-      const sizeOption = sizeOptions.find(
-        (option) => option.sizeInCM === fish.size
+    if (!fishDetails || fishDetails.length === 0) {
+      return {
+        small: 0,
+        medium: 0,
+        large: 0,
+        extraLarge: 0,
+        assignments: [],
+      };
+    }
+
+    // Sắp xếp cá theo kích thước giảm dần
+    const sortedFish = [...fishDetails].sort((a, b) => {
+      if (!a || !b) return 0;
+      const sizeA = sizeOptions.find((opt) => opt.sizeInCM === a.size);
+      const sizeB = sizeOptions.find((opt) => opt.sizeInCM === b.size);
+      if (!sizeA || !sizeB) return 0;
+
+      const maxSizeA = parseFloat(
+        sizeA.sizeInCM.split("-")[1] || sizeA.sizeInCM.split("-")[0]
       );
-      if (sizeOption) {
-        totalPoints += sizeOption.points;
+      const maxSizeB = parseFloat(
+        sizeB.sizeInCM.split("-")[1] || sizeB.sizeInCM.split("-")[0]
+      );
+      return maxSizeB - maxSizeA;
+    });
+
+    const boxCounts = {
+      small: 0,
+      medium: 0,
+      large: 0,
+      extraLarge: 0,
+      assignments: [],
+      smallFish: [], // Track small fish for pairing
+    };
+
+    // Process each fish
+    sortedFish.forEach((fish) => {
+      if (!fish || !fish.size || !fish.weight) return;
+
+      const sizeOption = sizeOptions.find((opt) => opt.sizeInCM === fish.size);
+      if (!sizeOption) return;
+
+      const fishSize = parseFloat(
+        sizeOption.sizeInCM.split("-")[1] || sizeOption.sizeInCM.split("-")[0]
+      );
+      const fishWeight = parseFloat(fish.weight || 0);
+
+      // Determine appropriate box
+      if (
+        fishSize <= boxSizes.small.maxLength &&
+        fishWeight <= boxSizes.small.maxWeight
+      ) {
+        // Check if we can pair with another small fish
+        if (
+          boxCounts.smallFish.length > 0 &&
+          boxCounts.smallFish[0].weight + fishWeight <= boxSizes.small.maxWeight
+        ) {
+          // Pair with existing small fish
+          boxCounts.assignments.push({
+            boxType: "small",
+            fishCount: 2,
+            fish: [
+              ...boxCounts.smallFish,
+              { size: fishSize, weight: fishWeight },
+            ],
+          });
+          boxCounts.smallFish = [];
+        } else {
+          // Add to small fish waiting list
+          boxCounts.smallFish.push({ size: fishSize, weight: fishWeight });
+        }
+      } else if (
+        fishSize <= boxSizes.medium.maxLength &&
+        fishWeight <= boxSizes.medium.maxWeight
+      ) {
+        boxCounts.medium++;
+        boxCounts.assignments.push({
+          boxType: "medium",
+          fishCount: 1,
+          fish: [{ size: fishSize, weight: fishWeight }],
+        });
+      } else if (
+        fishSize <= boxSizes.large.maxLength &&
+        fishWeight <= boxSizes.large.maxWeight
+      ) {
+        boxCounts.large++;
+        boxCounts.assignments.push({
+          boxType: "large",
+          fishCount: 1,
+          fish: [{ size: fishSize, weight: fishWeight }],
+        });
+      } else {
+        boxCounts.extraLarge++;
+        boxCounts.assignments.push({
+          boxType: "extraLarge",
+          fishCount: 1,
+          fish: [{ size: fishSize, weight: fishWeight }],
+        });
       }
     });
 
-    let smallBoxes = 0;
-    let mediumBoxes = 0;
-    let largeBoxes = 0;
-    let extraLargeBoxes = 0;
-
-    while (totalPoints > 0) {
-      if (totalPoints >= 16) {
-        extraLargeBoxes++;
-        totalPoints -= 16;
-      } else if (totalPoints >= 12) {
-        largeBoxes++;
-        totalPoints -= 12;
-      } else if (totalPoints >= 8) {
-        mediumBoxes++;
-        totalPoints -= 8;
-      } else {
-        smallBoxes++;
-        totalPoints -= 4;
-      }
+    // Handle remaining unpaired small fish
+    if (boxCounts.smallFish.length > 0) {
+      boxCounts.small++;
+      boxCounts.assignments.push({
+        boxType: "small",
+        fishCount: boxCounts.smallFish.length,
+        fish: [...boxCounts.smallFish],
+      });
     }
 
-    return {
-      small: smallBoxes,
-      medium: mediumBoxes,
-      large: largeBoxes,
-      extraLarge: extraLargeBoxes,
-    };
+    // Calculate final small box count
+    boxCounts.small = Math.ceil(
+      boxCounts.assignments.filter((a) => a.boxType === "small").length
+    );
+
+    return boxCounts;
   };
 
   const calculateTotalPrice = (fishDetails) => {
@@ -345,82 +486,66 @@ function Fish() {
 
   const handleFormChange = (changedValues, allValues) => {
     console.log("Form values changed:", changedValues);
-    updateSummary(allValues);
 
-    console.log("Current fish images:", fishImages);
-    console.log("Current license images:", licenseImages);
+    // Calculate new values
+    const newTotalWeight = calculateTotalWeight(allValues.fishDetails);
+    const newBoxCounts = calculateBoxes(allValues.fishDetails);
+    const newFishCount = allValues.fishDetails?.length || 0;
+    const newTotalPrice = calculateTotalPrice(allValues.fishDetails);
 
-    // Lưu ảnh cá
-    const fishImagesData = {};
-    Object.entries(fishImages).forEach(([key, value]) => {
-      if (value && value.url) {
-        fishImagesData[key] = {
-          url: value.url,
-          base64: value.base64,
-          status: "done",
-        };
-      }
-    });
+    // Update state
+    setTotalWeight(newTotalWeight);
+    setBoxCounts(newBoxCounts);
+    setFishCount(newFishCount);
+    setTotalPrice(newTotalPrice);
 
-    // Lưu ảnh giấy phép
-    const licenseImagesData = {};
-    Object.entries(licenseImages).forEach(([key, value]) => {
-      if (value && value.url) {
-        licenseImagesData[key] = {
-          url: value.url,
-          base64: value.base64,
-          status: "done",
-        };
-      }
-    });
-
+    // Save to localStorage
     const dataToSave = {
       ...allValues,
-      totalWeight: calculateTotalWeight(allValues.fishDetails),
-      boxCounts: calculateBoxes(allValues.fishDetails),
-      fishImages: fishImagesData,
-      licenseImages: licenseImagesData,
-      totalPrice: calculateTotalPrice(allValues.fishDetails),
+      totalWeight: newTotalWeight,
+      boxCounts: newBoxCounts,
+      totalPrice: newTotalPrice,
+      fishImages,
+      licenseImages,
     };
 
-    console.log("Saving data to localStorage:", dataToSave);
     localStorage.setItem("fishFormData", JSON.stringify(dataToSave));
-
-    // Load lại tất cả thông tin
-    loadAllData();
+    console.log("Updated box counts:", newBoxCounts);
   };
 
   // Thêm hàm mới để load tất cả dữ liệu
   const loadAllData = () => {
     try {
-      const savedData = JSON.parse(localStorage.getItem("fishFormData") || "{}");
-      
+      const savedData = JSON.parse(
+        localStorage.getItem("fishFormData") || "{}"
+      );
+
       // Load form values
       form.setFieldsValue(savedData);
-      
+
       // Load images
       loadSavedImages();
-      
+
       // Load summary data
       if (savedData.fishDetails) {
         updateSummary(savedData);
       }
-      
+
       // Load total weight
       if (savedData.totalWeight) {
         setTotalWeight(savedData.totalWeight);
       }
-      
+
       // Load box counts
       if (savedData.boxCounts) {
         setBoxCounts(savedData.boxCounts);
       }
-      
+
       // Load fish count
       if (savedData.fishDetails) {
         setFishCount(savedData.fishDetails.length);
       }
-      
+
       // Load total price
       if (savedData.totalPrice) {
         setTotalPrice(savedData.totalPrice);
@@ -477,23 +602,29 @@ function Fish() {
             {fields.map((field, index) => (
               <Card
                 key={field.key}
-                style={{ 
+                style={{
                   marginBottom: 24,
-                  borderRadius: '8px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 }}
                 title={
-                  <div style={{ color: '#e25822', fontSize: '18px', fontWeight: 'bold' }}>
+                  <div
+                    style={{
+                      color: "#e25822",
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                    }}
+                  >
                     Fish #{index + 1}
                   </div>
                 }
                 extra={
                   <Button
                     onClick={() => remove(field.name)}
-                    icon={<DeleteOutlined style={{ color: '#fff' }} />}
-                    style={{ 
-                      backgroundColor: '#ff4d4f',
-                      borderColor: '#ff4d4f',
+                    icon={<DeleteOutlined style={{ color: "#fff" }} />}
+                    style={{
+                      backgroundColor: "#ff4d4f",
+                      borderColor: "#ff4d4f",
                     }}
                     shape="circle"
                   />
@@ -504,11 +635,13 @@ function Fish() {
                     <Form.Item
                       name={[field.name, "weight"]}
                       label={<span style={{ fontWeight: 500 }}>Weight</span>}
-                      rules={[{ required: true, message: "Please enter Weight" }]}
+                      rules={[
+                        { required: true, message: "Please enter Weight" },
+                      ]}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100%", borderRadius: '6px' }}
+                        style={{ width: "100%", borderRadius: "6px" }}
                         placeholder="Weight (kg)"
                       />
                     </Form.Item>
@@ -517,12 +650,14 @@ function Fish() {
                     <Form.Item
                       name={[field.name, "size"]}
                       label={<span style={{ fontWeight: 500 }}>Size</span>}
-                      rules={[{ required: true, message: "Please select Size" }]}
+                      rules={[
+                        { required: true, message: "Please select Size" },
+                      ]}
                     >
                       <Select
-                        style={{ width: "100%", borderRadius: '6px' }}
+                        style={{ width: "100%", borderRadius: "6px" }}
                         placeholder="Select size"
-                        dropdownStyle={{ borderRadius: '6px' }}
+                        dropdownStyle={{ borderRadius: "6px" }}
                       >
                         {sizeOptions.map((option, index) => (
                           <Option key={index} value={option.sizeInCM}>
@@ -536,12 +671,18 @@ function Fish() {
                     <Form.Item
                       name={[field.name, "price"]}
                       label={<span style={{ fontWeight: 500 }}>Price</span>}
-                      rules={[{ required: true, message: "Please enter Price" }]}
+                      rules={[
+                        { required: true, message: "Please enter Price" },
+                      ]}
                     >
                       <InputNumber
                         min={0}
-                        style={{ width: "100%", borderRadius: '6px' }}
-                        placeholder="Price ($)"
+                        style={{ width: "100%", borderRadius: "6px" }}
+                        placeholder="Price (VND)"
+                        formatter={(value) =>
+                          `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
                       />
                     </Form.Item>
                   </Col>
@@ -549,8 +690,12 @@ function Fish() {
                 <Row gutter={[24, 24]}>
                   <Col span={12}>
                     <FormItem
-                      label={<span style={{ fontWeight: 500 }}>Fish Image</span>}
-                      rules={[{ required: true, message: "Please upload fish image" }]}
+                      label={
+                        <span style={{ fontWeight: 500 }}>Fish Image</span>
+                      }
+                      rules={[
+                        { required: true, message: "Please upload fish image" },
+                      ]}
                     >
                       <Upload
                         {...getKoiImageProps(field.name)}
@@ -568,21 +713,23 @@ function Fish() {
                               ]
                             : []
                         }
-                        style={{ borderRadius: '6px' }}
+                        style={{ borderRadius: "6px" }}
                       >
                         {!fishImages[field.name]?.url && (
-                          <div style={{ 
-                            padding: '16px',
-                            border: '1px dashed #d9d9d9',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            '&:hover': {
-                              borderColor: '#e25822'
-                            }
-                          }}>
-                            <PlusOutlined style={{ color: '#e25822' }} />
-                            <div style={{ marginTop: 8, color: '#666' }}>
+                          <div
+                            style={{
+                              padding: "16px",
+                              border: "1px dashed #d9d9d9",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              transition: "all 0.3s",
+                              "&:hover": {
+                                borderColor: "#e25822",
+                              },
+                            }}
+                          >
+                            <PlusOutlined style={{ color: "#e25822" }} />
+                            <div style={{ marginTop: 8, color: "#666" }}>
                               Upload Fish Image
                             </div>
                           </div>
@@ -592,12 +739,18 @@ function Fish() {
                   </Col>
                   <Col span={12}>
                     <FormItem
-                      label={<span style={{ fontWeight: 500 }}>License Image</span>}
-                      rules={[{ required: true, message: "Please upload license" }]}
+                      label={
+                        <span style={{ fontWeight: 500 }}>License Image</span>
+                      }
+                      rules={[
+                        { required: true, message: "Please upload license" },
+                      ]}
                     >
                       <Upload
                         {...getLicenseImageProps(field.name)}
-                        onRemove={() => handleRemoveImage("license", field.name)}
+                        onRemove={() =>
+                          handleRemoveImage("license", field.name)
+                        }
                         fileList={
                           licenseImages[field.name]?.url
                             ? [
@@ -611,21 +764,23 @@ function Fish() {
                               ]
                             : []
                         }
-                        style={{ borderRadius: '6px' }}
+                        style={{ borderRadius: "6px" }}
                       >
                         {!licenseImages[field.name]?.url && (
-                          <div style={{ 
-                            padding: '16px',
-                            border: '1px dashed #d9d9d9',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s',
-                            '&:hover': {
-                              borderColor: '#e25822'
-                            }
-                          }}>
-                            <PlusOutlined style={{ color: '#e25822' }} />
-                            <div style={{ marginTop: 8, color: '#666' }}>
+                          <div
+                            style={{
+                              padding: "16px",
+                              border: "1px dashed #d9d9d9",
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              transition: "all 0.3s",
+                              "&:hover": {
+                                borderColor: "#e25822",
+                              },
+                            }}
+                          >
+                            <PlusOutlined style={{ color: "#e25822" }} />
+                            <div style={{ marginTop: 8, color: "#666" }}>
                               Upload License Image
                             </div>
                           </div>
@@ -634,13 +789,13 @@ function Fish() {
                     </FormItem>
                   </Col>
                 </Row>
-                <Form.Item 
-                  name={[field.name, "note"]} 
+                <Form.Item
+                  name={[field.name, "note"]}
                   label={<span style={{ fontWeight: 500 }}>Note</span>}
                 >
-                  <TextArea 
-                    rows={2} 
-                    style={{ borderRadius: '6px' }}
+                  <TextArea
+                    rows={2}
+                    style={{ borderRadius: "6px" }}
                     placeholder="Enter notes about this fish..."
                   />
                 </Form.Item>
@@ -652,16 +807,16 @@ function Fish() {
                 onClick={() => add()}
                 block
                 icon={<PlusOutlined />}
-                style={{ 
-                  height: '45px',
-                  borderColor: '#e25822',
-                  color: '#e25822',
-                  borderRadius: '6px',
-                  marginBottom: '24px',
-                  '&:hover': {
-                    color: '#fff',
-                    backgroundColor: '#e25822'
-                  }
+                style={{
+                  height: "45px",
+                  borderColor: "#e25822",
+                  color: "#e25822",
+                  borderRadius: "6px",
+                  marginBottom: "24px",
+                  "&:hover": {
+                    color: "#fff",
+                    backgroundColor: "#e25822",
+                  },
                 }}
               >
                 Add Fish
@@ -671,87 +826,147 @@ function Fish() {
         )}
       </Form.List>
 
-      <Card 
-        style={{ 
-          marginTop: 24, 
+      <Card
+        style={{
+          marginTop: 24,
           backgroundColor: "#fff",
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
         }}
       >
-        <Title level={4} style={{ color: '#e25822', marginBottom: 24 }}>Order Summary</Title>
+        <Title
+          level={4}
+          style={{ color: "#e25822", marginBottom: 24, fontWeight: "bold" }}
+        >
+          Order Summary
+        </Title>
         <Row gutter={[16, 16]}>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Total Weight</span>}
+                title={<span style={{ color: "#666" }}>Total Weight</span>}
                 value={totalWeight}
                 precision={2}
                 suffix="kg"
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Total Fish</span>}
+                title={<span style={{ color: "#666" }}>Total Fish</span>}
                 value={fishCount}
                 suffix="fish"
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
           <Col span={8}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Total Price</span>}
+                title={<span style={{ color: "#666" }}>Total Price</span>}
                 value={totalPrice}
-                precision={2}
-                prefix="$"
-                valueStyle={{ color: '#000' }}
+                formatter={(value) => formatCurrency(value)}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>
         </Row>
-        
-        <Title level={5} style={{ margin: '24px 0 16px', color: '#000' }}>
+
+        <Title level={5} style={{ margin: "24px 0 16px", color: "#000" }}>
           Box Requirements
         </Title>
         <Row gutter={[16, 16]}>
           <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
-              <Statistic 
-                title={<span style={{ color: '#666' }}>Small Boxes</span>}
-                value={boxCounts.small}
-                valueStyle={{ color: '#000' }}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
-              <Statistic 
-                title={<span style={{ color: '#666' }}>Medium Boxes</span>}
-                value={boxCounts.medium}
-                valueStyle={{ color: '#000' }}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
-              <Statistic 
-                title={<span style={{ color: '#666' }}>Large Boxes</span>}
-                value={boxCounts.large}
-                valueStyle={{ color: '#000' }}
-              />
-            </Card>
-          </Col>
-          <Col span={6}>
-            <Card size="small" style={{ borderRadius: '6px' }}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
               <Statistic
-                title={<span style={{ color: '#666' }}>Extra Large Boxes</span>}
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Small Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.small.dimensions}
+                    </div>
+                  </div>
+                }
+                value={boxCounts.small}
+                valueStyle={{ color: "#000" }}
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
+              <Statistic
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Medium Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.medium.dimensions}
+                    </div>
+                  </div>
+                }
+                value={boxCounts.medium}
+                valueStyle={{ color: "#000" }}
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
+              <Statistic
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Large Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.large.dimensions}
+                    </div>
+                  </div>
+                }
+                value={boxCounts.large}
+                valueStyle={{ color: "#000" }}
+              />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card size="small" style={{ borderRadius: "6px" }}>
+              <Statistic
+                title={
+                  <div>
+                    <span style={{ color: "#666" }}>Extra Large Boxes</span>
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#c2c2c2",
+                        marginTop: "4px",
+                        fontWeight: "normal",
+                      }}
+                    >
+                      {BOX_SIZES.extraLarge.dimensions}
+                    </div>
+                  </div>
+                }
                 value={boxCounts.extraLarge}
-                valueStyle={{ color: '#000' }}
+                valueStyle={{ color: "#000" }}
               />
             </Card>
           </Col>

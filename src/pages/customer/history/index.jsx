@@ -11,6 +11,16 @@ import "./index.css";
 import { useForm } from "antd/es/form/Form";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
 function ViewHistory() {
   const user = useSelector((store) => store.user);
   console.log(user);
@@ -178,7 +188,7 @@ const History = ({ order, onFeedbackClick, onReportClick }) => {
         <Alert message={order?.status} type={getAlertType(order?.status)} />
 
         <div className="order__item">
-          <p>Reciver name: </p>
+          <p>Receiver name: </p>
           <p>{order?.reciverName}</p>
         </div>
 
@@ -196,7 +206,7 @@ const History = ({ order, onFeedbackClick, onReportClick }) => {
 
         <div className="order__item">
           <p>Total Price: </p>
-          <h5>{order?.totalPrice}</h5>
+          <h5>{formatCurrency(order?.totalPrice)}</h5>
         </div>
       </div>
       <div className="btn-wrapper">

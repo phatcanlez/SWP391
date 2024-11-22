@@ -1,4 +1,6 @@
+
 import {
+  FrownOutlined,
   MenuOutlined,
   PieChartOutlined,
   PushpinOutlined,
@@ -19,12 +21,15 @@ function getItem(label, key, icon, children) {
     key,
     icon,
     children,
+    // label: `${
+    //   key === "sub1" || key === "sub2" ? (
+    //     label
+    //   ) : (
+    //     <Link to={"/dashboard/key"}> {label.text} </Link>
+    //   )
+    // }`,
     label: (
-      <Link
-        to={`/dashboard/${
-          key === "sub1" || key === "sub2" || key === "sub3" ? "" : key
-        }`}
-      >
+      <Link to={`/dashboard/${key === "sub1" || key === "sub2" ? "" : key}`}>
         {label}
       </Link>
     ),
@@ -68,25 +73,34 @@ function Dashboard() {
           )
         : null,
       getItem("History", "history"),
+      getItem("UnRefund", "un-refund"),
+      getItem("Refunded", "refunded"),
     ]),
-    getItem("Manage User", "manage-user", <PieChartOutlined />),
-    getItem("Manage Service", "sub2", <MenuOutlined />, [
+    getItem("Manage Staff", "staff", <PieChartOutlined />),
+
+    // getItem("Manage User", "manage-user", <PieChartOutlined />),
+    getItem("Manage Customer", "manage-customer", <PieChartOutlined />),
+    getItem("Manage Service", "sub1", <MenuOutlined />, [
       getItem("Extra service", "extra-service"),
       getItem("Delivery", "delivery"),
     ]),
-    getItem("Manage Price", "sub3", <MenuOutlined />, [
+    getItem("Manage Price", "sub2", <MenuOutlined />, [
       getItem("Price list weight", "price-list-weight"),
       getItem("Price list distance", "price-list-distance"),
       getItem("Box price", "box"),
     ]),
     getItem("Feedback", "feedback", <PieChartOutlined />),
-    getItem("Report", "report", <PieChartOutlined />),
+    getItem("Complain", "report", <FrownOutlined />),
     getItem("FAQs", "FAQ", <PieChartOutlined />),
     getItem("My Profile", "profile", <UserOutlined />),
   ];
   return (
     <div style={{ marginTop: "20px" }}>
-      <Layout>
+      <Layout
+        style={{
+          minHeight: "100vh",
+        }}
+      >
         <Sider className="sider" style={{ background: "#f5f5f5" }}>
           <div className="sider__header">
             <Link to="/">
@@ -97,7 +111,8 @@ function Dashboard() {
           <Menu mode="inline" items={items} />
         </Sider>
         <Layout>
-          <Content className="ctn"
+          <Content
+            className="ctn"
             style={{
               margin: "0 16px",
             }}
@@ -127,3 +142,4 @@ function Dashboard() {
   );
 }
 export default Dashboard;
+

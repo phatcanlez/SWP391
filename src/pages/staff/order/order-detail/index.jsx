@@ -1,23 +1,38 @@
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import "./index.css";
-import { CheckCircleOutlined, DoubleRightOutlined, LoadingOutlined, PhoneOutlined, SmileOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  DoubleRightOutlined,
+  LoadingOutlined,
+  MessageOutlined,
+  PhoneOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
 import License from "../license";
-import { Button, Form, Input, Modal, Rate, Steps } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { Alert, Button, Form, Input, Modal, Rate, Steps } from "antd";
+import { useSelector } from "react-redux";
 import { useForm } from "antd/es/form/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import InProcess from "../pending/pending";
-import { approve } from "../../../../redux/features/orderSlice";
 import api from "../../../../config/axios";
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
 
 function OrderDetail() {
   const { id } = useParams();
+  const user = useSelector((store) => store.user);
   const [order, setOrder] = useState([]);
   const [service, setService] = useState([]);
   const [status, setStatus] = useState("WAITING");
-  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -59,7 +74,15 @@ function OrderDetail() {
     setFBModalOpen(true);
   };
 
-  const user = useSelector((store) => store.user);
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
   const [description, setDescription] = useState("");
 
   const handleSubmitReject = async (values) => {
@@ -88,7 +111,19 @@ function OrderDetail() {
       const processingOrder = await api.get(
         `/orders/status-emp?status=PENDING&empId=${user.id}`
       );
-      if (response.data.length === 0 && processingOrder.data.length === 0) {
+      const vietnam = await api.get(
+        `/orders/status-emp?status=PENDINGVIETNAM&empId=${user.id}`
+      );
+      const arrive = await api.get(
+        `/orders/status-emp?status=ARRIVEDVIETNAM&empId=${user.id}`
+      );
+
+      if (
+        response.data?.length === 0 &&
+        processingOrder.data?.length === 0 &&
+        vietnam.data?.length === 0 &&
+        arrive.data?.length === 0 
+      ) {
         console.log(user.id);
         const emid = user.id;
         const setvalue = await api.post("/status", {
@@ -98,10 +133,9 @@ function OrderDetail() {
           description: "The order is approved",
         });
         console.log(setvalue);
-        dispatch(approve(setvalue.data));
         toast.success("APPROVED");
       } else {
-        toast.error("You have an order in processing");
+        toast.error("Please check if you have any order in process");
       }
     } catch (error) {
       toast.error(error.response.data);
@@ -129,6 +163,18 @@ function OrderDetail() {
       toast.error(error);
     }
   };
+  console.log(order);
+
+  const handleRoomChat = async (customerID) => {
+    try {
+      const room = await api.get(`/chat/room/${user?.id}/${customerID}`);
+
+      console.log(room.data);
+      navigate(`/staff/chat/${room.data?.roomID}`);
+    } catch (error) {
+      toast.error(error);
+    }
+  };
   return (
     <div className="order-detail">
       {/* <Image src={order.image} alt="Order image" width={200} /> */}
@@ -137,7 +183,7 @@ function OrderDetail() {
         <h3 style={{ marginBottom: "50px" }}>
           <span className="color">Order ID: </span> {order.orderID}
         </h3>
-
+        <Alert message={order?.orderDetail?.type} />
         <div className="time-section">
           <p>
             Created Delivery Date:
@@ -162,13 +208,19 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order?.account?.name}</span> - (+84)
+                <span className="color">{order?.senderName}</span> -
                 {order.senderPhoneNumber}
               </p>
               <p>{order.senderAddress}</p>
             </div>
 
             <PhoneOutlined style={{ fontSize: 18, color: "#c3c3c3" }} />
+            {status === "WATINGFOR2NDSTAFF" && (
+              <MessageOutlined
+                onClick={() => handleRoomChat(order?.accountId)}
+                style={{ fontSize: 18, color: "#c3c3c3" }}
+              />
+            )}
           </div>
 
           <DoubleRightOutlined style={{ fontSize: 18, color: "#e25822" }} />
@@ -176,7 +228,7 @@ function OrderDetail() {
           <div className="item">
             <div>
               <p>
-                <span className="color">{order.reciverName} </span>- (+84)
+                <span className="color">{order.reciverName} </span> -
                 {order.reciverPhoneNumber}
               </p>
               <p>{order.reciverAdress}</p>
@@ -186,7 +238,7 @@ function OrderDetail() {
           </div>
         </div>
         <h6 style={{ marginTop: "30px", marginBottom: "0px" }}>
-          Distance: {order?.orderDetail?.kilometer}
+          Distance: {order?.orderDetail?.kilometer} km
         </h6>
       </div>
 
@@ -226,6 +278,10 @@ function OrderDetail() {
               <p>{order?.orderDetail?.extraLargeBox}</p>
             </div>
           </div>
+          <div className="shipmethod">
+            <h6 style={{ marginTop: "40px" }}>Ship Method</h6>
+            <p>{order?.orderDetail?.shipMethod?.description}</p>
+          </div>
           <div className="s-method">
             <h6>Service Method</h6>
             <div className="item">
@@ -239,7 +295,7 @@ function OrderDetail() {
                 <div key={service.id} className="item item-cnt">
                   <p className="color">{index + 1}</p>
                   <p>{service.nameService}</p>
-                  <p>{service.price}</p>
+                  <p>{formatCurrency(service.price)}</p>
                 </div>
               ))}
             </div>
@@ -248,29 +304,33 @@ function OrderDetail() {
           <p>
             Total price:{" "}
             <span className="color" style={{ fontWeight: "600" }}>
-              {order.orderPrice}
+              {formatCurrency(order?.totalPrice)}
             </span>
+          </p>
+          <p style={{ marginTop: "20px" }}>
+            <span style={{ color: "#e25822" }}>Note:</span> {order?.note}
           </p>
         </div>
       </div>
 
       <h5 className="title">Delivery status</h5>
+
       <div className="bg-w">
+        <div style={{ marginBottom: "20px" }}>
+          <p>Payment status: {order?.payment?.status}</p>
+        </div>
+        <InProcess />
         {(status === "APPROVED" || status === "PENDING") && (
           <>
-            <InProcess />
-            {(status === "APPROVED" || status === "PENDING") && (
-              <>
-                <button className="btn-item fail-btn" onClick={showModal}>
-                  Delivery Failure
-                </button>
-              </>
-            )}
+            <button className="btn-item fail-btn" onClick={showModal}>
+              Delivery Failure
+            </button>
           </>
         )}
-        {status === "SUCCESS" && (
+        {status === "SUCCESS" && order?.orderDetail?.type === "DOMESTIC" && (
           <>
-            <Steps className="step"
+            <Steps
+              className="step"
               items={[
                 {
                   title: "Approved",
@@ -294,14 +354,57 @@ function OrderDetail() {
                 },
               ]}
             />
-            {status === "SUCCESS" && (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <button className="fb-btn btn-item" onClick={showFBModal}>
-                  View Feedback
-                </button>
-              </div>
-            )}
           </>
+        )}
+        {status === "SUCCESS" && order?.orderDetail?.type === "OVERSEA" && (
+          <>
+            <Steps
+              progressDot
+              current={6}
+              direction="vertical"
+              items={[
+                {
+                  title: "Waiting for Approval",
+                  description: "Order is pending initial staff approval.",
+                },
+                {
+                  title: "Waiting for Second Staff",
+                  description:
+                    "Order has been approved by first staff member, awaiting second approval.",
+                },
+                {
+                  title: "Order Approved",
+                  description: "Order has been approved by both staff members.",
+                },
+                {
+                  title: "Processing in Japan",
+                  description:
+                    "Order is being processed at our Japan facility.",
+                },
+                {
+                  title: "Arrived in Vietnam",
+                  description:
+                    "Order has arrived and is being processed in Vietnam.",
+                },
+                {
+                  title: "Processing in Vietnam",
+                  description: "The order is being processed in Vietnam.",
+                },
+                {
+                  title: "Order Complete",
+                  description:
+                    "Order has been successfully processed and completed.",
+                },
+              ]}
+            />
+          </>
+        )}
+        {status === "SUCCESS" && (
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button className="fb-btn btn-item" onClick={showFBModal}>
+              View Feedback
+            </button>
+          </div>
         )}
         {status === "FAIL" && (
           <div style={{ textAlign: "center", fontSize: "20px" }}>
@@ -313,6 +416,7 @@ function OrderDetail() {
         <p>Loading...</p>
       ) : (
         <div className="btn-wrap">
+          {}
           {status === "WAITING" && (
             <>
               <Button className="btn btn-r" onClick={showModal}>
@@ -323,10 +427,18 @@ function OrderDetail() {
               </Button>
             </>
           )}
+          {status === "WATINGFOR2NDSTAFF" && (
+            <>
+              <Button className="btn btn-a" onClick={handleAddApprove}>
+                APPROVE
+              </Button>
+            </>
+          )}
+          
         </div>
       )}
 
-      {/* <span>Price: {order.price}</span>            */}
+      {/* <span>Price: {order.price}</span>*/}
 
       <Modal
         title="Failed Report "

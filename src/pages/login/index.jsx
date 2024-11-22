@@ -1,13 +1,11 @@
-import React from "react";
 import AuthenTemplate from "../../components/authen-template";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { googleProvider } from "../../config/firebase";
 import "../login/login.css";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import gg from "../../img/gg.png";
-import fb from "../../img/fb.png";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../config/axios";
 import { toast } from "react-toastify";
@@ -40,8 +38,10 @@ function LoginPage() {
           });
           toast.success("Successful");
           dispatch(login(response.data));
-          const { role, token } = response.data;
+          console.log(response.data);
+          const { id, role, token } = response.data;
           localStorage.setItem("token", token);
+          localStorage.setItem("accountId", id);
           console.log(response);
           navigate("/customer-service");
         } catch (err) {
@@ -64,19 +64,32 @@ function LoginPage() {
 
   const handleLogin = async (values) => {
     try {
+
       const response = await api.post("login", values);
+      if (response.data.status == false) {
+        toast.error("Your account has been disabled. Please contact support.");
+        return;
+      }
+
       toast.success("Successful");
       console.log(response);
       dispatch(login(response.data));
-      const { role, token } = response.data;
+      
+      const { id, role, token } = response.data;
       localStorage.setItem("token", token);
-
-      if (role === "MANAGER") navigate("/dashboard");
+      localStorage.setItem("accountId", id);
+      
+      if (role === "MANAGER") navigate("/dashboard/overview");
       if (role === "STAFF") navigate("/staff/order");
       if (role === "CUSTOMER") navigate("/customer-service/history");
+
     } catch (err) {
       console.error(err);
-      toast.error("Wrong username or password!");
+      if (err.response?.status === 404) {
+        toast.error("Account not found!");
+      } else {
+        toast.error("Wrong username or password!");
+      }
     }
   };
 
@@ -107,7 +120,7 @@ function LoginPage() {
               },
             ]}
           >
-            <Input.Password />
+            <Input.Password placeholder="Password" />
           </Form.Item>
 
           <Link to="/login"> </Link>

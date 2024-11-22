@@ -17,6 +17,12 @@ function Box() {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (text) => {
+        // Format the price with spaces every three digits
+        return text
+          ? text.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+          : "";
+      },
     },
     {
       title: "Surcharge",
@@ -51,7 +57,7 @@ function Box() {
         label="Surcharge"
         rules={[
           {
-            pattern: new RegExp(/^[0-9]+$/),
+            pattern: new RegExp(/^\d+(\.\d+)?$/),
             required: true,
             message: "Wrong number",
           },

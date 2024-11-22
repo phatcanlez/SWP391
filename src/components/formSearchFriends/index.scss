@@ -1,0 +1,99 @@
+.searchFriends {
+    z-index: 9999;
+    color: #fff;
+    .formSearch {
+      position: fixed;
+      top: 15%;
+      left: 32.5%;
+      right: 32.5%;
+      bottom: 15%;
+      background-color: #262626;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      &__header {
+        display: flex;
+        align-items: center;
+        // justify-content: center;
+        width: 100%;
+        margin-bottom: 15px;
+        h3 {
+          width: 100%;
+          text-align: center;
+          // margin-right: 6rem;
+        }
+      }
+      &__input {
+        border-bottom: 1px solid rgba(120, 119, 119, 0.3);
+        border-top: 1px solid rgba(120, 119, 119, 0.3);
+        display: flex;
+        align-items: center;
+        //   margin: 15px 0px;
+        input {
+          width: 100%;
+          padding: 15px;
+          background-color: transparent;
+          border: none;
+          outline: none;
+          color: #fff;
+        }
+      }
+      &__friends {
+        margin-top: 20px;
+        flex-grow: 1;
+        overflow-y: scroll;
+        // padding: 0px 25px;
+        overflow-x: hidden;
+        &::-webkit-scrollbar {
+          width: 3px;
+          /* Độ rộng của thanh cuộn */
+        }
+  
+        &::-webkit-scrollbar-thumb {
+          background-color: #75757573;
+          /* Màu sắc của "nút rgb(123, 123, 123)/
+          border-radius: 10px; /* Độ cong của "nút cuộn" */
+        }
+  
+        &::-webkit-scrollbar-track {
+          background-color: #e6e6e6; /* Màu sắc của phần nền thanh cuộn */
+        }
+      }
+    }
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.25);
+    // background-color: aqua;
+    z-index: 111;
+  }
+  
+  @media only screen and (max-width: 950px) {
+    .searchFriends {
+      .formSearch {
+        left: 26%;
+        right: 26%;
+      }
+    }
+  }
+  
+  @media only screen and (max-width: 700px) {
+    .searchFriends {
+      .formSearch {
+        left: 20%;
+        right: 20%;
+      }
+    }
+  }
+  @media only screen and (max-width: 540px) {
+    .searchFriends {
+      .formSearch {
+        left: 10%;
+        right: 10%;
+      }
+    }
+  }

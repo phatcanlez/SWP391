@@ -1,14 +1,16 @@
 import { toast } from "react-toastify";
-import CRUDTemplate from "../../../components/crud-template";
 import api from "../../../config/axios";
 import { useEffect, useState } from "react";
-import { Pagination, Table } from "antd";
+import { Button, Pagination, Rate, Table } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function Feedback() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [totalFeedback, setTotalFeedback] = useState();
   const [page, setPage] = useState(0);
+
+  const navigate = useNavigate();
   const columns = [
     {
       title: "ID",
@@ -30,11 +32,23 @@ function Feedback() {
       title: "Rating",
       dataIndex: "rating",
       key: "rating",
+      render: (fb, order) => <Rate disabled value={order?.rating} />,
     },
     {
       title: "Comment",
       dataIndex: "comment",
       key: "comment",
+    },
+    {
+      title: "",
+      dataIndex: "note",
+      key: "note",
+      fixed: "right",
+      render: (record, value) => (
+        <Button onClick={() => navigate(`/dashboard/view/${value.orderID}`)}>
+          View
+        </Button>
+      ),
     },
   ];
 

@@ -10,12 +10,10 @@ function AllOrder_AD() {
 }
 
 function FailOrder_AD() {
-  const user = useSelector((store) => store);
+  // const user = useSelector((store) => store);
   return (
     <div>
-      <AdminOrder
-        path={`/orders/status-emp?status=FAIL&empId=${user.user.id}`}
-      />
+      <AdminOrder path={`/orders/status?status=FAIL`} />
     </div>
   );
 }
@@ -23,18 +21,34 @@ function FailOrder_AD() {
 function WaitingOrder_AD() {
   return (
     <div>
-      <AdminOrder path={"/orders/status?status=WAITING"} />
+      <AdminOrder path={"orders/status?status=WAITING"} />
     </div>
   );
 }
 
 function History_AD() {
-  const user = useSelector((store) => store);
+  // const user = useSelector((store) => store);
   return (
     <div>
-      <AdminOrder
-        path={`orders/status-emp?status=SUCCESS&empId=${user.user.id}`}
-      />
+      <AdminOrder path={`orders/status?status=SUCCESS`} />
+    </div>
+  );
+}
+
+function UnRefund_AD() {
+  // const user = useSelector((store) => store);
+  return (
+    <div>
+      <AdminOrder path={`orders/status?status=UNREFUND`} />
+    </div>
+  );
+}
+
+function Refunded_AD() {
+  // const user = useSelector((store) => store);
+  return (
+    <div>
+      <AdminOrder path={`orders/status?status=REFUNDED`} />
     </div>
   );
 }
@@ -43,3 +57,5 @@ export default AllOrder_AD;
 export { WaitingOrder_AD };
 export { FailOrder_AD };
 export { History_AD };
+export { UnRefund_AD };
+export { Refunded_AD };
