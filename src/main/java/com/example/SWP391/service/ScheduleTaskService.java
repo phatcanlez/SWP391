@@ -40,7 +40,7 @@ public class ScheduleTaskService {
     @Autowired
     PaymentRepository paymentRepository;
 
-//    @Scheduled(fixedRate = 12 * 60 * 60 * 1000)//1 tiếng check 1 lần
+    @Scheduled(fixedRate = 12 * 60 * 60 * 1000)//1 tiếng check 1 lần
     public void performTask() {
         try {
             System.out.println("Task performed at " + new Date());
@@ -83,7 +83,7 @@ public class ScheduleTaskService {
         }
     }
 
-//    @Scheduled(fixedRate = 60 * 60 * 1000)//1 tiếng check 1 lần
+    @Scheduled(fixedRate = 60 * 60 * 1000)//1 tiếng check 1 lần
     @Transactional
     public void scheduleCheckPayment() {
         try {
@@ -121,7 +121,7 @@ public class ScheduleTaskService {
         }
     }
 
-//    @Transactional
+    @Transactional
 //    @Scheduled(fixedRate = 60 * 60 * 1000)//1 tiếng check 1 lần
     public void scheduleCheckOrder() {
         try {

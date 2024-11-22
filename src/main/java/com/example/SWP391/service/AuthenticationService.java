@@ -134,13 +134,13 @@ public class AuthenticationService implements UserDetailsService {
                 account.setStatus(true);
                 accountRepository.save(account);
                 //đăng ký thành công, gửi mail cho người dùng
-                EmailDetail emailDetail = new EmailDetail();
-                emailDetail.setReceiver(account);
-                emailDetail.setSubject("Welcome to KOIKICHI");
-                emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
-                emailDetail.setLink("http//koikichi.io.vn/");
-                emailDetail.setButton("Go to home page");
-                emailService.sendEmail(emailDetail);
+//                EmailDetail emailDetail = new EmailDetail();
+//                emailDetail.setReceiver(account);
+//                emailDetail.setSubject("Welcome to KOIKICHI");
+//                emailDetail.setContent("With a team of experienced experts, we are committed to transporting your Koi fish in the safest and most thoughtful way. Visit our website to discover more services and special offers for you.");
+//                emailDetail.setLink("http//koikichi.io.vn/");
+//                emailDetail.setButton("Go to home page");
+//                emailService.sendEmail(emailDetail);
             }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     oAuth.getEmail(),
@@ -148,7 +148,7 @@ public class AuthenticationService implements UserDetailsService {
             account = (Account) authentication.getPrincipal(); //lấy thông tin ng dùng và cast về account
             AccountResponse accountResponse = modelMapper.map(account, AccountResponse.class);
             accountResponse.setToken(tokenService.generateToken(account));
-            accountResponse.setCountry(TrackingUtil.getCountry(account.getAddress()));
+//            accountResponse.setCountry(TrackingUtil.getCountry(account.getAddress()));
             return accountResponse;
 
         } catch (Exception e) {

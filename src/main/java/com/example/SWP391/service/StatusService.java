@@ -147,7 +147,7 @@ public class StatusService {
                 EmailDetail emailDetail = new EmailDetail();
                 emailDetail.setReceiver(orders.getAccount());
                 emailDetail.setSubject("Your order is delivered successfully");
-                emailDetail.setContent("Your order is delivered successfully");
+                emailDetail.setContent("Your order: "+ orders.getOrderID() +" is delivered successfully");
                 emailService.sendEmail(emailDetail);
                 if (orderDetailService.checkOrderType(statusRequest.getOrder(), OrderType.OVERSEA)) {
                     OverseaOrder overseaOrder = orderOverseaRepository.findOrdersByOrderId(orders.getOrderID());
@@ -155,7 +155,7 @@ public class StatusService {
                         EmailDetail emailDetail2 = new EmailDetail();
                         emailDetail2.setReceiver(orders.getAccount());
                         emailDetail2.setSubject("Your order is delivered successfully");
-                        emailDetail2.setContent("Your order is delivered successfully");
+                        emailDetail2.setContent("Your order: "+ orders.getOrderID() +" is delivered successfully");
                         emailService.sendEmail(emailDetail2);
                     }
                 }
